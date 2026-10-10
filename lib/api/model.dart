@@ -116,6 +116,11 @@ abstract final class KunciRincian {
 
   /// Parameter `donasisaya` (kontrak §6.7).
   static const tanggal = 'tanggal';
+
+  /// Isian `gantipassword` (kontrak §6.10).
+  static const lama = 'lama';
+  static const baru = 'baru';
+  static const ulang = 'ulang';
 }
 
 // ---------------------------------------------------------------------------

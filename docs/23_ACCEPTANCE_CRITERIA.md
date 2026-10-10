@@ -11,13 +11,6 @@ Kriteria per fitur aktif. Alur rinci: docs/06_BUSINESS_PROCESS.md. Pola antarmuk
 
 Verifikasi: `flutter test test/layar/` → `All tests passed!`. Perintah "Cek warna literal", "Cek `print`", dan "Cek alamat tertanam" → keluaran kosong.
 
-F1 dan F2 (S1) sudah diterima: docs/_archive/23-S1-masuk.md. F3 dan F4 (S2): docs/_archive/23-S2-input-sumbangan.md. F5 (S3): docs/_archive/23-S3-tambah-donatur.md. F6 (S4): docs/_archive/23-S4-input-saya.md. F7 (S5): docs/_archive/23-S5-rekap.md.
+F1 dan F2 (S1) sudah diterima: docs/_archive/23-S1-masuk.md. F3 dan F4 (S2): docs/_archive/23-S2-input-sumbangan.md. F5 (S3): docs/_archive/23-S3-tambah-donatur.md. F6 (S4): docs/_archive/23-S4-input-saya.md. F7 (S5): docs/_archive/23-S5-rekap.md. F8 (S6): docs/_archive/23-S6-ganti-password.md. Logo yayasan (permintaan pemilik): docs/_archive/23-logo-yayasan.md.
 
-## F8 Ganti password dan APK debug (S6)
-
-- [ ] 200 → token tersimpan diganti token baru, dan permintaan berikutnya membawa token baru.
-- [ ] 422 → `errorText` pada `lama`/`baru`/`ulang` sesuai `rincian`. 409 `fitur_belum_tersedia` → panel berisi `pesan`.
-- [ ] `GalatJaringan` setelah mengirim → token dihapus → Masuk dengan pesan P6.3.
-- [ ] Perintah "APK debug" menghasilkan `app-debug.apk`, dan alur masuk → input → konfirmasi → rekap berjalan di emulator terhadap server lokal.
-
-Verifikasi: `flutter test test/layar/ganti_password_test.dart` → `All tests passed!`, lalu perintah "APK debug".
+Tidak ada fitur aktif: semua fitur MVP F1–F8 sudah diterima. Fitur baru menambah bloknya di sini.

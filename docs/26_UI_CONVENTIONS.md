@@ -60,7 +60,10 @@ Rasio kontras di bawah dibulatkan ke bawah.
 | Bentuk | elevasi | 0 untuk isian, AppBar, dan NavigationBar (dipisah garis atas 1 dp warna `garis`); 1 untuk kartu |
 | Sentuh | target | ≥ 48 × 48 dp; tinggi tombol 48 dp |
 | Ikon | set | Material Icons bawaan (`Icons.*`), 24 dp. Tab: `add_card`, `person_add_alt_1`, `receipt_long`, `bar_chart`. Lainnya: `search`, `more_vert`, `settings`, `edit` |
-| Ikon peluncur | sementara | Teks "mD" warna `diAtasPrimer` di atas `primer`, sampai logo yayasan PNG ≥ 1024 px tersedia [TERBUKA T9] |
+| Logo | berkas | `assets/logo_yayasan.png`, logo Yayasan Ibnu Atha'illah 224 px dari pemilik (10 Okt 2026). Bagian putih di dalam logo tembus pandang, jadi logo selalu di atas `latar` atau alas lingkaran `latar`. Ikon terbesar dan layar pembuka memperbesar berkas ini sampai 1,4×; bila berkas asli ≥ 1024 px tersedia, ganti lalu buat ulang PNG Android [TERBUKA] |
+| Logo | `logoKepala` | 56 dp di atas alas lingkaran `latar` 64 dp (tepi 4) pada kepala Masuk, sebaris dengan nama yayasan (jarak 12) dan ikon `settings` di kanan |
+| Logo | `logoMemuat` | 80 dp di tengah layar memuat awal dan layar pembuka Android < 12 |
+| Ikon peluncur | logo | Ikon adaptif: logo 66 dp (zona aman) di kanvas 108 dp, latar `latar`. Ikon lama (Android < 8): logo 40 dp di atas lingkaran `latar` 46 dp, kanvas 48 dp. Android 12 ke atas memakai ikon ini di layar pembuka sistem |
 
 **Lencana bintang** berisi teks "Bintang {n}" dengan gaya `tombol`, dan `Semantics` "Bintang {n} dari 5".
 
@@ -83,6 +86,7 @@ Rasio kontras di bawah dibulatkan ke bawah.
 | Nominal cepat | Kisi 3 kolom berisi `OutlinedButton` bertuliskan "100.000" (tanpa "Rp"), hanya `nominal_umum` ≤ Rp 300.000: enam tombol 50.000–300.000 dalam dua baris | `lib/widget/nominal_cepat.dart` |
 | Kartu donatur | `Card` ringkas: nama (`judul`) dan lencana sebaris; alamat; No HP · keterangan sebaris; "Riwayat {tahun}" dengan "Total Rp X" di kanan; riwayat "dd/MM Rp jumlah" yang terlipat | `lib/widget/kartu_donatur.dart` |
 | Lencana bintang | lihat tabel di atas | `lib/widget/lencana_bintang.dart` |
+| Logo yayasan | `Image.asset` selebar token Logo; `alas` = lingkaran `latar` untuk latar `primer`; label `Semantics` hanya bila nama yayasan tidak tertulis di sebelahnya | `lib/widget/logo_yayasan.dart` |
 | Strip hari ini | Satu baris di bawah AppBar tab Input: "Total input hari ini (N×): Rp X" (`teksLemah`), tanpa daftar input terakhir; huruf mengecil bila tidak muat | `lib/widget/strip_hari_ini.dart` |
 | Kartu hasil | `Card`: pesan sukses, nama donatur atau Nomor Register (`nomorRegister`), nominal (`nominal`), jam "HH:mm WITA" | `lib/widget/kartu_hasil.dart` |
 | Dialog konfirmasi | `AlertDialog`: judul, nama donatur bila ada, daftar alasan, `TextButton` Tidak + `FilledButton` Ya, simpan. Dipakai juga untuk dialog nominal kecil dan Keluar | `lib/widget/dialog_konfirmasi.dart` |
@@ -96,7 +100,8 @@ Rasio kontras di bawah dibulatkan ke bawah.
 
 | Layar | Pola | Navigasi | Judul AppBar |
 |---|---|---|---|
-| Masuk | autentikasi; kepala `primer` berisi nama yayasan (`aksen`) dan "mDonator" | awal tanpa token; didorong di atas kerangka saat 401 | — |
+| Memuat awal | logo `logoMemuat` di tengah latar `latar`, tanpa AppBar, status bar `primerGelap` | P0, selama token dibaca dan `konfigurasi` dipanggil | — |
+| Masuk | autentikasi; kepala `primer` berisi logo (`logoKepala`), nama yayasan (`aksen`), "mDonator", dan ikon `settings` dalam satu baris | awal tanpa token; didorong di atas kerangka saat 401 | — |
 | Input Sumbangan | formulir, strip hari ini di atas | tab 1 "Input" (layar awal) | Input Sumbangan |
 | Cari Donatur | daftar + cari | dari ikon `search` di Input | Cari Donatur |
 | Tambah Donatur | formulir | tab 2 "Donatur" | Tambah Donatur |

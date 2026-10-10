@@ -1,5 +1,5 @@
 // Layar Masuk (P1 docs/06_BUSINESS_PROCESS.md, docs/26_UI_CONVENTIONS.md §Layar → pola): kepala
-// primer berisi nama yayasan (aksen) dan "mDonator", ikon Pengaturan, Username, Password, Masuk.
+// primer berisi logo, nama yayasan (aksen), dan "mDonator", ikon Pengaturan, Username, Password, Masuk.
 // Tampil sebagai layar awal tanpa token, atau didorong di atas kerangka saat 401 (lib/layar/awal.dart).
 
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import '../state/masuk_notifier.dart';
 import '../state/sesi.dart';
 import '../tema.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/logo_yayasan.dart';
 import '../widget/panel_galat.dart';
 import 'pengaturan.dart';
 
@@ -124,28 +125,35 @@ class _Kepala extends StatelessWidget {
       color: Warna.primer,
       child: SafeArea(
         bottom: false,
+        // Ikon Pengaturan sebaris dengan logo, supaya kepala tidak lebih tinggi daripada sebelum ada
+        // logo dan tombol Masuk tetap terlihat di layar 360×640 dp dengan huruf 1,3.
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, Jarak.j4, Jarak.j4, Jarak.j24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, Jarak.j16, Jarak.j4, Jarak.j24),
+          child: Row(
             children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  icon: const Icon(Icons.settings),
-                  color: Warna.diAtasPrimer,
-                  tooltip: 'Pengaturan',
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const LayarPengaturan()),
-                  ),
+              const LogoYayasan(ukuran: Bentuk.logoKepala, alas: true),
+              const SizedBox(width: Jarak.j12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Yayasan Ibnu Atha'illah",
+                      style: teks.titleLarge!.copyWith(color: Warna.aksen),
+                    ),
+                    const SizedBox(height: Jarak.j4),
+                    Text('mDonator', style: teks.bodyLarge!.copyWith(color: Warna.diAtasPrimer)),
+                  ],
                 ),
               ),
-              Text(
-                "Yayasan Ibnu Atha'illah",
-                style: teks.titleLarge!.copyWith(color: Warna.aksen),
+              IconButton(
+                icon: const Icon(Icons.settings),
+                color: Warna.diAtasPrimer,
+                tooltip: 'Pengaturan',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const LayarPengaturan()),
+                ),
               ),
-              const SizedBox(height: Jarak.j4),
-              Text('mDonator', style: teks.bodyLarge!.copyWith(color: Warna.diAtasPrimer)),
             ],
           ),
         ),

@@ -21,7 +21,7 @@ Perintah `flutter` dan `bash scripts/…` dijalankan dari `mDonator/`. Perintah 
 | Jalankan | `flutter run -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000` | — |
 | Uji integrasi (opsional) | `flutter test integration_test -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000 --dart-define=UJI_USERNAME=uji_operator --dart-define=UJI_PASSWORD=<dari ../tests/.akun-uji>` | `All tests passed!` |
 | ⚠️ Bersihkan data uji integrasi (hanya DB lokal) | `mysql -u root -p kapuhmad_donatur -e "DELETE s FROM donasi s JOIN donator d ON d.Id = s.IdDonator WHERE d.Nama LIKE 'UJI-MOBILE%'; DELETE FROM donator WHERE Nama LIKE 'UJI-MOBILE%';"` | sidik data sama dengan sebelum uji |
-| APK debug | `flutter build apk --debug --dart-define=SERVER_URL=http://localhost:8000` | `build/app/outputs/flutter-apk/app-debug.apk` ada |
+| APK debug (alamat bawaan server produksi, permintaan pemilik 10 Okt 2026) | `flutter build apk --debug --dart-define=SERVER_URL=https://donatur.kapuhmadani.com` | `build/app/outputs/flutter-apk/app-debug.apk` ada. Untuk demo terhadap server lokal, ubah alamat di Pengaturan ke `http://localhost:8000` **sebelum** masuk |
 | Cek warna literal | `grep -rn "Color(0x" lib --include=*.dart \| grep -v "^lib/tema.dart"` | keluaran kosong |
 | Cek `print` | `grep -rnE "(^\|[^a-zA-Z_])print\(" lib --include=*.dart` | keluaran kosong |
 | Cek alamat tertanam | `grep -rnE "https?://" lib --include=*.dart` | keluaran kosong |

@@ -1,5 +1,5 @@
 // Sesi global: alamat server, token, konfigurasi, dan fase aplikasi (docs/08_ARCHITECTURE.md).
-// Alur P0, P1, dan P7 di docs/06_BUSINESS_PROCESS.md. Secure storage hanya memuat token,
+// Alur P0, P1, P6, dan P7 di docs/06_BUSINESS_PROCESS.md. Secure storage hanya memuat token,
 // kedaluwarsa, alamat server, dan username terakhir (docs/21_SECURITY_RULES.md); pengguna dan
 // peran selalu dari `konfigurasi` (docs/05_USER_ROLE.md).
 
@@ -69,6 +69,10 @@ abstract final class TeksGalat {
   static const apiMati = 'Layanan mobile belum diaktifkan di server.';
   static const alamatKosong = 'Alamat server belum diatur. Buka Pengaturan.';
   static const versi = 'Versi aplikasi tidak cocok dengan server. Perbarui aplikasi.';
+
+  /// P6.3 docs/06_BUSINESS_PROCESS.md, di layar Masuk.
+  static const putusGantiPassword =
+      'Koneksi terputus. Masuk dengan password baru; bila gagal, pakai password lama.';
 }
 
 /// Teks panel untuk [GalatApi] atau [GalatJaringan] yang tidak punya tempat tampil khusus.
@@ -186,6 +190,27 @@ class Sesi extends ChangeNotifier {
     _terimaKonfigurasi(await klien.konfigurasi());
   }
 
+  /// P6 Ganti Password. 200: semua token lama batal, jadi token tersimpan diganti token baru.
+  /// [GalatJaringan]: klien tidak tahu password mana yang berlaku (kontrak §6.10), maka token
+  /// dihapus dan Masuk didorong di atas kerangka dengan pesan P6.3, seperti alur 401 sehingga
+  /// isi tab tetap. Semua galat diteruskan ke pemanggil.
+  Future<void> gantiPassword(PermintaanGantiPassword isi) async {
+    final JawabanGantiPassword jawaban;
+    try {
+      jawaban = await klien.gantiPassword(isi);
+    } on GalatJaringan {
+      _mintaMasukUlang(TeksGalat.putusGantiPassword);
+      rethrow;
+    }
+    klien.token = jawaban.token;
+    _kedaluwarsa = jawaban.kedaluwarsa;
+    notifyListeners();
+    await Future.wait([
+      _penyimpanan.write(key: _Kunci.token, value: jawaban.token),
+      _penyimpanan.write(key: _Kunci.kedaluwarsa, value: jawaban.kedaluwarsa),
+    ]);
+  }
+
   /// P7 Keluar: tanpa aksi server. Alamat server dan username terakhir tetap tersimpan.
   Future<void> keluar() async {
     _lupakanSesi();
@@ -273,10 +298,12 @@ class Sesi extends ChangeNotifier {
 
   /// 401 selain dari `login` (docs/14_ERROR_HANDLING.md): hapus token. Di kerangka, konfigurasi
   /// dibiarkan agar isi tab tetap bisa dipakai; masuk lagi menggantinya.
-  void _tidakSah(GalatApi galat) {
+  void _tidakSah(GalatApi galat) => _mintaMasukUlang(galat.pesan.isEmpty ? null : galat.pesan);
+
+  void _mintaMasukUlang(String? pesan) {
     klien.token = null;
     _kedaluwarsa = null;
-    _pesanMasuk = galat.pesan.isEmpty ? null : galat.pesan;
+    _pesanMasuk = pesan;
     if (_fase == FaseSesi.aktif) {
       _perluMasukUlang = true;
       notifyListeners();

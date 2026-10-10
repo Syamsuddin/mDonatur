@@ -1,6 +1,7 @@
 // Kerangka: AppBar + NavigationBar 4 tab + IndexedStack (docs/08_ARCHITECTURE.md, docs/26_UI_CONVENTIONS.md).
 // IndexedStack menjaga isian setiap tab tetap ada saat berpindah tab, juga saat layar Masuk
-// didorong di atasnya karena 401. Menu ⋮: Pengaturan dan Keluar (P7 docs/06_BUSINESS_PROCESS.md).
+// didorong di atasnya karena 401. Menu ⋮: Ganti Password (P6), Pengaturan dan Keluar (P7
+// docs/06_BUSINESS_PROCESS.md).
 // Tab aktif dan pesan antartab ada di KerangkaNotifier. Tab 1 Input Sumbangan sejak S2, tab 2
 // Tambah Donatur sejak S3, tab 3 Input Saya sejak S4, tab 4 Rekap sejak S5 (docs/03_ROADMAP.md).
 
@@ -10,13 +11,14 @@ import '../state/kerangka_notifier.dart';
 import '../state/sesi.dart';
 import '../tema.dart';
 import '../widget/dialog_konfirmasi.dart';
+import 'ganti_password.dart';
 import 'input_saya.dart';
 import 'input_sumbangan.dart';
 import 'pengaturan.dart';
 import 'rekap.dart';
 import 'tambah_donatur.dart';
 
-enum _Menu { pengaturan, keluar }
+enum _Menu { gantiPassword, pengaturan, keluar }
 
 class LayarKerangka extends StatefulWidget {
   const LayarKerangka({super.key, this.isiTab});
@@ -47,6 +49,10 @@ class _LayarKerangkaState extends State<LayarKerangka> {
   Future<void> _pilihMenu(_Menu menu) async {
     final sesi = SesiScope.baca(context);
     switch (menu) {
+      case _Menu.gantiPassword:
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const LayarGantiPassword()),
+        );
       case _Menu.pengaturan:
         await Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => const LayarPengaturan()),
@@ -86,6 +92,7 @@ class _LayarKerangkaState extends State<LayarKerangka> {
             tooltip: 'Menu',
             onSelected: _pilihMenu,
             itemBuilder: (_) => const [
+              PopupMenuItem(value: _Menu.gantiPassword, child: Text('Ganti Password')),
               PopupMenuItem(value: _Menu.pengaturan, child: Text('Pengaturan')),
               PopupMenuItem(value: _Menu.keluar, child: Text('Keluar')),
             ],

@@ -60,6 +60,12 @@ abstract final class Bentuk {
   static const double tinggiTombol = 48;
   static const double ikon = 24;
   static const double indikatorTombol = 20;
+
+  /// Logo yayasan di kepala Masuk, di atas alas lingkaran `latar` (tepi alas [Jarak.j4]).
+  static const double logoKepala = 56;
+
+  /// Logo yayasan di layar memuat awal; sama dengan logo layar pembuka Android (launch_background.xml).
+  static const double logoMemuat = 80;
 }
 
 ThemeData temaMDonator() {

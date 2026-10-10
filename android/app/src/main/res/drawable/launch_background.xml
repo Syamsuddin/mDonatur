@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Layar pembuka Android < 12 (docs/26_UI_CONVENTIONS.md, Logo): logo yayasan 80 dp di tengah latar
+     putih, sama dengan layar memuat awal (lib/layar/awal.dart). Putih juga di mode gelap, karena
+     aplikasi hanya bertema terang dan bagian putih logo tembus pandang. Android 12 ke atas memakai
+     layar pembuka sistem dengan ikon peluncur. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
+    <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+            android:src="@drawable/logo_pembuka" />
+    </item>
 </layer-list>

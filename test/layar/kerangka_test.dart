@@ -79,12 +79,15 @@ void main() {
     expect(tema.textTheme.headlineMedium?.fontSize, 32);
   });
 
-  testWidgets('menu ⋮ berisi Pengaturan dan Keluar', (tester) async {
+  testWidgets('menu ⋮ berisi Ganti Password, Pengaturan, dan Keluar, berurutan', (tester) async {
     await pompaAplikasi(tester, server: ServerTiruan(), simpanan: simpananMasuk());
     await tester.tap(find.byTooltip('Menu'));
     await tester.pumpAndSettle();
-    expect(find.text('Pengaturan'), findsOneWidget);
-    expect(find.text('Keluar'), findsOneWidget);
+    final butir = find.byWidgetPredicate((w) => w is PopupMenuItem);
+    final menu = [
+      for (final b in tester.widgetList<PopupMenuItem<Object?>>(butir)) (b.child! as Text).data,
+    ];
+    expect(menu, ['Ganti Password', 'Pengaturan', 'Keluar']);
 
     await tester.tap(find.text('Pengaturan'));
     await tester.pumpAndSettle();

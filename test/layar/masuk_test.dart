@@ -6,10 +6,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mdonator/layar/kerangka.dart';
 import 'package:mdonator/layar/masuk.dart';
+import 'package:mdonator/main.dart';
 import 'package:mdonator/state/sesi.dart';
+import 'package:mdonator/widget/logo_yayasan.dart';
 
 import 'bantu.dart';
 
@@ -23,6 +26,10 @@ void main() {
       expect(find.byType(LayarMasuk), findsOneWidget);
       expect(find.text("Yayasan Ibnu Atha'illah"), findsOneWidget);
       expect(find.text('mDonator'), findsOneWidget);
+      // Logo di kepala, di sebelah kiri nama yayasan (docs/26_UI_CONVENTIONS.md, Logo).
+      final logo = tester.getRect(find.byType(LogoYayasan));
+      expect(logo.width, 64);
+      expect(logo.right, lessThan(tester.getRect(find.text("Yayasan Ibnu Atha'illah")).left));
       expect(tester.takeException(), isNull);
 
       await isiDanMasuk(tester);
@@ -162,6 +169,37 @@ void main() {
   });
 
   group('P0 buka aplikasi', () {
+    testWidgets('memuat: logo yayasan di tengah layar tanpa AppBar, lalu tab Input', (tester) async {
+      aturLayarKecil(tester);
+      final semantik = tester.ensureSemantics();
+      final server = ServerTiruan();
+      final jawaban = Completer<void>();
+      server.penangan['konfigurasi'] = (r) async {
+        await jawaban.future;
+        return jawabOk(konfigurasiUji());
+      };
+      FlutterSecureStorage.setMockInitialValues(simpananMasuk());
+      final sesi = Sesi(alamatBawaan: alamatBawaanUji, klienHttp: server.klien, rilis: false);
+      await tester.pumpWidget(AplikasiMDonator(sesi: sesi, kerangka: const LayarKerangka()));
+      final mulai = sesi.mulai();
+      await tester.pump();
+
+      expect(find.byType(LogoYayasan), findsOneWidget);
+      expect(find.bySemanticsLabel("Yayasan Ibnu Atha'illah"), findsOneWidget);
+      expect(find.byType(AppBar), findsNothing);
+      // Posisi dan ukuran sama dengan logo layar pembuka Android (launch_background.xml).
+      expect(tester.getRect(find.byType(LogoYayasan)),
+          Rect.fromCenter(center: const Offset(180, 320), width: 80, height: 80));
+      expect(tester.takeException(), isNull);
+
+      jawaban.complete();
+      await mulai;
+      await tester.pumpAndSettle();
+      expect(find.byType(LogoYayasan), findsNothing);
+      expect(judulAppBar(tester), 'Input Sumbangan');
+      semantik.dispose();
+    });
+
     testWidgets('tanpa token → Masuk, Username terisi username terakhir', (tester) async {
       final server = ServerTiruan();
       await pompaAplikasi(tester, server: server, simpanan: {'username_terakhir': 'uji_operator'});

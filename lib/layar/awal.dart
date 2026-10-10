@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../state/sesi.dart';
 import '../tema.dart';
-import '../widget/kerangka_memuat.dart';
+import '../widget/logo_yayasan.dart';
 import '../widget/panel_galat.dart';
 import 'kerangka.dart';
 import 'masuk.dart';
@@ -94,16 +94,19 @@ void _bukaPengaturan(BuildContext context) => Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => const LayarPengaturan()),
     );
 
+/// Logo di tengah latar putih tanpa AppBar, sama dengan layar pembuka Android < 12
+/// (launch_background.xml), sehingga peralihan dari layar pembuka tidak berkedip.
 class _LayarMemuat extends StatelessWidget {
   const _LayarMemuat();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('mDonator')),
-      body: const Padding(
-        padding: EdgeInsets.all(Jarak.tepiLayar),
-        child: KerangkaMemuat(),
+    return AnnotatedRegion(
+      value: Theme.of(context).appBarTheme.systemOverlayStyle!,
+      child: const Scaffold(
+        body: Center(
+          child: LogoYayasan(ukuran: Bentuk.logoMemuat, label: "Yayasan Ibnu Atha'illah"),
+        ),
       ),
     );
   }

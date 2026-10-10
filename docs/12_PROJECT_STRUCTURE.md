@@ -8,6 +8,7 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 ├── docs/                      00–27, _MANIFEST.json, _TOKEN_LEDGER.json
 ├── scripts/                   validate.sh, token_ledger.py (alat blueprint, bukan Flutter)
 ├── pubspec.yaml · pubspec.lock · analysis_options.yaml
+├── assets/                    logo_yayasan.png (docs/26_UI_CONVENTIONS.md, Logo)
 ├── lib/
 │   ├── main.dart              runApp, MaterialApp (locale id_ID), SesiScope, orientasi potret
 │   ├── tema.dart              ThemeData + konstanta token 26: satu-satunya tempat Color(0x…), ukuran huruf, dan jarak
@@ -30,6 +31,7 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 │   └── layar/                 <layar>_test.dart; bantu.dart (server tiruan, secure storage tiruan, layar 360 dp)
 ├── integration_test/          alur_test.dart (opsional, server lokal)
 └── android/                   applicationId com.kapuhmadani.mdonator; manifest: docs/21_SECURITY_RULES.md
+                               ikon peluncur di res/mipmap-*, layar pembuka di res/drawable*/launch_background.xml
 ```
 
 ## Penamaan

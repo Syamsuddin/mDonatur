@@ -56,17 +56,24 @@
     {
       "mulai": "2026-10-10T18:19:13+08:00",
       "selesai": null,
-      "step": 0,
-      "detik": 0,
-      "tok_est": 0
+      "step": 5,
+      "detik": 3648,
+      "tok_est": 54404
+    },
+    {
+      "mulai": "2026-10-10T19:50:40+08:00",
+      "selesai": null,
+      "step": 4,
+      "detik": 1491,
+      "tok_est": 64480
     }
   ],
   "step_berjalan": null,
   "blueprint": {
     "sidik_awal": "f1aef310f11ad39e",
-    "sidik": "ad7a18e2181d038f",
+    "sidik": "eade7ff943cd7241",
     "dokumen": 28,
-    "disegel": "2026-10-10T18:19:13+08:00",
+    "disegel": "2026-10-10T19:50:39+08:00",
     "riwayat": [
       {
         "dari": "f1aef310f11ad39e",
@@ -97,9 +104,13 @@
         "dari": "f612729316436679",
         "ke": "ad7a18e2181d038f",
         "pada": "2026-10-10T18:19:13+08:00"
+      },
+      {
+        "dari": "ad7a18e2181d038f",
+        "ke": "eade7ff943cd7241",
+        "pada": "2026-10-10T19:27:13+08:00"
       }
-    ],
-    "sidik_sebelumnya": "f612729316436679"
+    ]
   },
   "riwayat_fitur": [
     {
@@ -1228,13 +1239,288 @@
         "Commit S1–S5: menunggu permintaan pemilik (git hanya atas permintaan)"
       ],
       "selesai": "2026-10-10T17:58:08+08:00"
+    },
+    {
+      "fitur": "S6 ganti password + APK debug",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T18:22:53+08:00",
+      "rencana": [
+        "lib/state/sesi.dart",
+        "lib/state/ganti_password_notifier.dart",
+        "lib/layar/ganti_password.dart",
+        "lib/layar/kerangka.dart",
+        "test/layar/ganti_password_test.dart",
+        "test/layar/kerangka_test.dart",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+        "android/app/src/main/res/values/ic_launcher_background.xml",
+        "docs/10_DEV_ENV.md",
+        "docs/11_COMMANDS.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S6-ganti-password.md",
+        "docs/03_ROADMAP.md",
+        "docs/_MANIFEST.json",
+        "docs/_CODING_LEDGER.json",
+        "docs/_TOKEN_LEDGER.json",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md",
+        "lib/api/model.dart"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Service: Sesi.gantiPassword + GantiPasswordNotifier",
+          "mulai": "2026-10-10T18:23:00+08:00",
+          "selesai": "2026-10-10T18:24:19+08:00",
+          "detik": 79,
+          "tok_est": 24674,
+          "muat": [
+            "lib/state/sesi.dart",
+            "lib/state/ganti_password_notifier.dart",
+            "lib/api/model.dart",
+            "lib/state/masuk_notifier.dart",
+            "lib/api/klien_api.dart",
+            "lib/api/galat_api.dart",
+            "docs/14_ERROR_HANDLING.md",
+            "API_CONTRACT.md"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "UI: layar Ganti Password, menu, ikon peluncur",
+          "mulai": "2026-10-10T18:24:25+08:00",
+          "selesai": "2026-10-10T18:25:23+08:00",
+          "detik": 58,
+          "tok_est": 8960,
+          "muat": [
+            "lib/layar/ganti_password.dart",
+            "lib/layar/kerangka.dart",
+            "lib/layar/masuk.dart",
+            "lib/layar/pengaturan.dart",
+            "lib/widget/panel_galat.dart",
+            "docs/26_UI_CONVENTIONS.md",
+            "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Tes: ganti_password_test + kerangka_test",
+          "mulai": "2026-10-10T18:25:23+08:00",
+          "selesai": "2026-10-10T19:09:53+08:00",
+          "detik": 2671,
+          "tok_est": 15096,
+          "muat": [
+            "test/layar/ganti_password_test.dart",
+            "test/layar/kerangka_test.dart",
+            "test/layar/bantu.dart",
+            "test/layar/masuk_test.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "APK debug: domain produksi + build",
+          "mulai": "2026-10-10T19:10:08+08:00",
+          "selesai": "2026-10-10T19:20:12+08:00",
+          "detik": 605,
+          "tok_est": 2053,
+          "muat": [
+            "docs/10_DEV_ENV.md",
+            "docs/11_COMMANDS.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md"
+          ]
+        },
+        {
+          "no": 5,
+          "nama": "Gerbang fitur",
+          "mulai": "2026-10-10T19:20:12+08:00",
+          "selesai": "2026-10-10T19:24:07+08:00",
+          "detik": 235,
+          "tok_est": 3621,
+          "muat": [
+            "test/layar/ganti_password_test.dart"
+          ]
+        }
+      ],
+      "detik": 3648,
+      "tok_est": 54404,
+      "deviasi": [
+        "lib/api/model.dart — di luar rencana awal, ditambahkan ke rencana: kunci rincian lama/baru/ulang adalah nama field JSON (docs/12)",
+        "test/layar/ganti_password_test.dart — password tiruan jadi konstanta agar lolos S5 (asersi tidak berubah)"
+      ],
+      "warn_dilewati": [
+        "S1: nama blok 23 'F8 Ganti password dan APK debug (S6)' berbeda dengan nama fitur ledger; keempat butir terbukti",
+        "S6: konvensi 12 dan guardrail 20/21 diperiksa manual",
+        "S7: selisih awalan path mDonator/ dan dua berkas server (tampildonasiterbanyak.php, form-donasi.php) yang berubah 18:40/18:49 di luar sesi ini, tidak disentuh",
+        "S8: kosong Ganti Password = isian kosong (docs/26), heuristik tidak mengenalinya"
+      ],
+      "asumsi": [
+        "P6.1 'lalu kembali' = pesan sukses di layar, kembali manual (tanpa SnackBar karena di luar inventaris 26)",
+        "P6.3 memakai alur masuk ulang 401 (isi tab tetap) dan layar GP menutup diri",
+        "Isian password dikosongkan setiap jawaban server kecuali 5xx (docs/21 di atas docs/14)",
+        "Ikon: Roboto Bold 700"
+      ],
+      "dokumen_diperbarui": [
+        "docs/10_DEV_ENV.md (SERVER_URL APK debug)",
+        "docs/11_COMMANDS.md (APK debug produksi)",
+        "docs/23_ACCEPTANCE_CRITERIA.md (S6 diarsipkan)",
+        "docs/_archive/23-S6-ganti-password.md",
+        "docs/_MANIFEST.json",
+        "../UPDATE_PLAN.md (Hasil uji S6, 12c selesai)",
+        "../CLAUDE.md (S6 selesai)"
+      ],
+      "landmine_tersentuh": [
+        "APK debug beralamat produksi: produksi belum punya API (deploy ditunda), masuk gagal di sana; ubah alamat di Pengaturan ke server lokal SEBELUM masuk agar tidak ada permintaan ke produksi"
+      ],
+      "ditunda": [
+        "T9 logo yayasan untuk ikon peluncur",
+        "Distribusi APK (di luar scope)"
+      ],
+      "selesai": "2026-10-10T19:25:56+08:00"
+    },
+    {
+      "fitur": "Logo yayasan (permintaan pemilik)",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T19:50:40+08:00",
+      "rencana": [
+        "assets/logo_yayasan.png",
+        "pubspec.yaml",
+        "lib/tema.dart",
+        "lib/widget/logo_yayasan.dart",
+        "lib/layar/masuk.dart",
+        "lib/layar/awal.dart",
+        "test/layar/masuk_test.dart",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/drawable-mdpi/logo_pembuka.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/drawable-hdpi/logo_pembuka.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/drawable-xhdpi/logo_pembuka.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/drawable-xxhdpi/logo_pembuka.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "android/app/src/main/res/drawable-xxxhdpi/logo_pembuka.png",
+        "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+        "android/app/src/main/res/values/ic_launcher_background.xml",
+        "android/app/src/main/res/drawable/launch_background.xml",
+        "android/app/src/main/res/drawable-v21/launch_background.xml",
+        "docs/26_UI_CONVENTIONS.md",
+        "docs/12_PROJECT_STRUCTURE.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-logo-yayasan.md",
+        "../UPDATE_PLAN.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Aset logo + ikon peluncur + layar pembuka Android",
+          "mulai": "2026-10-10T19:50:51+08:00",
+          "selesai": "2026-10-10T19:52:00+08:00",
+          "detik": 70,
+          "tok_est": 6268,
+          "muat": [
+            "docs/26_UI_CONVENTIONS.md",
+            "lib/layar/masuk.dart",
+            "lib/layar/awal.dart",
+            "android/app/src/main/res/drawable/launch_background.xml"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "UI: LogoYayasan, kepala Masuk, layar memuat",
+          "mulai": "2026-10-10T19:52:00+08:00",
+          "selesai": "2026-10-10T19:53:41+08:00",
+          "detik": 102,
+          "tok_est": 7147,
+          "muat": [
+            "pubspec.yaml",
+            "lib/tema.dart",
+            "lib/widget/logo_yayasan.dart",
+            "lib/layar/masuk.dart",
+            "lib/layar/awal.dart"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Tes",
+          "mulai": "2026-10-10T19:53:42+08:00",
+          "selesai": "2026-10-10T20:05:24+08:00",
+          "detik": 702,
+          "tok_est": 15735,
+          "muat": [
+            "test/layar/masuk_test.dart",
+            "test/layar/ganti_password_test.dart",
+            "lib/layar/masuk.dart",
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/12_PROJECT_STRUCTURE.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Demo emulator + gerbang",
+          "mulai": "2026-10-10T20:05:24+08:00",
+          "selesai": "2026-10-10T20:15:41+08:00",
+          "detik": 617,
+          "tok_est": 35330,
+          "muat": [
+            "build/app/outputs/flutter-apk",
+            "../UPDATE_PLAN.md",
+            "docs/_archive/23-logo-yayasan.md"
+          ]
+        }
+      ],
+      "detik": 1491,
+      "tok_est": 64480,
+      "deviasi": [
+        "lib/layar/masuk.dart — ikon Pengaturan pindah sebaris dengan logo (bukan baris sendiri) agar tombol Masuk tetap terlihat di 360x640 x1,3; P6.3 gagal di percobaan pertama",
+        "lib/layar/awal.dart — layar memuat P0 tanpa AppBar dan tanpa KerangkaMemuat, kini logo di tengah"
+      ],
+      "warn_dilewati": [
+        "S1: positif palsu, 23 hanya memuat rujukan arsip",
+        "S7: berkas S6 dan PHP root belum di-commit sebelum slice ini + beda awalan path",
+        "S8: LogoYayasan widget tampilan tanpa data"
+      ],
+      "asumsi": [
+        "Ukuran logo dipilih agen atas izin pemilik ('ukuran yang sesuai'): 56/64 dp Masuk, 80 dp memuat, 66/108 dp ikon adaptif",
+        "Layar pembuka Android <12 putih juga di mode gelap karena aplikasi hanya bertema terang"
+      ],
+      "dokumen_diperbarui": [
+        "docs/26_UI_CONVENTIONS.md (token Logo, ikon peluncur, inventaris, pola Masuk dan Memuat awal)",
+        "docs/12_PROJECT_STRUCTURE.md (assets/)",
+        "docs/23_ACCEPTANCE_CRITERIA.md (rujukan arsip)",
+        "../UPDATE_PLAN.md (Hasil uji 12c logo yayasan)"
+      ],
+      "landmine_tersentuh": [
+        "Logo yayasan: bagian putih di dalam logo tembus pandang; jangan taruh langsung di atas primer"
+      ],
+      "ditunda": [
+        "Logo resolusi >= 1024 px dari pemilik [TERBUKA docs/26]",
+        "APK per ABI beralamat produksi: ditolak pemeriksa izin otomatis, dibuat pemilik sendiri"
+      ],
+      "selesai": "2026-10-10T20:15:42+08:00"
     }
   ],
   "akumulasi": {
-    "detik": 20171,
-    "tok_est": 620337,
+    "detik": 25310,
+    "tok_est": 739221,
     "tok_terukur": 0,
-    "step": 41,
-    "fitur": 7
+    "step": 50,
+    "fitur": 9
   }
 }

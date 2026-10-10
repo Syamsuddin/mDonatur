@@ -64,6 +64,26 @@
       "chars": 23788,
       "cpt": 3.5,
       "est_tokens": 6797
+    },
+    {
+      "ts": "2026-10-10T19:25:56+08:00",
+      "type": "task",
+      "task": "S6 ganti password + APK debug",
+      "route": "Fitur baru (vertical slice)",
+      "files": 8,
+      "chars": 23518,
+      "cpt": 3.5,
+      "est_tokens": 6719
+    },
+    {
+      "ts": "2026-10-10T20:15:42+08:00",
+      "type": "task",
+      "task": "Logo yayasan (permintaan pemilik)",
+      "route": "Fitur baru (vertical slice)",
+      "files": 8,
+      "chars": 23587,
+      "cpt": 3.5,
+      "est_tokens": 6739
     }
   ],
   "measured_sessions": {
