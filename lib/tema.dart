@@ -31,6 +31,9 @@ abstract final class Huruf {
   static const nominal = TextStyle(fontSize: 28, height: 36 / 28, fontWeight: FontWeight.w700);
   static const nomorRegister =
       TextStyle(fontSize: 32, height: 40 / 32, fontWeight: FontWeight.w700);
+
+  /// Penanda note_n: berat 700 pada tanggal atau jam, ukuran tetap.
+  static const penandaNote = TextStyle(fontWeight: FontWeight.w700);
 }
 
 abstract final class Jarak {
@@ -42,7 +45,10 @@ abstract final class Jarak {
 
   static const double tepiLayar = j16;
   static const double antarIsian = j16;
-  static const double isiKartu = j16;
+
+  /// Layar Input Sumbangan: rapat agar muat satu layar tanpa digulir (keputusan pemilik 10 Okt 2026).
+  static const double antarIsianRapat = j8;
+  static const double isiKartu = j12;
   static const double antarTombol = j8;
 }
 
@@ -143,6 +149,19 @@ ThemeData temaMDonator() {
         textStyle: Huruf.tombol,
       ),
     ),
+    // Segmen Rekap: radius 8 dan tinggi 48 seperti tombol lain, bukan pil 40 dp bawaan M3.
+    // Segmen terpilih berlatar primer dengan teks diAtasPrimer.
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(ukuranTombol),
+        shape: WidgetStatePropertyAll(bentuk),
+        side: const WidgetStatePropertyAll(BorderSide(color: Warna.garis)),
+        textStyle: const WidgetStatePropertyAll(Huruf.tombol),
+        backgroundColor: WidgetStateProperty.resolveWith((s) => dipilih(s) ? Warna.primer : Warna.latar),
+        foregroundColor:
+            WidgetStateProperty.resolveWith((s) => dipilih(s) ? Warna.diAtasPrimer : Warna.teks),
+      ),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       // Warna garis per state memakai bawaan Material 3 dari skema: outline = garis,
       // fokus = primer, galat = teksBahaya.
@@ -165,6 +184,12 @@ ThemeData temaMDonator() {
       ),
     ),
     dialogTheme: DialogThemeData(
+      backgroundColor: Warna.latar,
+      surfaceTintColor: Warna.latar,
+      shape: bentuk,
+    ),
+    // Date picker Input Saya juga dialog: radius 8 dan latar tanpa rona, bukan bawaan M3.
+    datePickerTheme: DatePickerThemeData(
       backgroundColor: Warna.latar,
       surfaceTintColor: Warna.latar,
       shape: bentuk,

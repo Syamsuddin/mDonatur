@@ -98,6 +98,26 @@ GalatApi galatApiFromJson(int status, Json json) {
   );
 }
 
+/// Kunci `rincian` 422 (nama field permintaan, kontrak §6) yang dipetakan layar ke isiannya
+/// (docs/14_ERROR_HANDLING.md §Pemetaan rincian).
+abstract final class KunciRincian {
+  /// Nomor donatur pada aksi `donatur` (kontrak §6.3).
+  static const id = 'id';
+  static const idDonatur = 'id_donatur';
+  static const jumlah = 'jumlah';
+  static const q = 'q';
+
+  /// Isian `tambahdonatur` (kontrak §6.6).
+  static const nama = 'nama';
+  static const alamat = 'alamat';
+  static const noHp = 'no_hp';
+  static const keterangan = 'keterangan';
+  static const sumbangan = 'sumbangan';
+
+  /// Parameter `donasisaya` (kontrak §6.7).
+  static const tanggal = 'tanggal';
+}
+
 // ---------------------------------------------------------------------------
 // Struktur bersama (kontrak §6)
 

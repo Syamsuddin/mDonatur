@@ -44,4 +44,4 @@ Kontrak menang (kontrak §1).
 
 ## Celah kontrak yang diketahui
 
-- [TERBUKA T17] Tidak ada aksi yang mengembalikan `RingkasanHariIni` saat layar Input dibuka. Usulan minor 0.2.0: `konfigurasi` ikut membawa `ringkasan_hari_ini`. Sampai diputuskan, berlaku docs/06_BUSINESS_PROCESS.md P2.1.
+- [TERBUKA T17] Tidak ada aksi yang mengembalikan `RingkasanHariIni` saat layar Input dibuka. Usulan minor 0.2.0: `konfigurasi` ikut membawa `ringkasan_hari_ini`. Sejak strip satu baris (keputusan pemilik 10 Okt 2026) layar tidak lagi membutuhkannya, karena `donasisaya` sudah memberi total dan banyaknya input.

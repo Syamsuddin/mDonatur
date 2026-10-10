@@ -14,19 +14,19 @@ Isi permintaan, jawaban, dan kode galat ada di `API_CONTRACT.md` §6–§8. Cara
 
 ## P1 Masuk
 
-- *Normal:* Username dan Password → `login`. Simpan token, kedaluwarsa, pengguna, dan username terakhir → `konfigurasi` → tab Input.
+- *Normal:* Username dan Password → `login`. Simpan token, kedaluwarsa, dan username terakhir → `konfigurasi` → tab Input. Pengguna dan peran tidak disimpan di perangkat; keduanya selalu dari `konfigurasi` (docs/05_USER_ROLE.md).
 - Layar Masuk punya ikon Pengaturan, supaya alamat server bisa diubah sebelum masuk.
 - *Cabang:* `tidak_valid`, `login_gagal`, `login_terkunci`, `api_mati`, galat jaringan, versi tidak cocok. Isian tetap.
 
 ## P2 Input Sumbangan (layar awal, tab Input)
 
-1. **Saat dibuka,** panggil `donasisaya` tanpa tanggal untuk mengisi strip "Total input hari ini (N×): Rp X". Enam input terakhir baru muncul dari `ringkasan_hari_ini` setelah simpan pertama di sesi ini [TERBUKA T17: kontrak belum punya aksi yang mengembalikan `RingkasanHariIni` saat layar dibuka].
+1. **Saat dibuka,** panggil `donasisaya` tanpa tanggal untuk mengisi strip satu baris "Total input hari ini (N×): Rp X". Strip tidak menampilkan daftar input terakhir (keputusan pemilik 10 Okt 2026).
 2. **Cek donatur.** Ketik Nomor Donator (keypad angka, maksimal 5 digit) → Cek → `donatur`. Hasilnya kartu donatur: nama, alamat, No HP, keterangan, bintang, riwayat tahun ini, dan total tahun ini.
    - Ikon cari di sebelah isian membuka layar **Cari Donatur** (`caridonatur`, minimal 2 huruf). Ketuk satu hasil → nomor terisi → Cek otomatis.
    - Mengubah nomor membuang hasil Cek. **Simpan hanya aktif bila ada hasil Cek untuk nomor yang tertulis** [ASUMSI].
 3. **Jumlah**
    - Bila `saran_jumlah` tidak `null`, nilainya mengisi Jumlah hanya bila Jumlah kosong atau masih berisi saran sebelumnya (penanda "otomatis"). Ketikan pengguna atau ketukan nominal cepat menghapus penanda itu. Aturan ini sama dengan Fase 11 web (`isiSaranJumlah()`).
-   - Tombol nominal cepat diambil dari `konfigurasi.nominal_umum`; ketukan mengisi Jumlah.
+   - Tombol nominal cepat diambil dari `konfigurasi.nominal_umum` yang ≤ Rp 300.000, yaitu enam tombol 50.000–300.000 (keputusan pemilik 10 Okt 2026); ketukan mengisi Jumlah. Saran di atas Rp 300.000 tetap mengisi Jumlah.
 4. **Jumlah < 1.000:** sebelum mengirim, tampilkan dialog lokal "Nominal Rp {jumlah} — benar?" dengan tombol **Ya, simpan** / **Tidak** (T16). Tidak → kembali ke isian Jumlah.
 5. **Simpan** → `tambahdonasi`. Pada 201, atau 2xx dengan `"ulang": true`:
    - tampilkan kartu hasil (nama, nominal, jam WITA);
@@ -87,7 +87,7 @@ Isi permintaan, jawaban, dan kode galat ada di `API_CONTRACT.md` §6–§8. Cara
 
 - **Keluar** (menu ⋮)
   - Bila ada isian yang belum disimpan di tab mana pun, tampilkan dialog "Isian yang belum disimpan akan hilang. Keluar?" dengan tombol **Keluar** / **Batal**.
-  - Lalu hapus token, kedaluwarsa, pengguna, dan semua state layar. Alamat server dan username terakhir tetap disimpan.
+  - Lalu hapus token, kedaluwarsa, dan semua state di memori (konfigurasi, pengguna, isi layar). Alamat server dan username terakhir tetap disimpan.
   - Tidak ada aksi server.
 - **Pencabutan:** 401 `akun_nonaktif` atau `token_*` pada permintaan mana pun → docs/14_ERROR_HANDLING.md.
 - **Pengaturan** (menu ⋮ dan layar Masuk)

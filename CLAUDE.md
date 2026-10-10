@@ -21,7 +21,7 @@ Flutter 3.47.5 / Dart 3.13.4, Android; `http`, `flutter_secure_storage`, `intl`,
 
 ## Perintah penting  (sumber: docs/11)
 - `flutter analyze` → `No issues found!` · `flutter test` → `All tests passed!`
-- `flutter run -d emulator-5554 --dart-define=SERVER_URL=http://10.0.2.2:3000` (server dari `..`: `php -S localhost:3000 -t public public/index.php`)
+- `adb reverse tcp:8000 tcp:8000` lalu `flutter run -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000` (server dari `..`: `php -S localhost:8000 -t public public/index.php`)
 - Migrasi: tidak ada, skema DB ⚠️ tidak boleh berubah · prasyarat server per slice: `php tests/api.php` LULUS di `..`
 
 ## Guardrail inti  (penuh: docs/20, 21, 22)

@@ -13,6 +13,11 @@ void main() {
     });
   });
 
+  test('formatTanggalPendek "dd/MM" untuk riwayat ringkas', () {
+    expect(formatTanggalPendek(DateTime.utc(2026, 1, 4)), '04/01');
+    expect(formatTanggalPendek(DateTime.utc(2026, 12, 31)), '31/12');
+  });
+
   test('namaHari Senin sampai Minggu', () {
     const harapan = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
     for (var i = 0; i < 7; i++) {
@@ -39,12 +44,31 @@ void main() {
     expect(formatJam('23:59:59'), '23:59');
   });
 
+  group('formatWaktuIso', () {
+    test('kedaluwarsa kontrak §6.1 menurut jam server, tanpa konversi zona HP', () {
+      expect(formatWaktuIso('2026-10-13T00:15:00+08:00'), 'Selasa, 13/10/2026 00:15');
+      expect(formatWaktuIso('2026-10-11T23:59:59+00:00'), 'Minggu, 11/10/2026 23:59');
+    });
+
+    test('teks yang tidak dikenali dikembalikan apa adanya', () {
+      for (final teks in ['', 'besok', '2026-02-30T10:00:00+08:00', '13/10/2026 00:15']) {
+        expect(formatWaktuIso(teks), teks);
+      }
+    });
+  });
+
   group('bacaTanggal dan tulisTanggal', () {
     test('format kontrak "YYYY-MM-DD" bolak-balik', () {
       final tanggal = bacaTanggal('2026-01-05');
       expect(tanggal, DateTime.utc(2026, 1, 5));
       expect(tanggal.isUtc, isTrue);
       expect(tulisTanggal(tanggal), '2026-01-05');
+    });
+
+    test('tanggalSaja: tanggal lokal date picker → tanggal server yang sama', () {
+      final tanggal = tanggalSaja(DateTime(2026, 10, 12, 23, 59));
+      expect(tanggal, DateTime.utc(2026, 10, 12));
+      expect(tanggal, bacaTanggal('2026-10-12'));
     });
 
     test('tanggal tidak sah ditolak', () {

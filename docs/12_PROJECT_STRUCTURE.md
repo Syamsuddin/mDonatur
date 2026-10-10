@@ -17,15 +17,17 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 │   │   └── model.dart         kelas permintaan dan jawaban (fromJson/toJson): satu-satunya tempat nama field JSON
 │   ├── state/
 │   │   ├── sesi.dart          Sesi + SesiScope (token, pengguna, konfigurasi, alamat server)
+│   │   ├── kerangka_notifier.dart  tab aktif + pesan antartab (Donatur → Cek di tab Input, strip hari ini)
 │   │   └── <layar>_notifier.dart   satu ChangeNotifier per layar ber-data
-│   ├── layar/                 masuk, kerangka, input_sumbangan, cari_donatur, tambah_donatur,
-│   │                          input_saya, ubah_sumbangan, rekap, ganti_password, pengaturan (.dart)
+│   ├── layar/                 awal (gerbang P0, layar gagal dan blokir versi), masuk, kerangka,
+│   │                          input_sumbangan, cari_donatur, tambah_donatur, input_saya,
+│   │                          ubah_sumbangan, rekap, ganti_password, pengaturan (.dart)
 │   ├── widget/                komponen bersama (inventaris: docs/26_UI_CONVENTIONS.md)
 │   └── util/                  rupiah.dart, tanggal.dart, kunci.dart (UUID v4 dari Random.secure)
 ├── test/
 │   ├── api/                   klien_api_test.dart, kontrak_test.dart
 │   ├── util/                  rupiah_test.dart, tanggal_test.dart
-│   └── layar/                 <layar>_test.dart
+│   └── layar/                 <layar>_test.dart; bantu.dart (server tiruan, secure storage tiruan, layar 360 dp)
 ├── integration_test/          alur_test.dart (opsional, server lokal)
 └── android/                   applicationId com.kapuhmadani.mdonator; manifest: docs/21_SECURITY_RULES.md
 ```

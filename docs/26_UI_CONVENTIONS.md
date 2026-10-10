@@ -55,7 +55,7 @@ Rasio kontras di bawah dibulatkan ke bawah.
 | Huruf | `nominal` | 28/36 sp, 700 → `headlineSmall` (diubah), nominal di kartu hasil |
 | Huruf | `nomorRegister` | 32/40 sp, 700 → `headlineMedium` (diubah), Nomor Register di kartu hasil |
 | Huruf | penanda `note_n` | berat 700 pada tanggal atau jam, ukuran tetap |
-| Jarak | skala | 4 · 8 · 12 · 16 · 24 dp. Tepi layar 16, antar-isian 16, isi kartu 16, antar-tombol 8 |
+| Jarak | skala | 4 · 8 · 12 · 16 · 24 dp. Tepi layar 16, antar-isian 16 (layar Input Sumbangan 8), isi kartu 12, antar-tombol 8 |
 | Bentuk | radius | 8 dp untuk kartu, tombol, isian, dialog, lencana, dan sudut atas lembar bawah |
 | Bentuk | elevasi | 0 untuk isian, AppBar, dan NavigationBar (dipisah garis atas 1 dp warna `garis`); 1 untuk kartu |
 | Sentuh | target | ≥ 48 × 48 dp; tinggi tombol 48 dp |
@@ -79,11 +79,11 @@ Rasio kontras di bawah dibulatkan ke bawah.
 | Tema | `ThemeData`, `ColorScheme` eksplisit, `TextTheme` | `lib/tema.dart` |
 | Kerangka | `Scaffold` + `AppBar` (judul layar, menu ⋮: Ganti Password, Pengaturan, Keluar) + `NavigationBar` 4 tab + `IndexedStack`; indikator tab aktif transparan | `lib/layar/kerangka.dart` |
 | Tombol | `FilledButton`: Simpan, Masuk, Ya, simpan · `OutlinedButton`: Cek, Coba lagi, Kirim ulang · `TextButton`: Tidak, Batal, Pakai alamat bawaan | gaya di `lib/tema.dart` |
-| Isian | `TextField` dengan `labelText`, `errorText`, dan border garis luar. Isian angka: keypad angka + hanya digit | `lib/widget/isian_angka.dart` |
-| Nominal cepat | `Wrap` berisi `OutlinedButton` bertuliskan "100.000" (tanpa "Rp") | `lib/widget/nominal_cepat.dart` |
-| Kartu donatur | `Card`: nama (`judul`), alamat, No HP, keterangan, lencana, riwayat (tanggal + jumlah), total tahun ini | `lib/widget/kartu_donatur.dart` |
+| Isian | `TextField` dengan `labelText`, `errorText`, dan border garis luar. Isian angka: keypad angka + hanya digit. Layar Input Sumbangan memakai isian padat (`isDense`, tetap ≥ 48 dp) | `lib/widget/isian_angka.dart` |
+| Nominal cepat | Kisi 3 kolom berisi `OutlinedButton` bertuliskan "100.000" (tanpa "Rp"), hanya `nominal_umum` ≤ Rp 300.000: enam tombol 50.000–300.000 dalam dua baris | `lib/widget/nominal_cepat.dart` |
+| Kartu donatur | `Card` ringkas: nama (`judul`) dan lencana sebaris; alamat; No HP · keterangan sebaris; "Riwayat {tahun}" dengan "Total Rp X" di kanan; riwayat "dd/MM Rp jumlah" yang terlipat | `lib/widget/kartu_donatur.dart` |
 | Lencana bintang | lihat tabel di atas | `lib/widget/lencana_bintang.dart` |
-| Strip hari ini | Di bawah AppBar tab Input: "Total input hari ini (N×): Rp X", lalu ≤ 6 butir "nomor · Rp jumlah" (`teksLemah`) | `lib/widget/strip_hari_ini.dart` |
+| Strip hari ini | Satu baris di bawah AppBar tab Input: "Total input hari ini (N×): Rp X" (`teksLemah`), tanpa daftar input terakhir; huruf mengecil bila tidak muat | `lib/widget/strip_hari_ini.dart` |
 | Kartu hasil | `Card`: pesan sukses, nama donatur atau Nomor Register (`nomorRegister`), nominal (`nominal`), jam "HH:mm WITA" | `lib/widget/kartu_hasil.dart` |
 | Dialog konfirmasi | `AlertDialog`: judul, nama donatur bila ada, daftar alasan, `TextButton` Tidak + `FilledButton` Ya, simpan. Dipakai juga untuk dialog nominal kecil dan Keluar | `lib/widget/dialog_konfirmasi.dart` |
 | Panel galat | Kotak ber-border 1 dp `teksBahaya`, teks `teksBahaya`, tombol Coba lagi atau Kirim ulang | `lib/widget/panel_galat.dart` |
@@ -112,6 +112,7 @@ Tidak ada aksi destruktif. Keluar dengan isian yang belum disimpan selalu lewat 
 
 - Ponsel Android, orientasi potret dikunci, mobile-first.
 - Wajib layak di lebar 360 dp dengan `textScaler` sampai 1,3 tanpa luapan. Tablet dan lanskap bukan target.
+- Input Sumbangan muat satu layar tanpa digulir di HP 393×851 dp (Pixel 5) dengan skala huruf 1,0, untuk donatur dengan riwayat bulanan (keputusan pemilik 10 Okt 2026). Riwayat yang jauh lebih panjang, layar lebih kecil, atau keyboard terbuka boleh menggulir.
 - Label tab 2 adalah "Donatur". Label "Donatur Baru" pecah dua baris pada 360 dp × 1,3 (diperiksa di emulator saat S0); pemilik memilih label lebih pendek, 10 Okt 2026.
 
 ## Empat state wajib
@@ -134,7 +135,7 @@ Tidak ada aksi destruktif. Keluar dengan isian yang belum disimpan selalu lewat 
 - **Label isian:** Username, Password, Nomor Donator, Sumbangan, Nama Donator, Alamat, Nomor Handphone, Keterangan, Sumbangan Pertama, Password Lama, Password Baru, Ulangi Password Baru, Alamat Server.
 - **Format**
   - Rupiah "Rp 100.000" (`id_ID`, tanpa desimal).
-  - Tanggal "Minggu, 12/10/2026"; rentang "Senin, 05/10/2026 – Minggu, 11/10/2026"; bulan "Oktober 2026".
+  - Tanggal "Minggu, 12/10/2026"; rentang "Senin, 05/10/2026 – Minggu, 11/10/2026"; bulan "Oktober 2026". Riwayat di kartu donatur memakai tanggal ringkas "04/01" (tahunnya di judul "Riwayat 2026").
   - Jam "HH:mm". Label "WITA" hanya di kartu hasil, karena data baru pasti WITA, sedangkan data sebelum deploy tercatat UTC (K1).
 
 ## Aksesibilitas

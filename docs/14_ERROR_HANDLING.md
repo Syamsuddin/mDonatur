@@ -35,7 +35,7 @@ Arti setiap kode dan tindakan yang diharapkan ada di `API_CONTRACT.md` §8 (ruma
 
 | Kunci `rincian` | Isian |
 |---|---|
-| `id_donatur` | Nomor Donator |
+| `id_donatur`; `id` pada aksi `donatur` (kontrak §6.3) | Nomor Donator |
 | `jumlah` / `sumbangan` | Sumbangan / Sumbangan Pertama |
 | `nama`, `alamat`, `no_hp`, `keterangan` | Isian Tambah Donatur yang sesuai |
 | `lama`, `baru`, `ulang` | Isian Ganti Password yang sesuai |

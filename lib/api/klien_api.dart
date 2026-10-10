@@ -74,6 +74,7 @@ class KlienApi {
     required this.alamatServer,
     this.token,
     this.padaTidakSah,
+    this.padaGalatVersi,
     http.Client? klien,
     this.batasPermintaan = const Duration(seconds: 20),
   }) : _klien = klien ?? IOClient(HttpClient()..connectionTimeout = batasKoneksi);
@@ -88,6 +89,10 @@ class KlienApi {
   /// Dipanggil pada setiap 401, kecuali dari `login` (docs/08_ARCHITECTURE.md).
   void Function(GalatApi galat)? padaTidakSah;
 
+  /// Dipanggil setiap kali versi server tidak cocok (`X-Api-Versi` atau `konfigurasi.versi_api`),
+  /// sebelum [GalatVersi] dilempar, sehingga layar blokir bisa tampil dari permintaan mana pun.
+  void Function(GalatVersi galat)? padaGalatVersi;
+
   final Duration batasPermintaan;
   final http.Client _klien;
 
@@ -96,7 +101,7 @@ class KlienApi {
 
   Future<Konfigurasi> konfigurasi() => _kirim(Aksi.konfigurasi, (data) {
         final konfigurasi = Konfigurasi.fromJson(data);
-        if (!versiCocok(konfigurasi.versiApi)) throw GalatVersi(konfigurasi.versiApi);
+        if (!versiCocok(konfigurasi.versiApi)) _galatVersi(konfigurasi.versiApi);
         return konfigurasi;
       });
 
@@ -171,7 +176,7 @@ class KlienApi {
     final versi = jawaban.headers['x-api-versi'];
     if (versi != null && !versiCocok(versi)) {
       _catat(aksi, status, jam, 'versi $versi');
-      throw GalatVersi(versi);
+      _galatVersi(versi);
     }
 
     final json = _json(jawaban);
@@ -189,6 +194,12 @@ class KlienApi {
 
     _catat(aksi, status, jam, galat.kode.isEmpty ? 'bukan amplop' : galat.kode);
     if (galat.tidakSah && aksi != Aksi.login) padaTidakSah?.call(galat);
+    throw galat;
+  }
+
+  Never _galatVersi(String versiServer) {
+    final galat = GalatVersi(versiServer);
+    padaGalatVersi?.call(galat);
     throw galat;
   }
 

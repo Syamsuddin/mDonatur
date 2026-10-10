@@ -4,8 +4,8 @@
   "perintah": {
     "test": "flutter test",
     "lint": "flutter analyze",
-    "run": "flutter run -d emulator-5554 --dart-define=SERVER_URL=http://10.0.2.2:3000",
-    "migrate": "(tidak ada)",
+    "run": "flutter run -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000",
+    "migrate": "",
     "deps": "flutter pub get",
     "create": "flutter create --project-name mdonator --org com.kapuhmadani --platforms android .",
     "test_satu": "flutter test test/api/"
@@ -17,14 +17,89 @@
       "step": 7,
       "detik": 3228,
       "tok_est": 66427
+    },
+    {
+      "mulai": "2026-10-10T11:41:44+08:00",
+      "selesai": null,
+      "step": 7,
+      "detik": 1761,
+      "tok_est": 55287
+    },
+    {
+      "mulai": "2026-10-10T12:59:35+08:00",
+      "selesai": null,
+      "step": 9,
+      "detik": 2386,
+      "tok_est": 186149
+    },
+    {
+      "mulai": "2026-10-10T13:58:48+08:00",
+      "selesai": null,
+      "step": 7,
+      "detik": 976,
+      "tok_est": 115329
+    },
+    {
+      "mulai": "2026-10-10T14:21:26+08:00",
+      "selesai": null,
+      "step": 7,
+      "detik": 10228,
+      "tok_est": 143721
+    },
+    {
+      "mulai": "2026-10-10T17:24:02+08:00",
+      "selesai": null,
+      "step": 4,
+      "detik": 1592,
+      "tok_est": 53424
+    },
+    {
+      "mulai": "2026-10-10T18:19:13+08:00",
+      "selesai": null,
+      "step": 0,
+      "detik": 0,
+      "tok_est": 0
     }
   ],
   "step_berjalan": null,
   "blueprint": {
     "sidik_awal": "f1aef310f11ad39e",
-    "sidik": "f1aef310f11ad39e",
+    "sidik": "ad7a18e2181d038f",
     "dokumen": 28,
-    "disegel": "2026-10-10T09:24:14+08:00"
+    "disegel": "2026-10-10T18:19:13+08:00",
+    "riwayat": [
+      {
+        "dari": "f1aef310f11ad39e",
+        "ke": "910e038736665857",
+        "pada": "2026-10-10T11:41:44+08:00"
+      },
+      {
+        "dari": "910e038736665857",
+        "ke": "854c2955a19bb6ce",
+        "pada": "2026-10-10T12:59:35+08:00"
+      },
+      {
+        "dari": "854c2955a19bb6ce",
+        "ke": "758a8cb6b26cae78",
+        "pada": "2026-10-10T13:58:48+08:00"
+      },
+      {
+        "dari": "758a8cb6b26cae78",
+        "ke": "2006bdb862882ce3",
+        "pada": "2026-10-10T14:21:25+08:00"
+      },
+      {
+        "dari": "2006bdb862882ce3",
+        "ke": "f612729316436679",
+        "pada": "2026-10-10T17:24:02+08:00"
+      },
+      {
+        "dari": "f612729316436679",
+        "ke": "ad7a18e2181d038f",
+        "pada": "2026-10-10T18:19:13+08:00"
+      }
+    ],
+    "sidik_sebelumnya": "f612729316436679"
   },
   "riwayat_fitur": [
     {
@@ -215,13 +290,951 @@
         "Menu ⋮ AppBar (S1/S6)"
       ],
       "selesai": "2026-10-10T10:23:19+08:00"
+    },
+    {
+      "fitur": "S1 masuk",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T11:53:27+08:00",
+      "rencana": [
+        "lib/main.dart",
+        "lib/api/klien_api.dart",
+        "lib/state/sesi.dart",
+        "lib/state/masuk_notifier.dart",
+        "lib/layar/awal.dart",
+        "lib/layar/masuk.dart",
+        "lib/layar/pengaturan.dart",
+        "lib/layar/kerangka.dart",
+        "lib/widget/panel_galat.dart",
+        "lib/widget/kerangka_memuat.dart",
+        "lib/widget/dialog_konfirmasi.dart",
+        "lib/util/tanggal.dart",
+        "test/api/klien_api_test.dart",
+        "test/util/tanggal_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/masuk_test.dart",
+        "test/layar/pengaturan_test.dart",
+        "test/layar/kerangka_test.dart",
+        "docs/06_BUSINESS_PROCESS.md",
+        "docs/21_SECURITY_RULES.md",
+        "docs/12_PROJECT_STRUCTURE.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S1-masuk.md",
+        "docs/_MANIFEST.json",
+        "../UPDATE_PLAN.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Skema/migrasi (dilewati: klien tanpa DB, skema beku)",
+          "mulai": "2026-10-10T11:53:29+08:00",
+          "selesai": "2026-10-10T11:53:32+08:00",
+          "detik": 3,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 2,
+          "nama": "Akses data: KlienApi padaGalatVersi",
+          "mulai": "2026-10-10T11:53:53+08:00",
+          "selesai": "2026-10-10T11:54:24+08:00",
+          "detik": 32,
+          "tok_est": 5281,
+          "muat": [
+            "lib/api/klien_api.dart",
+            "docs/06_BUSINESS_PROCESS.md",
+            "docs/21_SECURITY_RULES.md"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Logika: Sesi, MasukNotifier, format kedaluwarsa",
+          "mulai": "2026-10-10T11:55:48+08:00",
+          "selesai": "2026-10-10T11:58:05+08:00",
+          "detik": 137,
+          "tok_est": 5724,
+          "muat": [
+            "lib/state/sesi.dart",
+            "lib/state/masuk_notifier.dart",
+            "lib/util/tanggal.dart",
+            "docs/21_SECURITY_RULES.md"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Rute/endpoint (dilewati: bagian server S1 sudah ada, php tests/api.php LULUS 158 cek)",
+          "mulai": "2026-10-10T11:59:38+08:00",
+          "selesai": "2026-10-10T11:59:38+08:00",
+          "detik": 1,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 5,
+          "nama": "UI: widget bersama, Masuk, Pengaturan, gerbang awal, menu kerangka",
+          "mulai": "2026-10-10T11:59:38+08:00",
+          "selesai": "2026-10-10T12:01:47+08:00",
+          "detik": 129,
+          "tok_est": 6708,
+          "muat": [
+            "lib/widget/panel_galat.dart",
+            "lib/widget/kerangka_memuat.dart",
+            "lib/widget/dialog_konfirmasi.dart",
+            "lib/layar/masuk.dart",
+            "lib/layar/pengaturan.dart",
+            "lib/layar/awal.dart",
+            "lib/layar/kerangka.dart",
+            "lib/main.dart"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Tes: masuk, pengaturan, kerangka, klien versi, tanggal",
+          "mulai": "2026-10-10T12:01:47+08:00",
+          "selesai": "2026-10-10T12:07:00+08:00",
+          "detik": 313,
+          "tok_est": 18314,
+          "muat": [
+            "test/layar/bantu.dart",
+            "test/layar/masuk_test.dart",
+            "test/layar/pengaturan_test.dart",
+            "test/layar/kerangka_test.dart",
+            "test/api/klien_api_test.dart",
+            "test/util/tanggal_test.dart"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur (23, 24) + demo emulator",
+          "mulai": "2026-10-10T12:07:01+08:00",
+          "selesai": "2026-10-10T12:26:06+08:00",
+          "detik": 1146,
+          "tok_est": 19260,
+          "muat": [
+            "docs/24_DEFINITION_OF_DONE.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/_archive/23-S1-masuk.md",
+            "docs/12_PROJECT_STRUCTURE.md",
+            "docs/_MANIFEST.json",
+            "lib/layar/masuk.dart",
+            "test/layar/bantu.dart",
+            "test/layar/masuk_test.dart",
+            "test/layar/pengaturan_test.dart"
+          ]
+        }
+      ],
+      "detik": 1761,
+      "tok_est": 55287,
+      "deviasi": [
+        "lib/layar/awal.dart — berkas layar baru (gerbang P0, layar gagal, blokir versi); docs/12 diperbarui",
+        "lib/state/sesi.dart memuat TeksGalat, TombolPanel, teksGalat() bersama semua notifier (teks klien docs/14)",
+        "test/layar/bantu.dart — pembantu uji (server tiruan, secure storage tiruan, TabTiruan untuk alur 401 sebelum layar Input ada)",
+        "LayarKerangka.isiTab dan AplikasiMDonator.kerangka bisa diisi uji",
+        "Demo memakai server port 8000 + adb reverse (docs/11 diubah sesi mdonator-9f di tengah slice; port 3000 dipakai node)"
+      ],
+      "warn_dilewati": [
+        "S1: blok F1/F2 sudah diarsipkan ke docs/_archive/23-S1-masuk.md dengan bukti per butir",
+        "S6: diperiksa manual — HTTP hanya di klien_api, field JSON hanya di model, warna hanya di tema, format di util, tanpa aturan K5/K6/K9 di Dart, tanpa POST ulang otomatis",
+        "S7: di luar rencana = docs/10, 11, 16, mDonator/CLAUDE.md, manifest.environment (sesi mdonator-9f), _CODING_LEDGER (meter.py); docs/06,12,21,23 dan ../UPDATE_PLAN.md ada di rencana tetapi dibandingkan dengan path berbeda",
+        "S8: heuristik; Masuk dan Pengaturan punya empat state teruji, widget bukan layar, awal.dart tidak punya state kosong"
+      ],
+      "asumsi": [
+        "Password dikosongkan setelah server menjawab, tetap di isian (memori) saat GalatJaringan atau pesan umum agar Kirim ulang/Coba lagi bisa langsung",
+        "Username terakhir = pengguna.username dari jawaban login",
+        "Setelah 401 di kerangka konfigurasi dibiarkan di memori agar tab tetap bisa dipakai; masuk lagi menggantinya (docs/21 dicatat)",
+        "Teks klien baru: 'Alamat server belum diatur. Buka Pengaturan.', 'Alamat server wajib diisi.', 'Alamat harus memakai https.' / '…http atau https.', 'Alamat server tersimpan.'",
+        "Kedaluwarsa ditampilkan 'Selasa, 13/10/2026 00:15' menurut jam server tanpa konversi zona",
+        "Menu ⋮ S1 hanya Pengaturan dan Keluar; Ganti Password menyusul S6",
+        "Layar gagal saat dibuka punya ikon Pengaturan agar alamat salah bisa diperbaiki"
+      ],
+      "dokumen_diperbarui": [
+        "docs/06_BUSINESS_PROCESS.md (P1, P7: pengguna tidak disimpan)",
+        "docs/21_SECURITY_RULES.md (tabel penyimpanan)",
+        "docs/12_PROJECT_STRUCTURE.md (awal.dart, bantu.dart)",
+        "docs/23_ACCEPTANCE_CRITERIA.md (F1/F2 diarsipkan)",
+        "docs/_archive/23-S1-masuk.md (baru)",
+        "docs/_MANIFEST.json (keputusan penyimpanan_pengguna, versi_aplikasi)",
+        "../UPDATE_PLAN.md (status S1, Hasil uji 12c S1)"
+      ],
+      "landmine_tersentuh": [
+        "Autofill Android menawarkan menyimpan password ke Google bila TextField memakai autofillHints bawaan []; hanya null yang mematikannya",
+        "adb input keyevent membuat Android menggambar sorotan fokus #AAD52B di tepi FlutterView; bukan bug aplikasi, hilang bila tanpa keyevent",
+        "uiautomator dump gagal (null root node) beberapa detik setelah aplikasi dibuka; hapus salinan lokal agar tidak membaca dump basi",
+        "php -S localhost:PORT bisa hanya mendengar [::1], sehingga 10.0.2.2 dari emulator gagal; pakai adb reverse + localhost",
+        "Port 3000 di mesin ini dipakai proses node lain",
+        "pageBack() di flutter_test mencari tombol kembali Cupertino; pakai binding.handlePopRoute()",
+        "TextField di ListView di luar layar 360x640x1,3 tidak dibangun; uji harus scrollUntilVisible"
+      ],
+      "ditunda": [
+        "Ganti Password di menu ⋮ (S6)",
+        "Kalimat docs/03 tanpa kolom status, jadi status slice dicatat di UPDATE_PLAN.md",
+        "../CLAUDE.md (root) masih menulis 'S1–S6 are not'; di luar rencana slice, belum diubah",
+        "API_CONTRACT.md:33, DOSIR_MDONATOR.md, ../UPDATE_PLAN.md:186 masih menyebut port 3000 (dilaporkan sesi mdonator-9f)"
+      ],
+      "selesai": "2026-10-10T12:26:32+08:00"
+    },
+    {
+      "fitur": "S2 input sumbangan",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T13:05:52+08:00",
+      "rencana": [
+        "lib/state/input_sumbangan_notifier.dart",
+        "lib/state/cari_donatur_notifier.dart",
+        "lib/layar/input_sumbangan.dart",
+        "lib/layar/cari_donatur.dart",
+        "lib/layar/kerangka.dart",
+        "lib/widget/isian_angka.dart",
+        "lib/widget/nominal_cepat.dart",
+        "lib/widget/kartu_donatur.dart",
+        "lib/widget/lencana_bintang.dart",
+        "lib/widget/strip_hari_ini.dart",
+        "lib/widget/kartu_hasil.dart",
+        "lib/widget/state_kosong.dart",
+        "test/layar/input_sumbangan_test.dart",
+        "test/layar/cari_donatur_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/kerangka_test.dart",
+        "docs/14_ERROR_HANDLING.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S2-input-sumbangan.md",
+        "docs/_MANIFEST.json",
+        "docs/_CODING_LEDGER.json",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Skema/migrasi (dilewati: klien tanpa skema; skema DB tidak boleh berubah)",
+          "mulai": "2026-10-10T13:05:52+08:00",
+          "selesai": "2026-10-10T13:05:52+08:00",
+          "detik": 0,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 2,
+          "nama": "Model/akses data (dilewati: model dan KlienApi 10 aksi sudah ada sejak S0)",
+          "mulai": "2026-10-10T13:05:52+08:00",
+          "selesai": "2026-10-10T13:05:52+08:00",
+          "detik": 1,
+          "tok_est": 17575,
+          "muat": [
+            "lib/api/model.dart",
+            "lib/api/klien_api.dart",
+            "lib/api/galat_api.dart",
+            "API_CONTRACT.md"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "State: InputSumbanganNotifier, CariDonaturNotifier",
+          "mulai": "2026-10-10T13:06:59+08:00",
+          "selesai": "2026-10-10T13:08:47+08:00",
+          "detik": 109,
+          "tok_est": 16418,
+          "muat": [
+            "docs/06_BUSINESS_PROCESS.md",
+            "docs/14_ERROR_HANDLING.md",
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/08_ARCHITECTURE.md",
+            "lib/state/sesi.dart",
+            "lib/state/masuk_notifier.dart",
+            "lib/state/input_sumbangan_notifier.dart",
+            "lib/state/cari_donatur_notifier.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Endpoint/rute (dilewati: aksi donatur, caridonatur, tambahdonasi, donasisaya sudah ada di 12b; tanpa kode server)",
+          "mulai": "2026-10-10T13:08:47+08:00",
+          "selesai": "2026-10-10T13:08:47+08:00",
+          "detik": 1,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 5,
+          "nama": "UI: layar Input Sumbangan, Cari Donatur, 7 widget inventaris, kerangka",
+          "mulai": "2026-10-10T13:08:48+08:00",
+          "selesai": "2026-10-10T13:11:59+08:00",
+          "detik": 192,
+          "tok_est": 14223,
+          "muat": [
+            "lib/layar/kerangka.dart",
+            "lib/layar/masuk.dart",
+            "lib/layar/awal.dart",
+            "lib/tema.dart",
+            "lib/widget/panel_galat.dart",
+            "lib/widget/dialog_konfirmasi.dart",
+            "lib/widget/kerangka_memuat.dart",
+            "lib/util/rupiah.dart",
+            "lib/util/tanggal.dart",
+            "lib/layar/input_sumbangan.dart",
+            "lib/layar/cari_donatur.dart",
+            "lib/widget/isian_angka.dart",
+            "lib/widget/nominal_cepat.dart",
+            "lib/widget/kartu_donatur.dart",
+            "lib/widget/lencana_bintang.dart",
+            "lib/widget/strip_hari_ini.dart",
+            "lib/widget/kartu_hasil.dart",
+            "lib/widget/state_kosong.dart"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Tes: input_sumbangan_test, cari_donatur_test, bantu, kerangka_test",
+          "mulai": "2026-10-10T13:11:59+08:00",
+          "selesai": "2026-10-10T13:26:31+08:00",
+          "detik": 872,
+          "tok_est": 22385,
+          "muat": [
+            "test/layar/bantu.dart",
+            "test/layar/masuk_test.dart",
+            "test/layar/kerangka_test.dart",
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/cari_donatur_test.dart",
+            "docs/13_TESTING.md",
+            "docs/16_DEBUGGING_GUIDE.md"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur (23, 24, demo emulator)",
+          "mulai": "2026-10-10T13:26:31+08:00",
+          "selesai": "2026-10-10T13:40:00+08:00",
+          "detik": 810,
+          "tok_est": 50903,
+          "muat": [
+            "docs/24_DEFINITION_OF_DONE.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/_archive/23-S1-masuk.md",
+            "docs/_archive/23-S2-input-sumbangan.md",
+            "docs/14_ERROR_HANDLING.md",
+            "docs/_MANIFEST.json",
+            "../UPDATE_PLAN.md",
+            "../CLAUDE.md",
+            "lib/api/model.dart"
+          ]
+        }
+      ],
+      "detik": 1985,
+      "tok_est": 121504,
+      "deviasi": [
+        "lib/tema.dart — tambah Huruf.penandaNote (token note_n docs/26 harus di tema, bukan literal di widget)",
+        "lib/api/model.dart — tambah KunciRincian (id, id_donatur, jumlah, q) agar kunci rincian tidak diketik di notifier (docs/27)",
+        "test/layar/bantu.dart — pompaAplikasi kini bawaan kerangkaKosong; uji S1 tetap melihat aksi sesi saja, uji layar memakai LayarKerangka() sungguhan",
+        "Server 127.0.0.1:8000 dijalankan sementara untuk demo lalu dihentikan; diagnosa awal (server ::1 tak terjangkau adb reverse) keliru karena nc Android menutup koneksi saat stdin habis"
+      ],
+      "warn_dilewati": [
+        "S1: nama blok 23 berbeda (F3/F4); butir dibuktikan per uji di docs/_archive/23-S2-input-sumbangan.md",
+        "S6: diperiksa grep — tanpa http/json/format langsung/angka aturan/jam HP/penyimpanan di kode baru; kunci rincian dipindah ke model.dart",
+        "S7: di luar rencana = berkas S1 yang belum di-commit, lib/tema.dart, lib/api/model.dart (deviasi), UPDATE_PLAN.md dan mDonator/CLAUDE.md (path dibandingkan berbeda / sesi lain)",
+        "S8: heuristik pada widget; empat state layar Input (Cek, Simpan, strip) dan Cari Donatur teruji"
+      ],
+      "asumsi": [
+        "Tata letak Input: Simpan + panel galat tetap di bawah, strip ikut tergulir, keyboard ditutup setelah Cek sukses (dicatat di manifest open_questions, belum di docs/26)",
+        "Simpan juga nonaktif bila Jumlah kosong",
+        "Saran null saat Cek donatur lain mengosongkan saran lama (paritas isiSaranJumlah web)",
+        "Galat GET 401 tampil sebagai panel pesan server; POST 401 kembali siap tanpa Kirim ulang",
+        "Teks klien baru: 'Data Sumbangan Berhasil Disimpan' (sama dengan web), 'Riwayat tahun {t}', 'Total tahun {t}', 'Belum ada sumbangan tahun {t}.', label cari 'Nama, alamat, atau nomor', '(donatur terhapus)'",
+        "Mengubah isian setelah Simpan gagal membuang kiriman tertunda (Kirim ulang hilang)",
+        "Jumlah maks 10 digit (batas kontrak 2.147.483.647)"
+      ],
+      "dokumen_diperbarui": [
+        "docs/14_ERROR_HANDLING.md (rincian id → Nomor Donator)",
+        "docs/23_ACCEPTANCE_CRITERIA.md (F3/F4 diarsipkan)",
+        "docs/_archive/23-S2-input-sumbangan.md (baru)",
+        "docs/_MANIFEST.json (open_questions tata letak S2)",
+        "../UPDATE_PLAN.md (status S2, Hasil uji 12c S2)",
+        "../CLAUDE.md (status slice)"
+      ],
+      "landmine_tersentuh": [
+        "Uji widget memakai font Ahem (lebar ±2× Roboto): elemen tetap di atas daftar cepat menghabiskan layar 360 dp; uji perilaku memakai layar 800×2000",
+        "Finder menganggap butir ListView di luar viewport (dalam cacheExtent) sebagai offstage",
+        "Emulator bisa dipakai bersamaan oleh pengguna atau sesi lain: ketukan adb dapat mengenai isian orang lain — koordinasikan sebelum demo",
+        "nc Android menutup koneksi saat stdin EOF; jangan dipakai untuk cek jangkauan adb reverse"
+      ],
+      "ditunda": [
+        "Hapus donasi lokal 145679, 145680, 145681 (uji_operator ke donatur nyata, demo S2) — menunggu keputusan pemilik",
+        "masuk_notifier.dart masih mengetik kunci rincian 'username'/'password'; pindahkan ke KunciRincian saat berkas itu disentuh",
+        "Persetujuan tata letak Input lalu catat di docs/26",
+        "Dialog K5 belum didemokan di emulator (teruji di widget test dan php tests/api.php)"
+      ],
+      "selesai": "2026-10-10T13:40:17+08:00"
+    },
+    {
+      "fitur": "S2b input ringkas (permintaan pemilik)",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T13:46:52+08:00",
+      "rencana": [
+        "lib/widget/strip_hari_ini.dart",
+        "lib/widget/nominal_cepat.dart",
+        "lib/widget/kartu_donatur.dart",
+        "lib/widget/kartu_hasil.dart",
+        "lib/widget/isian_angka.dart",
+        "lib/layar/input_sumbangan.dart",
+        "lib/state/input_sumbangan_notifier.dart",
+        "lib/tema.dart",
+        "lib/util/tanggal.dart",
+        "test/util/tanggal_test.dart",
+        "test/layar/input_sumbangan_test.dart",
+        "test/layar/bantu.dart",
+        "docs/26_UI_CONVENTIONS.md",
+        "docs/06_BUSINESS_PROCESS.md",
+        "docs/16_DEBUGGING_GUIDE.md",
+        "docs/27_API_CONTRACT.md",
+        "docs/_MANIFEST.json",
+        "docs/_archive/23-S2-input-sumbangan.md",
+        "../UPDATE_PLAN.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "UI ringkas: strip satu baris, 6 nominal, kartu dan jarak rapat",
+          "mulai": "2026-10-10T13:46:52+08:00",
+          "selesai": "2026-10-10T13:51:01+08:00",
+          "detik": 250,
+          "tok_est": 11980,
+          "muat": [
+            "lib/widget/strip_hari_ini.dart",
+            "lib/widget/nominal_cepat.dart",
+            "lib/widget/kartu_donatur.dart",
+            "lib/widget/isian_angka.dart",
+            "lib/layar/input_sumbangan.dart",
+            "lib/state/input_sumbangan_notifier.dart",
+            "lib/tema.dart",
+            "lib/util/tanggal.dart"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "Uji + demo visual emulator",
+          "mulai": "2026-10-10T13:51:01+08:00",
+          "selesai": "2026-10-10T13:53:31+08:00",
+          "detik": 151,
+          "tok_est": 52665,
+          "muat": [
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/input_sumbangan_muat_test.dart",
+            "test/util/tanggal_test.dart",
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/06_BUSINESS_PROCESS.md",
+            "docs/16_DEBUGGING_GUIDE.md",
+            "docs/27_API_CONTRACT.md",
+            "docs/_MANIFEST.json",
+            "docs/_archive/23-S2-input-sumbangan.md",
+            "../UPDATE_PLAN.md"
+          ]
+        }
+      ],
+      "detik": 401,
+      "tok_est": 64645,
+      "deviasi": [
+        "test/layar/input_sumbangan_muat_test.dart — berkas uji baru di luar rencana; memuat Roboto dari cache SDK (bukan dependensi, tidak dibundel)"
+      ],
+      "warn_dilewati": [
+        "S1: blok F3/F4 sudah terarsip; perubahan dicatat di bagian 'Perubahan sesudah diterima' arsip",
+        "S7: berkas S1/S2 yang belum di-commit ikut terhitung",
+        "S8: heuristik pada widget"
+      ],
+      "asumsi": [
+        "Enam tombol diambil dengan menyaring nominal_umum ≤ 300.000 (bukan daftar tertanam), sehingga nilai tetap dari server",
+        "Label tombol tetap '50.000' dst. sesuai format docs/26",
+        "Target 'tanpa gulir' = Pixel 5 skala 1,0, riwayat bulanan; 360×640 dan riwayat mingguan tetap boleh menggulir"
+      ],
+      "dokumen_diperbarui": [
+        "docs/26_UI_CONVENTIONS.md (strip, nominal cepat, kartu donatur, isian padat, jarak, target muat)",
+        "docs/06_BUSINESS_PROCESS.md (P2.1, P2.3)",
+        "docs/16_DEBUGGING_GUIDE.md (font uji, emulator bersama)",
+        "docs/27_API_CONTRACT.md (T17 tidak dibutuhkan layar)",
+        "docs/_MANIFEST.json (keputusan input_ringkas, T17)",
+        "docs/_archive/23-S2-input-sumbangan.md",
+        "../UPDATE_PLAN.md"
+      ],
+      "ditunda": [
+        "Hapus donasi lokal 145679–145684 hasil pemakaian emulator — menunggu keputusan pemilik",
+        "Pengguna aktif di emulator: kartu donatur ringkas belum difoto di emulator (terbukti di uji muat)"
+      ],
+      "selesai": "2026-10-10T13:53:31+08:00"
+    },
+    {
+      "fitur": "S3 tambah donatur",
+      "rute": "Fitur baru (vertical slice): 01,02,06,07,11,23 +26 +14 +API_CONTRACT §6.4/6.6/7/8",
+      "mulai": "2026-10-10T14:03:23+08:00",
+      "rencana": [
+        "lib/state/kerangka_notifier.dart",
+        "lib/state/tambah_donatur_notifier.dart",
+        "lib/state/input_sumbangan_notifier.dart",
+        "lib/layar/tambah_donatur.dart",
+        "lib/layar/kerangka.dart",
+        "lib/layar/input_sumbangan.dart",
+        "lib/widget/kartu_hasil.dart",
+        "lib/api/model.dart",
+        "test/layar/tambah_donatur_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/kerangka_test.dart",
+        "docs/12_PROJECT_STRUCTURE.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S3-tambah-donatur.md",
+        "docs/_MANIFEST.json",
+        "docs/_CODING_LEDGER.json",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md"
+      ],
+      "total_step": 7,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Skema/migrasi (dilewati: klien tanpa skema; skema DB beku)",
+          "mulai": "2026-10-10T14:03:23+08:00",
+          "selesai": "2026-10-10T14:03:23+08:00",
+          "detik": 0,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 2,
+          "nama": "Model/akses data: KunciRincian tambahdonatur",
+          "mulai": "2026-10-10T14:03:23+08:00",
+          "selesai": "2026-10-10T14:06:41+08:00",
+          "detik": 199,
+          "tok_est": 18743,
+          "muat": [
+            "API_CONTRACT.md",
+            "docs/14_ERROR_HANDLING.md",
+            "lib/api/model.dart",
+            "lib/api/klien_api.dart",
+            "lib/api/galat_api.dart"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "State: KerangkaNotifier, TambahDonaturNotifier, terimaRingkasan Input",
+          "mulai": "2026-10-10T14:06:42+08:00",
+          "selesai": "2026-10-10T14:07:42+08:00",
+          "detik": 60,
+          "tok_est": 13449,
+          "muat": [
+            "lib/state/input_sumbangan_notifier.dart",
+            "lib/state/cari_donatur_notifier.dart",
+            "lib/state/sesi.dart",
+            "lib/state/kerangka_notifier.dart",
+            "lib/state/tambah_donatur_notifier.dart",
+            "docs/08_ARCHITECTURE.md",
+            "docs/12_PROJECT_STRUCTURE.md"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Endpoint/rute (dilewati: aksi tambahdonatur sudah ada di 12b; php tests/api.php LULUS 158 cek)",
+          "mulai": "2026-10-10T14:07:42+08:00",
+          "selesai": "2026-10-10T14:07:42+08:00",
+          "detik": 1,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 5,
+          "nama": "UI: layar Tambah Donatur, kartu Nomor Register, kerangka + Input",
+          "mulai": "2026-10-10T14:07:42+08:00",
+          "selesai": "2026-10-10T14:09:27+08:00",
+          "detik": 105,
+          "tok_est": 15014,
+          "muat": [
+            "docs/26_UI_CONVENTIONS.md",
+            "lib/layar/input_sumbangan.dart",
+            "lib/layar/kerangka.dart",
+            "lib/layar/cari_donatur.dart",
+            "lib/layar/tambah_donatur.dart",
+            "lib/widget/kartu_hasil.dart",
+            "lib/widget/isian_angka.dart",
+            "lib/widget/dialog_konfirmasi.dart",
+            "lib/widget/panel_galat.dart",
+            "lib/widget/state_kosong.dart",
+            "lib/tema.dart"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Tes: tambah_donatur_test, kerangka_test, bantu",
+          "mulai": "2026-10-10T14:09:27+08:00",
+          "selesai": "2026-10-10T14:14:10+08:00",
+          "detik": 284,
+          "tok_est": 20469,
+          "muat": [
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/bantu.dart",
+            "test/layar/kerangka_test.dart",
+            "test/layar/tambah_donatur_test.dart"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur (23, 24) + demo emulator",
+          "mulai": "2026-10-10T14:14:10+08:00",
+          "selesai": "2026-10-10T14:19:37+08:00",
+          "detik": 327,
+          "tok_est": 47654,
+          "muat": [
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/_archive/23-S2-input-sumbangan.md",
+            "docs/_archive/23-S3-tambah-donatur.md",
+            "docs/12_PROJECT_STRUCTURE.md",
+            "docs/_MANIFEST.json",
+            "docs/16_DEBUGGING_GUIDE.md",
+            "../UPDATE_PLAN.md",
+            "../CLAUDE.md"
+          ]
+        }
+      ],
+      "detik": 976,
+      "tok_est": 115329,
+      "deviasi": [
+        "lib/state/kerangka_notifier.dart — berkas state baru (tab aktif + pesan antartab), docs/12 diperbarui",
+        "lib/layar/kerangka.dart — _tab pindah ke KerangkaNotifier, isi tab dibungkus KerangkaScope",
+        "lib/state/input_sumbangan_notifier.dart — terimaRingkasan() publik untuk strip dari tab lain",
+        "DB lokal: baris 145679 dipulihkan ke Rp 100.000 setelah tests/api.php mengubahnya; donasi demo 145679–145685 dihapus atas keputusan pemilik (cadangan tests/_out/cadangan-donasi-demo-s2-2026-10-10.sql)"
+      ],
+      "warn_dilewati": [
+        "S1: nama blok 23 berbeda (F5); butir dibuktikan per uji di docs/_archive/23-S3-tambah-donatur.md",
+        "S6: diperiksa manual — HTTP hanya di klien_api, kunci rincian di model.dart, warna di tema, tanpa aturan K9/duplikat di Dart, tanpa POST ulang otomatis",
+        "S7: di luar rencana = berkas S1/S2 yang belum di-commit (tidak disentuh S3); ../UPDATE_PLAN.md ada di rencana dengan path berbeda",
+        "S8: heuristik pada widget; empat state Tambah Donatur dan Nama mirip teruji"
+      ],
+      "asumsi": [
+        "donatur_sudah_ada memakai PanelGalat (paritas infodanger web); docs/14 menulis Panel info — open_questions",
+        "Simpan aktif bila Sumbangan Pertama berisi angka; isian wajib lain diperiksa server (422)",
+        "Teks dikirim apa adanya; server memangkas",
+        "Panjang isian dibatasi kontrak (100/255/20/255, 10 digit)",
+        "Dialog K9 menampilkan nama yang diketik sebagai nama donatur",
+        "Nama mirip: hasil sebelumnya tetap tampil selama mencari; galat → panel Coba lagi; hasil kosong → tanpa peringatan",
+        "Kartu hasil hilang saat Simpan berikutnya dimulai",
+        "Teks klien baru: 'Data Donatur Berhasil Disimpan' (sama dengan web), 'Nomor Register', 'Nomor Register: N' di panel, 'Input sumbangan untuk nomor ini'",
+        "Nama dan Alamat: kapital per kata, tanpa autocorrect; Keterangan: kapital per kalimat; No HP: keyboard telepon"
+      ],
+      "dokumen_diperbarui": [
+        "docs/12_PROJECT_STRUCTURE.md (kerangka_notifier)",
+        "docs/23_ACCEPTANCE_CRITERIA.md (F5 diarsipkan)",
+        "docs/_archive/23-S3-tambah-donatur.md (baru)",
+        "docs/_MANIFEST.json (open_questions S3)",
+        "../UPDATE_PLAN.md (status S3, catatan data lokal, Hasil uji 12c S3)",
+        "../CLAUDE.md (status slice)"
+      ],
+      "landmine_tersentuh": [
+        "tests/api.php memakai sumbangan paling awal uji_operator hari ini sebagai baris uji ubahdonasi: data demo emulator hari yang sama ikut diubah dan sidik gagal"
+      ],
+      "ditunda": [
+        "Donatur 7822 'Aluh alay' + sumbangan 145716 dari demo emulator pemakai — menunggu keputusan pemilik (juga harus dihapus sebelum tests/api.php dijalankan lagi hari ini)",
+        "Perbaikan pemilihan $milik di tests/api.php (kode server, belum diputuskan)",
+        "Konfirmasi gaya panel donatur_sudah_ada dan tata letak Tambah Donatur",
+        "Dialog K9 dan donatur_sudah_ada belum didemokan di emulator (emulator dipakai pihak lain)"
+      ],
+      "selesai": "2026-10-10T14:19:37+08:00"
+    },
+    {
+      "fitur": "S4 input saya",
+      "rute": "Fitur baru (vertical slice): 01,02,05,06,07,11,23 +26 +14 +API_CONTRACT §6.7/6.8/7/8",
+      "mulai": "2026-10-10T14:28:29+08:00",
+      "rencana": [
+        "lib/api/model.dart",
+        "lib/util/tanggal.dart",
+        "lib/tema.dart",
+        "lib/state/input_saya_notifier.dart",
+        "lib/state/ubah_sumbangan_notifier.dart",
+        "lib/state/kerangka_notifier.dart",
+        "lib/state/input_sumbangan_notifier.dart",
+        "lib/layar/input_saya.dart",
+        "lib/layar/ubah_sumbangan.dart",
+        "lib/layar/kerangka.dart",
+        "lib/widget/baris_sumbangan.dart",
+        "test/layar/input_saya_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/kerangka_test.dart",
+        "test/util/tanggal_test.dart",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S4-input-saya.md",
+        "docs/_MANIFEST.json",
+        "docs/_CODING_LEDGER.json",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md",
+        "../tests/api.php"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Skema/migrasi (dilewati: klien tanpa skema; skema DB beku)",
+          "mulai": "2026-10-10T14:28:33+08:00",
+          "selesai": "2026-10-10T14:28:33+08:00",
+          "detik": 1,
+          "tok_est": 0,
+          "muat": []
+        },
+        {
+          "no": 2,
+          "nama": "Model/akses data: KunciRincian.tanggal, tanggalSaja",
+          "mulai": "2026-10-10T14:28:33+08:00",
+          "selesai": "2026-10-10T14:28:51+08:00",
+          "detik": 18,
+          "tok_est": 7729,
+          "muat": [
+            "lib/api/model.dart",
+            "lib/util/tanggal.dart",
+            "test/util/tanggal_test.dart"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "State: InputSayaNotifier, UbahSumbanganNotifier, total hari ini ke strip",
+          "mulai": "2026-10-10T14:28:56+08:00",
+          "selesai": "2026-10-10T14:30:41+08:00",
+          "detik": 106,
+          "tok_est": 16003,
+          "muat": [
+            "lib/state/input_saya_notifier.dart",
+            "lib/state/ubah_sumbangan_notifier.dart",
+            "lib/state/kerangka_notifier.dart",
+            "lib/state/input_sumbangan_notifier.dart",
+            "lib/state/tambah_donatur_notifier.dart",
+            "lib/state/cari_donatur_notifier.dart",
+            "lib/state/sesi.dart",
+            "lib/api/galat_api.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Endpoint/rute (dilewati: aksi donasisaya dan ubahdonasi sudah ada di 12b; tanpa kode server)",
+          "mulai": "2026-10-10T14:30:41+08:00",
+          "selesai": "2026-10-10T14:30:42+08:00",
+          "detik": 1,
+          "tok_est": 16989,
+          "muat": [
+            "../app/api/donasisaya.php",
+            "../tests/api.php"
+          ]
+        },
+        {
+          "no": 5,
+          "nama": "UI: layar Input Saya, lembar Ubah, BarisSumbangan, tab 3, tema date picker",
+          "mulai": "2026-10-10T14:32:02+08:00",
+          "selesai": "2026-10-10T14:33:32+08:00",
+          "detik": 91,
+          "tok_est": 18223,
+          "muat": [
+            "lib/widget/baris_sumbangan.dart",
+            "lib/layar/ubah_sumbangan.dart",
+            "lib/layar/input_saya.dart",
+            "lib/layar/kerangka.dart",
+            "lib/tema.dart",
+            "lib/layar/tambah_donatur.dart",
+            "lib/layar/cari_donatur.dart",
+            "lib/widget/panel_galat.dart",
+            "lib/widget/state_kosong.dart",
+            "lib/widget/kerangka_memuat.dart",
+            "lib/widget/dialog_konfirmasi.dart",
+            "lib/widget/isian_angka.dart",
+            "lib/widget/strip_hari_ini.dart",
+            "lib/widget/kartu_hasil.dart",
+            "lib/layar/awal.dart",
+            "docs/26_UI_CONVENTIONS.md"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Tes: input_saya_test, bantu",
+          "mulai": "2026-10-10T14:33:32+08:00",
+          "selesai": "2026-10-10T14:43:15+08:00",
+          "detik": 583,
+          "tok_est": 21388,
+          "muat": [
+            "test/layar/input_saya_test.dart",
+            "test/layar/bantu.dart",
+            "test/layar/tambah_donatur_test.dart",
+            "lib/widget/baris_sumbangan.dart",
+            "lib/layar/input_saya.dart"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur: server, gerbang.sh, demo emulator",
+          "mulai": "2026-10-10T14:43:15+08:00",
+          "selesai": "2026-10-10T17:20:23+08:00",
+          "detik": 9428,
+          "tok_est": 63389,
+          "muat": [
+            "docs/_archive/23-S4-input-saya.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/_MANIFEST.json",
+            "../UPDATE_PLAN.md",
+            "../CLAUDE.md",
+            "../tests/api.php",
+            "docs/_archive/23-S3-tambah-donatur.md"
+          ]
+        }
+      ],
+      "detik": 10228,
+      "tok_est": 143721,
+      "deviasi": [
+        "../tests/api.php:569 — $milik kini sumbangan buatan uji sendiri ($s['id']); disetujui pemilik, sebelumnya memakai dan mengubah sumbangan uji_operator yang sudah ada",
+        "DB lokal — donatur 7822 dan sumbangan 145716 (sisa demo S3) dihapus atas keputusan pemilik; sebelumnya nominal 145716 sempat berubah 10.000 → 1.300 oleh tests/api.php"
+      ],
+      "warn_dilewati": [
+        "S1: blok F6 sudah diarsipkan ke docs/_archive/23-S4-input-saya.md dengan bukti per butir",
+        "S6: diperiksa manual — HTTP hanya di klien_api, nama field hanya di model.dart (KunciRincian.tanggal), state di lib/state, layar di lib/layar, widget inventaris di lib/widget; tidak ada validasi/otorisasi dilonggarkan (Ubah hanya untuk boleh_ubah, K6 tetap di server)",
+        "S7: berkas di luar rencana adalah hasil S1–S3 yang belum di-commit; semuanya diubah sebelum S4 mulai (14:33)",
+        "S8: heuristik; Input Saya punya empat state (diuji), lembar Ubah adalah formulir, sisanya widget",
+        "Demo emulator sebagian: pemilik mencoba masuk, Input Saya, date picker; alur Ubah tidak didemokan (akun belum punya sumbangan hari ini) — dibuktikan uji widget + tests/api.php",
+        "Regresi web (HTML 129/129) tidak dijalankan ulang: tidak ada kode server yang berubah, hanya tests/api.php"
+      ],
+      "asumsi": [
+        "Input Saya dimuat saat tab dibuka dan setiap dibuka lagi; tanggal pilihan tetap saat pindah tab",
+        "Tanggal = hari_ini dikirim tanpa tanggal; date picker 2000-01-01 (batas server) sampai hari_ini",
+        "Strip tab Input diperbarui dari donasisaya tanpa tanggal di Input Saya karena ubahdonasi tanpa ringkasan_hari_ini",
+        "Pilihan tanggal = isian baca-saja berlabel Tanggal tanpa ikon kalender (label belum ada di mikroteks 26)",
+        "Nominal di ringkasan dan baris dibatasi separuh baris, mengecil bila tidak muat",
+        "Lembar Ubah tidak bisa ditutup selama menyimpan; 404 memuat ulang daftar, 403 tidak"
+      ],
+      "dokumen_diperbarui": [
+        "docs/23_ACCEPTANCE_CRITERIA.md (F6 diarsipkan)",
+        "docs/_archive/23-S4-input-saya.md (baru)",
+        "docs/_MANIFEST.json (4 pertanyaan terbuka S4)",
+        "../UPDATE_PLAN.md (status, Hasil uji S4, catatan S3 terjawab)",
+        "../CLAUDE.md (status S4)"
+      ],
+      "landmine_tersentuh": [
+        "tests/api.php sebelum S4 memakai sumbangan tertua uji_operator hari ini dan mengubahnya — sudah diperbaiki",
+        "Emulator dipakai bersama: pemilik mengetik di emulator saat agen memakai adb; koordinasi sebelum mengetuk",
+        "Gradle mengompilasi Dart saat flutter run: jangan uji mutasi bersamaan dengan build demo"
+      ],
+      "ditunda": [
+        "Penegasan tata letak dan asumsi S4 di docs/26 menunggu persetujuan pemilik (_MANIFEST open_questions)",
+        "Demo emulator alur Ubah"
+      ],
+      "selesai": "2026-10-10T17:20:23+08:00"
+    },
+    {
+      "fitur": "S5 rekap",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-10T17:29:53+08:00",
+      "rencana": [
+        "lib/state/rekap_notifier.dart",
+        "lib/layar/rekap.dart",
+        "lib/layar/kerangka.dart",
+        "lib/state/kerangka_notifier.dart",
+        "lib/tema.dart",
+        "test/layar/rekap_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/kerangka_test.dart",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/_archive/23-S5-rekap.md",
+        "docs/_MANIFEST.json",
+        "../CLAUDE.md",
+        "../UPDATE_PLAN.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Service/notifier rekap",
+          "mulai": "2026-10-10T17:29:53+08:00",
+          "selesai": "2026-10-10T17:30:41+08:00",
+          "detik": 48,
+          "tok_est": 23941,
+          "muat": [
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/06_BUSINESS_PROCESS.md",
+            "API_CONTRACT.md",
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/14_ERROR_HANDLING.md",
+            "lib/state/input_saya_notifier.dart",
+            "lib/state/rekap_notifier.dart",
+            "lib/api/model.dart"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "UI layar rekap + tema segmen",
+          "mulai": "2026-10-10T17:30:41+08:00",
+          "selesai": "2026-10-10T17:32:17+08:00",
+          "detik": 96,
+          "tok_est": 9486,
+          "muat": [
+            "lib/layar/rekap.dart",
+            "lib/layar/input_saya.dart",
+            "lib/layar/kerangka.dart",
+            "lib/tema.dart",
+            "lib/widget/baris_sumbangan.dart",
+            "lib/state/kerangka_notifier.dart"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Tes rekap",
+          "mulai": "2026-10-10T17:32:17+08:00",
+          "selesai": "2026-10-10T17:43:34+08:00",
+          "detik": 678,
+          "tok_est": 19336,
+          "muat": [
+            "test/layar/rekap_test.dart",
+            "test/layar/bantu.dart",
+            "test/layar/input_saya_test.dart",
+            "test/layar/kerangka_test.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Gerbang fitur",
+          "mulai": "2026-10-10T17:43:36+08:00",
+          "selesai": "2026-10-10T17:56:26+08:00",
+          "detik": 770,
+          "tok_est": 661,
+          "muat": [
+            "docs/23_ACCEPTANCE_CRITERIA.md"
+          ]
+        }
+      ],
+      "detik": 1592,
+      "tok_est": 53424,
+      "deviasi": [
+        "lib/tema.dart — segmentedButtonTheme baru (radius 8, tinggi 48, terpilih primer/diAtasPrimer); nilai dari token, tata letak menunggu persetujuan pemilik (manifest open_questions)",
+        "lib/layar/rekap.dart — ikon chevron_left/chevron_right belum ada di daftar ikon 'Lainnya' docs/26"
+      ],
+      "warn_dilewati": [
+        "S1 gerbang: blok bernama 'F7 Rekap (S5)', bukan 'S5 rekap'; bukti per butir di docs/_archive/23-S5-rekap.md",
+        "S7 gerbang: berkas di luar rencana = kerja S1–S4 yang belum di-commit (diff terhadap HEAD d85e4f3)",
+        "S8 gerbang: heuristik pada widget/layar lain; rekap.dart punya keempat state"
+      ],
+      "asumsi": [
+        "Rekap dimuat saat tab dibuka dan setiap kali dibuka lagi; bawaan dikirim tanpa tanggal; panah mengisi tanggal dari navigasi (P5.2 'tanggal yang sama')",
+        "Rincian per operator ditampilkan di atas rincian per hari",
+        "Nama baris id_user null ditampilkan dari server ('User lama (sudah dihapus)' menurut kontrak), tidak ditulis ulang di klien"
+      ],
+      "dokumen_diperbarui": [
+        "docs/23_ACCEPTANCE_CRITERIA.md (F7 diarsipkan)",
+        "docs/_archive/23-S5-rekap.md",
+        "docs/_MANIFEST.json (open_questions S5)",
+        "../CLAUDE.md (status S5)",
+        "../UPDATE_PLAN.md (status + Hasil uji S5)"
+      ],
+      "landmine_tersentuh": [
+        "php tests/api.php cek 'sumbangan pertama tersimpan bersama donaturnya' kadang gagal (1/158), data server benar menurut audit; penyebab belum diketahui",
+        "Demo emulator: sekali muncul 1 permintaan rekap ekstra (3 permintaan untuk 2 ketukan adb), tidak terulang dalam 2 replay; diduga sentuhan ganda emulator"
+      ],
+      "ditunda": [
+        "S6 ganti password + APK debug",
+        "Commit S1–S5: menunggu permintaan pemilik (git hanya atas permintaan)"
+      ],
+      "selesai": "2026-10-10T17:58:08+08:00"
     }
   ],
   "akumulasi": {
-    "detik": 3228,
-    "tok_est": 66427,
+    "detik": 20171,
+    "tok_est": 620337,
     "tok_terukur": 0,
-    "step": 7,
-    "fitur": 1
+    "step": 41,
+    "fitur": 7
   }
 }

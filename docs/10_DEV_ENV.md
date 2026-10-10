@@ -19,13 +19,13 @@
 
 ## Harian
 
-Jalankan berurutan: server dev di repo root → emulator → `flutter run`. Semua perintahnya di docs/11_COMMANDS.md.
+Jalankan berurutan: server dev di repo root → emulator → `adb reverse tcp:8000 tcp:8000` → `flutter run`. Semua perintahnya di docs/11_COMMANDS.md.
 
 ## Variabel build (`--dart-define`)
 
 | Nama | Isi | Nilai |
 |---|---|---|
-| `SERVER_URL` | Alamat dasar server = `APP_URL` server, tanpa garis miring akhir | emulator `http://10.0.2.2:3000` · HP fisik di LAN `http://<IP-mesin>:3000` (server mendengar `0.0.0.0`) · rilis `https://donatur.kapuhmadani.com` (API baru ada di sana setelah server Fase 12 dideploy; deploy ditunda) |
+| `SERVER_URL` | Alamat dasar server = `APP_URL` server, tanpa garis miring akhir | emulator dan HP fisik lewat USB `http://localhost:8000`, sama dengan `APP_URL` di `../.env` (`localhost` di perangkat diteruskan ke mesin oleh `adb reverse tcp:8000 tcp:8000`) · HP fisik di LAN `http://<IP-mesin>:8000` (server mendengar `0.0.0.0`) · rilis `https://donatur.kapuhmadani.com` (API baru ada di sana setelah server Fase 12 dideploy; deploy ditunda) |
 | `UJI_USERNAME`, `UJI_PASSWORD` | Akun untuk uji integrasi saja | dari `../tests/.akun-uji` |
 
 Alamat yang disimpan di Pengaturan menang atas `SERVER_URL` (docs/06_BUSINESS_PROCESS.md P0).

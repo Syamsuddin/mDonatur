@@ -6,8 +6,8 @@ Lokasi log: docs/15_OBSERVABILITY.md. Perintah: docs/11_COMMANDS.md.
 
 | Gejala | Penyebab yang mungkin | Langkah |
 |---|---|---|
-| Emulator tidak bisa menghubungi server | Alamat salah, server mati, atau cleartext belum diizinkan di build debug | `SERVER_URL` harus `http://10.0.2.2:3000`; server `php -S` harus jalan; periksa manifest `src/debug` (docs/21_SECURITY_RULES.md) |
-| HP fisik tidak bisa menghubungi server | Server hanya mendengar `localhost` | Jalankan `php -S 0.0.0.0:3000 …` dan pakai IP LAN mesin |
+| Emulator tidak bisa menghubungi server | Alamat salah, server mati, atau cleartext belum diizinkan di build debug | `SERVER_URL` harus `http://localhost:8000` dan `adb reverse tcp:8000 tcp:8000` sudah dijalankan sejak emulator terakhir menyala (cek `adb reverse --list`); server `php -S` harus jalan; periksa manifest `src/debug` (docs/21_SECURITY_RULES.md) |
+| HP fisik tidak bisa menghubungi server | Server hanya mendengar `localhost` | Sambungkan lewat USB dan jalankan `adb reverse tcp:8000 tcp:8000`, atau jalankan `php -S 0.0.0.0:8000 …` dan pakai IP LAN mesin |
 | APK rilis sama sekali tanpa jaringan | Izin `INTERNET` hanya ada di manifest debug/profile buatan Flutter | Tambahkan izin itu di `android/app/src/main/AndroidManifest.xml` |
 | `SERVER_URL` sudah diganti, aplikasi tetap ke alamat lama | Alamat di Pengaturan menang atas `SERVER_URL` | Tekan "Pakai alamat bawaan" di Pengaturan |
 | Semua aksi 401 di Apache (PHP-FPM/CGI), padahal token baru | Header `Authorization` dibuang web server | Bug server: aturan `.htaccess` `E=HTTP_AUTHORIZATION` (`../UPDATE_PLAN.md` Fase 12) |
@@ -29,7 +29,8 @@ Lokasi log: docs/15_OBSERVABILITY.md. Perintah: docs/11_COMMANDS.md.
 - **Urutan sumber.** Untuk API, `API_CONTRACT.md` menang atas semua dokumen. `DOSIR_MDONATOR.md` hanya bahan asal; bila beda dengan `docs/`, docs menang.
 - **Tipe data.** `jumlah` dan `id_donatur` dikirim sebagai bilangan bulat JSON; string seperti `"100000"` dijawab 422. Nomor donatur 1–32767.
 - **Visibilitas admin.** Baris `note_n` dan `boleh_ubah` untuk tanggal lain hanya muncul bagi `uji_admin`. Uji visibilitas harus memakai kedua akun.
-- **Strip hari ini.** Daftar 6 input terakhir masih kosong saat layar dibuka sampai simpan pertama. Ini celah kontrak [TERBUKA T17], bukan bug.
+- **Font di uji widget.** Uji memakai font Ahem (setiap huruf selebar 1 em, kira-kira 2× Roboto), sehingga teks lebih cepat terlipat daripada di HP. Uji "muat satu layar" (`test/layar/input_sumbangan_muat_test.dart`) memuat Roboto dari cache SDK Flutter; jangan mengukur tinggi layar dengan Ahem.
+- **Emulator dipakai bersama.** Pengguna atau sesi lain bisa sedang memakai aplikasi di emulator. Ketukan `adb shell input` lalu bisa mengenai isian orang lain dan menyimpan data; periksa layar dulu, dan jangan menekan Simpan lewat `adb` tanpa koordinasi.
 - **Emulator tanpa layar** belum pernah dicoba di mesin ini, dan headless Chrome diketahui macet. Bila uji integrasi tidak bisa berjalan otomatis, jalankan alurnya manual.
 
 Jebakan implementasi server (sesi di repo root) ada di `DOSIR_MDONATOR.md` §12 (L1, L9–L13, L19–L20) dan `../UPDATE_PLAN.md` Fase 12.

@@ -498,6 +498,31 @@ void main() {
       );
     });
 
+    test('padaGalatVersi dipanggil sebelum GalatVersi, dari header maupun versi_api', () async {
+      final dipanggil = <String>[];
+      final dariHeader = buatKlien((r) async =>
+          jawabJson(200, {'ok': true, 'data': ringkasanUji}, versi: '0.2.0'))
+        ..padaGalatVersi = (g) => dipanggil.add('header ${g.versiServer}');
+      await expectLater(dariHeader.donasiSaya(), throwsA(isA<GalatVersi>()));
+
+      final dariIsi = buatKlien((r) async => jawabJson(200, {
+            'ok': true,
+            'data': {...konfigurasiUji, 'versi_api': '0.3.0'},
+          }))
+        ..padaGalatVersi = (g) => dipanggil.add('isi ${g.versiServer}');
+      await expectLater(dariIsi.konfigurasi(), throwsA(isA<GalatVersi>()));
+
+      expect(dipanggil, ['header 0.2.0', 'isi 0.3.0']);
+    });
+
+    test('versi cocok tidak memanggil padaGalatVersi', () async {
+      final dipanggil = <GalatVersi>[];
+      final api = buatKlien((r) async => jawabJson(200, {'ok': true, 'data': konfigurasiUji}))
+        ..padaGalatVersi = dipanggil.add;
+      await api.konfigurasi();
+      expect(dipanggil, isEmpty);
+    });
+
     test('versi patch berbeda tetap diterima', () async {
       final api = buatKlien((r) async => jawabJson(200, {
             'ok': true,

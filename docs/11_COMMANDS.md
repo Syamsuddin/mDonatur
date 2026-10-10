@@ -4,8 +4,8 @@ Perintah `flutter` dan `bash scripts/…` dijalankan dari `mDonator/`. Perintah 
 
 | Tujuan | Perintah | Lulus bila |
 |---|---|---|
-| Server dev **(root)** | `php -S localhost:3000 -t public public/index.php` | — |
-| Server untuk HP di LAN **(root)** | `php -S 0.0.0.0:3000 -t public public/index.php` | — |
+| Server dev **(root)** | `php -S localhost:8000 -t public public/index.php` | — |
+| Server untuk HP di LAN **(root)** | `php -S 0.0.0.0:8000 -t public public/index.php` | — |
 | Akun uji **(root)** | `php tests/akun-uji.php` | — |
 | Uji API server **(root)**, lahir di S1 | `php tests/api.php` | mencetak LULUS |
 | Regresi web **(root)** | rangkaian di `../CLAUDE.md` bagian "Git and tests" | semua LULUS, HTML 129/129 SAMA |
@@ -17,10 +17,11 @@ Perintah `flutter` dan `bash scripts/…` dijalankan dari `mDonator/`. Perintah 
 | Semua uji | `flutter test` | `All tests passed!` |
 | Satu berkas uji | `flutter test test/api/klien_api_test.dart` | `All tests passed!` |
 | Emulator | `~/Library/Android/sdk/emulator/emulator -avd Pixel_5-Android_13` | — |
-| Jalankan | `flutter run -d emulator-5554 --dart-define=SERVER_URL=http://10.0.2.2:3000` | — |
-| Uji integrasi (opsional) | `flutter test integration_test -d emulator-5554 --dart-define=SERVER_URL=http://10.0.2.2:3000 --dart-define=UJI_USERNAME=uji_operator --dart-define=UJI_PASSWORD=<dari ../tests/.akun-uji>` | `All tests passed!` |
+| Teruskan port server ke emulator (ulang setiap emulator menyala) | `adb reverse tcp:8000 tcp:8000` | `adb reverse --list` memuat `tcp:8000` |
+| Jalankan | `flutter run -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000` | — |
+| Uji integrasi (opsional) | `flutter test integration_test -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000 --dart-define=UJI_USERNAME=uji_operator --dart-define=UJI_PASSWORD=<dari ../tests/.akun-uji>` | `All tests passed!` |
 | ⚠️ Bersihkan data uji integrasi (hanya DB lokal) | `mysql -u root -p kapuhmad_donatur -e "DELETE s FROM donasi s JOIN donator d ON d.Id = s.IdDonator WHERE d.Nama LIKE 'UJI-MOBILE%'; DELETE FROM donator WHERE Nama LIKE 'UJI-MOBILE%';"` | sidik data sama dengan sebelum uji |
-| APK debug | `flutter build apk --debug --dart-define=SERVER_URL=http://10.0.2.2:3000` | `build/app/outputs/flutter-apk/app-debug.apk` ada |
+| APK debug | `flutter build apk --debug --dart-define=SERVER_URL=http://localhost:8000` | `build/app/outputs/flutter-apk/app-debug.apk` ada |
 | Cek warna literal | `grep -rn "Color(0x" lib --include=*.dart \| grep -v "^lib/tema.dart"` | keluaran kosong |
 | Cek `print` | `grep -rnE "(^\|[^a-zA-Z_])print\(" lib --include=*.dart` | keluaran kosong |
 | Cek alamat tertanam | `grep -rnE "https?://" lib --include=*.dart` | keluaran kosong |

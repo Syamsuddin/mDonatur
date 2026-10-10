@@ -12,7 +12,8 @@
 
 | Data | Tempat | Dihapus saat |
 |---|---|---|
-| Token, kedaluwarsa, pengguna (id, username, peran) | `flutter_secure_storage` | 401, Keluar, ganti alamat server |
+| Token, kedaluwarsa | `flutter_secure_storage` | 401, Keluar, ganti alamat server |
+| Pengguna (id, username, peran) dan konfigurasi | memori saja, dari `konfigurasi` (docs/05_USER_ROLE.md); tidak disimpan di perangkat | Keluar, ganti alamat server. Setelah 401 di kerangka, konfigurasi dibiarkan agar isi tab tetap; masuk lagi menggantinya |
 | Alamat server, username terakhir | `flutter_secure_storage` | tidak dihapus saat Keluar |
 | Password | tidak pernah disimpan; isian dikosongkan setelah dikirim | — |
 | Nama, alamat, No HP, dan riwayat donatur | memori layar saja | Keluar, atau layar ditutup |
