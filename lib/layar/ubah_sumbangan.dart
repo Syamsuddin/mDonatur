@@ -16,6 +16,7 @@ import '../widget/dialog_konfirmasi.dart';
 import '../widget/isian_angka.dart';
 import '../widget/kerangka_memuat.dart';
 import '../widget/panel_galat.dart';
+import '../widget/tombol_utama.dart';
 
 /// `jumlah` paling besar 2.147.483.647 (kontrak §6.8): paling banyak 10 digit.
 const _digitJumlah = 10;
@@ -145,7 +146,7 @@ class _LayarUbahSumbanganState extends State<LayarUbahSumbangan> {
                         child: const Text('Batal'),
                       ),
                       const SizedBox(width: Jarak.antarTombol),
-                      FilledButton(
+                      TombolUtama(
                         onPressed: n.bisaSimpan ? () => n.simpan(_tanya) : null,
                         child: memuat ? const IndikatorTombol() : const Text('Simpan'),
                       ),

@@ -11,7 +11,7 @@ JANGAN:
 7. **Memakai jam HP untuk "hari ini".** Selalu pakai `konfigurasi.hari_ini`.
 8. **Mengulang POST otomatis,** atau membuat kunci kirim ulang baru saat Kirim ulang.
 9. **Menanam alamat server di `lib/`,** atau mengizinkan `http://` dan cleartext di build rilis.
-10. **Menulis warna, ukuran, atau ikon di luar token docs/26_UI_CONVENTIONS.md.**
+10. **Menulis warna, ukuran, huruf, gradien, gerak, atau ikon di luar token docs/26_UI_CONVENTIONS.md,** atau menjumlah dan menyaring data di Dart untuk grafik.
 11. **Mengubah dari tugas klien:** markup atau CSS web, skema DB, atau kode server. Pekerjaan server mengikuti `../UPDATE_PLAN.md` Fase 12 di repo root.
 12. **Menghubungkan aplikasi atau uji ke server produksi atau DB non-lokal.** Uji integrasi hanya boleh menulis ke donatur `UJI-MOBILE …` (docs/13_TESTING.md).
 13. **Menyalin password akun uji** (`../tests/.akun-uji`) ke berkas di `mDonator/`.

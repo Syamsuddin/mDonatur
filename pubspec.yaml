@@ -38,6 +38,9 @@ dependencies:
   intl: ^0.20.3
   flutter_localizations:
     sdk: flutter
+  fl_chart: ^1.2.0
+  flutter_animate: ^4.5.2
+  skeletonizer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +66,34 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # Logo yayasan (docs/26_UI_CONVENTIONS.md, Logo).
+  # Logo yayasan (docs/26_UI_CONVENTIONS.md, Logo) dan lisensi OFL huruf (didaftarkan di main.dart).
   assets:
     - assets/logo_yayasan.png
+    - assets/huruf/OFL-PlusJakartaSans.txt
+    - assets/huruf/OFL-Outfit.txt
+
+  # Huruf arah C "Dasbor Yayasan" (docs/26_UI_CONVENTIONS.md, docs/09_STACK.md): TTF statis, OFL 1.1.
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/huruf/PlusJakartaSans-Regular.ttf
+          weight: 400
+        - asset: assets/huruf/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/huruf/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/huruf/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: assets/huruf/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
+    - family: Outfit
+      fonts:
+        - asset: assets/huruf/Outfit-SemiBold.ttf
+          weight: 600
+        - asset: assets/huruf/Outfit-Bold.ttf
+          weight: 700
+        - asset: assets/huruf/Outfit-ExtraBold.ttf
+          weight: 800
 
   # To add assets to your application, add an assets section, like this:
   # assets:

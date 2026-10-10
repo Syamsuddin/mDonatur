@@ -9,7 +9,9 @@ import '../state/ganti_password_notifier.dart';
 import '../state/sesi.dart';
 import '../tema.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/latar_dasbor.dart';
 import '../widget/panel_galat.dart';
+import '../widget/tombol_utama.dart';
 
 class LayarGantiPassword extends StatefulWidget {
   const LayarGantiPassword({super.key});
@@ -39,6 +41,7 @@ class _LayarGantiPasswordState extends State<LayarGantiPassword> {
   Widget build(BuildContext context) {
     final teks = Theme.of(context).textTheme;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: const Text('Ganti Password')),
       body: ListenableBuilder(
         listenable: _notifier,
@@ -50,54 +53,56 @@ class _LayarGantiPasswordState extends State<LayarGantiPassword> {
             TombolPanel.cobaLagi => 'Coba lagi',
             TombolPanel.kirimUlang => 'Kirim ulang',
           };
-          return ListView(
-            padding: const EdgeInsets.all(Jarak.tepiLayar),
-            children: [
-              _IsianPassword(
-                controller: n.lama,
-                label: 'Password Lama',
-                galat: n.galatLama,
-                aktif: !memuat,
-              ),
-              const SizedBox(height: Jarak.antarIsian),
-              _IsianPassword(
-                controller: n.baru,
-                label: 'Password Baru',
-                galat: n.galatBaru,
-                aktif: !memuat,
-              ),
-              const SizedBox(height: Jarak.antarIsian),
-              _IsianPassword(
-                controller: n.ulang,
-                label: 'Ulangi Password Baru',
-                galat: n.galatUlang,
-                aktif: !memuat,
-                padaKirim: _simpan,
-              ),
-              if (n.status == StatusGantiPassword.sukses) ...[
-                const SizedBox(height: Jarak.j8),
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    'Password berhasil diganti.',
-                    style: teks.bodyMedium!.copyWith(color: Warna.teksSukses),
-                  ),
+          return LatarDasbor(
+            isi: ListView(
+              padding: const EdgeInsets.all(Jarak.tepiLayar),
+              children: [
+                _IsianPassword(
+                  controller: n.lama,
+                  label: 'Password Lama',
+                  galat: n.galatLama,
+                  aktif: !memuat,
                 ),
-              ],
-              if (n.status == StatusGantiPassword.gagal && n.pesanPanel != null) ...[
                 const SizedBox(height: Jarak.antarIsian),
-                PanelGalat(
-                  pesan: n.pesanPanel!,
-                  labelTombol: labelTombol,
-                  padaTombol: memuat ? null : _simpan,
+                _IsianPassword(
+                  controller: n.baru,
+                  label: 'Password Baru',
+                  galat: n.galatBaru,
+                  aktif: !memuat,
+                ),
+                const SizedBox(height: Jarak.antarIsian),
+                _IsianPassword(
+                  controller: n.ulang,
+                  label: 'Ulangi Password Baru',
+                  galat: n.galatUlang,
+                  aktif: !memuat,
+                  padaKirim: _simpan,
+                ),
+                if (n.status == StatusGantiPassword.sukses) ...[
+                  const SizedBox(height: Jarak.j8),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      'Password berhasil diganti.',
+                      style: teks.bodyMedium!.copyWith(color: Warna.teksSukses),
+                    ),
+                  ),
+                ],
+                if (n.status == StatusGantiPassword.gagal && n.pesanPanel != null) ...[
+                  const SizedBox(height: Jarak.antarIsian),
+                  PanelGalat(
+                    pesan: n.pesanPanel!,
+                    labelTombol: labelTombol,
+                    padaTombol: memuat ? null : _simpan,
+                  ),
+                ],
+                const SizedBox(height: Jarak.antarIsian),
+                TombolUtama(
+                  onPressed: memuat ? null : _simpan,
+                  child: memuat ? const IndikatorTombol() : const Text('Simpan'),
                 ),
               ],
-              const SizedBox(height: Jarak.antarIsian),
-              FilledButton(
-                onPressed: memuat ? null : _simpan,
-                child: memuat ? const IndikatorTombol() : const Text('Simpan'),
-              ),
-            ],
+            ),
           );
         },
       ),

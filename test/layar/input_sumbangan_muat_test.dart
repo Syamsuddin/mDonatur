@@ -1,7 +1,8 @@
 // Permintaan pemilik 10 Okt 2026: layar Input Sumbangan muat satu layar tanpa digulir di HP setara
 // Pixel 5 (393×851 dp, status bar 52 dp, gesture bar 24 dp, skala huruf 1,0) untuk donatur bulanan.
-// Uji ini memuat Roboto dari cache SDK Flutter (tidak dibundel ke aplikasi) agar lebar teks sama
-// dengan Android; berkasnya tersendiri supaya font itu tidak memengaruhi uji lain.
+// Uji ini memuat huruf aplikasi (Plus Jakarta Sans dan Outfit) dari assets/huruf/ agar lebar teks sama
+// dengan Android; uji widget lain memakai font uji Flutter. Berkasnya tersendiri supaya huruf itu tidak
+// memengaruhi uji lain.
 
 import 'dart:io';
 
@@ -9,18 +10,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mdonator/layar/kerangka.dart';
+import 'package:mdonator/tema.dart';
 import 'package:mdonator/widget/kartu_donatur.dart';
 import 'package:mdonator/widget/kartu_hasil.dart';
 
 import 'bantu.dart';
 
-Future<void> muatRoboto() async {
-  final folder = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
-  final pemuat = FontLoader('Roboto');
-  for (final berkas in ['Roboto-Regular.ttf', 'Roboto-Medium.ttf', 'Roboto-Bold.ttf']) {
-    pemuat.addFont(File('$folder/$berkas').readAsBytes().then(ByteData.sublistView));
+/// Huruf yang didaftarkan di pubspec.yaml (docs/09_STACK.md), dimuat dari berkasnya.
+Future<void> muatHurufAplikasi() async {
+  const keluarga = {
+    Huruf.keluargaIsi: ['Regular', 'Medium', 'SemiBold', 'Bold', 'ExtraBold'],
+    Huruf.keluargaTampilan: ['SemiBold', 'Bold', 'ExtraBold'],
+  };
+  for (final MapEntry(key: nama, value: berat) in keluarga.entries) {
+    final pemuat = FontLoader(nama);
+    for (final b in berat) {
+      pemuat.addFont(File('assets/huruf/$nama-$b.ttf').readAsBytes().then(ByteData.sublistView));
+    }
+    await pemuat.load();
   }
-  await pemuat.load();
 }
 
 void aturPixel5(WidgetTester tester) {
@@ -36,7 +44,7 @@ ScrollPosition gulirInput(WidgetTester tester) => tester
     .position;
 
 void main() {
-  setUpAll(muatRoboto);
+  setUpAll(muatHurufAplikasi);
 
   testWidgets('Pixel 5: donatur bulanan (10 riwayat), 6 nominal, Simpan → tanpa gulir', (tester) async {
     aturPixel5(tester);

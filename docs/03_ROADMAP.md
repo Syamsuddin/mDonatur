@@ -16,6 +16,7 @@ Slice selesai bila dapat didemokan di emulator terhadap server lokal.
 | S4 | Input Saya dan ubah nominal | aksi `donasisaya` dan `ubahdonasi` | layar Input Saya dan lembar Ubah | F6 |
 | S5 | Rekap | logika bersama rekap, aksi `rekap` | layar Rekap | F7 |
 | S6 | Ganti password dan APK debug | aksi `gantipassword` | layar Ganti Password, ikon sementara, `flutter build apk --debug` | F8 |
+| S7 | Tampilan arah C "Dasbor Yayasan" di semua layar (keputusan pemilik 10 Okt 2026) | — (tanpa bagian server) | token docs/26 baru di `tema.dart`, huruf di `assets/huruf/`, latar dasbor, tombol utama, kartu, grafik Rekap, gerak, kerangka memuat berkilau | F1–F8 (tampilan) |
 
 Kriteria terima per fitur ada di docs/23_ACCEPTANCE_CRITERIA.md.
 

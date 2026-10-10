@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../state/sesi.dart';
 import '../tema.dart';
+import '../widget/latar_dasbor.dart';
 import '../widget/logo_yayasan.dart';
 import '../widget/panel_galat.dart';
 import 'kerangka.dart';
@@ -95,15 +96,16 @@ void _bukaPengaturan(BuildContext context) => Navigator.of(context).push(
     );
 
 /// Logo di tengah latar putih tanpa AppBar, sama dengan layar pembuka Android < 12
-/// (launch_background.xml), sehingga peralihan dari layar pembuka tidak berkedip.
+/// (launch_background.xml), sehingga peralihan dari layar pembuka tidak berkedip. Status bar berikon gelap.
 class _LayarMemuat extends StatelessWidget {
   const _LayarMemuat();
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion(
-      value: Theme.of(context).appBarTheme.systemOverlayStyle!,
-      child: const Scaffold(
+    return const AnnotatedRegion(
+      value: GayaSistem.diAtasLatar,
+      child: Scaffold(
+        backgroundColor: Warna.latar,
         body: Center(
           child: LogoYayasan(ukuran: Bentuk.logoMemuat, label: "Yayasan Ibnu Atha'illah"),
         ),
@@ -121,6 +123,7 @@ class _LayarGagal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('mDonator'),
         actions: [
@@ -131,15 +134,17 @@ class _LayarGagal extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(Jarak.tepiLayar),
-        children: [
-          PanelGalat(
-            pesan: teksGalat(galat ?? const Object(), post: false),
-            labelTombol: 'Coba lagi',
-            padaTombol: SesiScope.baca(context).cobaLagi,
-          ),
-        ],
+      body: LatarDasbor(
+        isi: ListView(
+          padding: const EdgeInsets.all(Jarak.tepiLayar),
+          children: [
+            PanelGalat(
+              pesan: teksGalat(galat ?? const Object(), post: false),
+              labelTombol: 'Coba lagi',
+              padaTombol: SesiScope.baca(context).cobaLagi,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -152,22 +157,19 @@ class _LayarBlokirVersi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: const Text('mDonator')),
-      body: ListView(
-        padding: const EdgeInsets.all(Jarak.tepiLayar),
-        children: [
-          const PanelGalat(pesan: TeksGalat.versi),
-          const SizedBox(height: Jarak.antarIsian),
-          OutlinedButton(
-            onPressed: () => _bukaPengaturan(context),
-            child: const Text('Pengaturan'),
-          ),
-          const SizedBox(height: Jarak.antarTombol),
-          OutlinedButton(
-            onPressed: SesiScope.baca(context).keluar,
-            child: const Text('Keluar'),
-          ),
-        ],
+      body: LatarDasbor(
+        isi: ListView(
+          padding: const EdgeInsets.all(Jarak.tepiLayar),
+          children: [
+            const PanelGalat(pesan: TeksGalat.versi),
+            const SizedBox(height: Jarak.antarIsian),
+            OutlinedButton(onPressed: () => _bukaPengaturan(context), child: const Text('Pengaturan')),
+            const SizedBox(height: Jarak.antarTombol),
+            OutlinedButton(onPressed: SesiScope.baca(context).keluar, child: const Text('Keluar')),
+          ],
+        ),
       ),
     );
   }

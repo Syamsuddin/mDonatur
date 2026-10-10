@@ -1,6 +1,8 @@
 // Layar Tambah Donatur, tab 2 (P3 docs/06_BUSINESS_PROCESS.md). Urutannya mengikuti P3: kartu hasil
 // setelah tersimpan, Nama Donator dengan daftar "Nama mirip" tepat di bawahnya, isian lain, lalu
-// Sumbangan Pertama. Simpan dan panel galatnya tetap di bawah seperti layar Input Sumbangan. Empat
+// Sumbangan Pertama, di lembar dasbor tanpa isi kepala. "Nama mirip" di dalam kartu, karena warna
+// teksPeringatan hanya boleh di atas latar putih. Simpan dan panel galatnya tetap di bawah seperti layar
+// Input Sumbangan. Empat
 // state: docs/26_UI_CONVENTIONS.md; tempat tampil galat: docs/14_ERROR_HANDLING.md.
 
 import 'package:flutter/material.dart';
@@ -12,11 +14,14 @@ import '../state/kerangka_notifier.dart';
 import '../state/sesi.dart';
 import '../state/tambah_donatur_notifier.dart';
 import '../tema.dart';
+import '../widget/avatar_inisial.dart';
 import '../widget/dialog_konfirmasi.dart';
 import '../widget/isian_angka.dart';
 import '../widget/kartu_hasil.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/latar_dasbor.dart';
 import '../widget/panel_galat.dart';
+import '../widget/tombol_utama.dart';
 
 // Batas panjang kontrak §6.6; nilai di luar batas tidak bisa diketik.
 const _panjangNama = 100;
@@ -70,82 +75,80 @@ class _LayarTambahDonaturState extends State<LayarTambahDonatur> {
         final n = _notifier;
         final terkunci = n.isianTerkunci;
         final simpanMemuat = n.statusSimpan == StatusSimpan.memuat;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ListView(
-                controller: _gulir,
-                padding: const EdgeInsets.all(Jarak.tepiLayar),
-                children: [
-                  if (n.hasil case final hasil?) ...[
-                    KartuHasil(
-                      pesan: 'Data Donatur Berhasil Disimpan',
-                      nomorRegister: hasil.donatur.id,
-                      judul: hasil.donatur.nama,
-                      jumlah: hasil.sumbangan.jumlah,
-                      waktu: hasil.sumbangan.waktu,
+        return LatarDasbor(
+          isi: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ListView(
+                  controller: _gulir,
+                  padding: const EdgeInsets.all(Jarak.tepiLayar),
+                  children: [
+                    if (n.hasil case final hasil?) ...[
+                      KartuHasil(
+                        key: ObjectKey(hasil),
+                        pesan: 'Data Donatur Berhasil Disimpan',
+                        nomorRegister: hasil.donatur.id,
+                        judul: hasil.donatur.nama,
+                        jumlah: hasil.sumbangan.jumlah,
+                        waktu: hasil.sumbangan.waktu,
+                      ),
+                      const SizedBox(height: Jarak.antarIsian),
+                    ],
+                    _IsianTeks(
+                      label: 'Nama Donator',
+                      controller: n.nama,
+                      errorText: n.galatNama,
+                      panjang: _panjangNama,
+                      enabled: !terkunci,
+                      huruf: TextCapitalization.words,
+                    ),
+                    _NamaMirip(
+                      mirip: n.mirip,
+                      padaPilih: terkunci ? null : _kerangka.inputSumbanganUntuk,
                     ),
                     const SizedBox(height: Jarak.antarIsian),
+                    _IsianTeks(
+                      label: 'Alamat',
+                      controller: n.alamat,
+                      errorText: n.galatAlamat,
+                      panjang: _panjangAlamat,
+                      enabled: !terkunci,
+                      huruf: TextCapitalization.words,
+                    ),
+                    const SizedBox(height: Jarak.antarIsian),
+                    _IsianTeks(
+                      label: 'Nomor Handphone',
+                      controller: n.noHp,
+                      errorText: n.galatNoHp,
+                      panjang: _panjangNoHp,
+                      enabled: !terkunci,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: Jarak.antarIsian),
+                    _IsianTeks(
+                      label: 'Keterangan',
+                      controller: n.keterangan,
+                      errorText: n.galatKeterangan,
+                      panjang: _panjangKeterangan,
+                      enabled: !terkunci,
+                      huruf: TextCapitalization.sentences,
+                    ),
+                    const SizedBox(height: Jarak.antarIsian),
+                    IsianAngka(
+                      label: 'Sumbangan Pertama',
+                      controller: n.sumbangan,
+                      focusNode: n.fokusSumbangan,
+                      errorText: n.galatSumbangan,
+                      maksDigit: _digitSumbangan,
+                      enabled: !terkunci,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => n.simpan(_tanya),
+                    ),
                   ],
-                  _IsianTeks(
-                    label: 'Nama Donator',
-                    controller: n.nama,
-                    errorText: n.galatNama,
-                    panjang: _panjangNama,
-                    enabled: !terkunci,
-                    huruf: TextCapitalization.words,
-                  ),
-                  _NamaMirip(
-                    mirip: n.mirip,
-                    padaPilih: terkunci ? null : _kerangka.inputSumbanganUntuk,
-                  ),
-                  const SizedBox(height: Jarak.antarIsian),
-                  _IsianTeks(
-                    label: 'Alamat',
-                    controller: n.alamat,
-                    errorText: n.galatAlamat,
-                    panjang: _panjangAlamat,
-                    enabled: !terkunci,
-                    huruf: TextCapitalization.words,
-                  ),
-                  const SizedBox(height: Jarak.antarIsian),
-                  _IsianTeks(
-                    label: 'Nomor Handphone',
-                    controller: n.noHp,
-                    errorText: n.galatNoHp,
-                    panjang: _panjangNoHp,
-                    enabled: !terkunci,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: Jarak.antarIsian),
-                  _IsianTeks(
-                    label: 'Keterangan',
-                    controller: n.keterangan,
-                    errorText: n.galatKeterangan,
-                    panjang: _panjangKeterangan,
-                    enabled: !terkunci,
-                    huruf: TextCapitalization.sentences,
-                  ),
-                  const SizedBox(height: Jarak.antarIsian),
-                  IsianAngka(
-                    label: 'Sumbangan Pertama',
-                    controller: n.sumbangan,
-                    focusNode: n.fokusSumbangan,
-                    errorText: n.galatSumbangan,
-                    maksDigit: _digitSumbangan,
-                    enabled: !terkunci,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => n.simpan(_tanya),
-                  ),
-                ],
+                ),
               ),
-            ),
-            DecoratedBox(
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Warna.garis, width: Bentuk.garisPemisah)),
-              ),
-              child: Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Jarak.tepiLayar, vertical: Jarak.j8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,15 +161,15 @@ class _LayarTambahDonaturState extends State<LayarTambahDonatur> {
                       ),
                       const SizedBox(height: Jarak.j8),
                     ],
-                    FilledButton(
+                    TombolUtama(
                       onPressed: n.bisaSimpan ? () => n.simpan(_tanya) : null,
                       child: simpanMemuat ? const IndikatorTombol() : const Text('Simpan'),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
@@ -230,19 +233,31 @@ class _NamaMirip extends StatelessWidget {
     final pilih = padaPilih;
     return Padding(
       padding: const EdgeInsets.only(top: Jarak.j8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Nama mirip', style: gaya.copyWith(color: Warna.teksPeringatan)),
-          for (final donatur in mirip.hasil)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(donatur.nama),
-              subtitle: Text('${donatur.id} · ${donatur.alamat}'),
-              onTap: pilih == null ? null : () => pilih(donatur.id),
-            ),
-          if (mirip.lebih) Text('Persempit pencarian', style: gaya.copyWith(color: Warna.teksInfo)),
-        ],
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Jarak.isiKartu),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Jarak.tepiLayar),
+                child: Text('Nama mirip', style: gaya.copyWith(color: Warna.teksPeringatan)),
+              ),
+              for (final donatur in mirip.hasil)
+                ListTile(
+                  leading: AvatarInisial(donatur.nama),
+                  title: Text(donatur.nama),
+                  subtitle: Text('${donatur.id} · ${donatur.alamat}'),
+                  onTap: pilih == null ? null : () => pilih(donatur.id),
+                ),
+              if (mirip.lebih)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Jarak.tepiLayar),
+                  child: Text('Persempit pencarian', style: gaya.copyWith(color: Warna.teksInfo)),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

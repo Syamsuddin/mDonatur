@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,10 +11,25 @@ import 'tema.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Kepala dasbor digambar sampai ke tepi atas layar, juga di Android < 15 (docs/26 §Perangkat).
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  daftarkanLisensiHuruf();
   // Alamat bawaan hanya dari --dart-define=SERVER_URL (docs/10_DEV_ENV.md); Pengaturan menang.
   final sesi = Sesi(alamatBawaan: const String.fromEnvironment('SERVER_URL'));
   runApp(AplikasiMDonator(sesi: sesi));
   await sesi.mulai();
+}
+
+/// Lisensi OFL 1.1 kedua huruf yang dibundel (docs/09_STACK.md) ikut tercatat di daftar lisensi aplikasi.
+void daftarkanLisensiHuruf() {
+  LicenseRegistry.addLicense(() async* {
+    for (final (huruf, berkas) in const [
+      ('Plus Jakarta Sans', 'assets/huruf/OFL-PlusJakartaSans.txt'),
+      ('Outfit', 'assets/huruf/OFL-Outfit.txt'),
+    ]) {
+      yield LicenseEntryWithLineBreaks([huruf], await rootBundle.loadString(berkas));
+    }
+  });
 }
 
 class AplikasiMDonator extends StatelessWidget {

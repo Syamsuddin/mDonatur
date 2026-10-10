@@ -1,5 +1,5 @@
 // Logo Yayasan Ibnu Atha'illah (docs/26_UI_CONVENTIONS.md, Logo). Bagian putih di dalam logo tembus
-// pandang, jadi di atas `primer` logo memakai alas lingkaran `latar`.
+// pandang, jadi di atas gradien kepala logo memakai alas lingkaran `latar`, bercincin `aksen`.
 
 import 'package:flutter/material.dart';
 
@@ -8,15 +8,19 @@ import '../tema.dart';
 const asetLogoYayasan = 'assets/logo_yayasan.png';
 
 class LogoYayasan extends StatelessWidget {
-  const LogoYayasan({super.key, required this.ukuran, this.alas = false, this.label});
+  const LogoYayasan({super.key, required this.ukuran, this.alas, this.cincin = false, this.label});
 
   /// Diameter logo dalam dp, dari [Bentuk].
   final double ukuran;
 
-  /// Alas lingkaran `latar` selebar [ukuran] + 2 × [Jarak.j4], untuk latar `primer`.
-  final bool alas;
+  /// Diameter alas lingkaran `latar` ([Bentuk.alasLogoKepala] atau [Bentuk.alasLogoBar]), untuk latar
+  /// gradien; `null` tanpa alas.
+  final double? alas;
 
-  /// Label pembaca layar; null bila nama yayasan sudah tertulis di sebelahnya.
+  /// Cincin `aksen` [Bentuk.cincinLogo] di luar alas.
+  final bool cincin;
+
+  /// Label pembaca layar; null bila nama yayasan sudah tertulis di sebelahnya atau logo hanya hiasan.
   final String? label;
 
   @override
@@ -28,10 +32,19 @@ class LogoYayasan extends StatelessWidget {
       semanticLabel: label,
       excludeFromSemantics: label == null,
     );
-    if (!alas) return gambar;
-    return DecoratedBox(
-      decoration: const BoxDecoration(color: Warna.latar, shape: BoxShape.circle),
-      child: Padding(padding: const EdgeInsets.all(Jarak.j4), child: gambar),
+    final alas = this.alas;
+    if (alas == null) return gambar;
+    final tebalCincin = cincin ? Bentuk.cincinLogo : 0.0;
+    return SizedBox.square(
+      dimension: alas + 2 * tebalCincin,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Warna.latar,
+          shape: BoxShape.circle,
+          border: cincin ? Border.all(color: Warna.aksen, width: Bentuk.cincinLogo) : null,
+        ),
+        child: Center(child: gambar),
+      ),
     );
   }
 }

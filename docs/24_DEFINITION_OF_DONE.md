@@ -7,7 +7,7 @@ Sebuah task atau slice selesai bila semua butir ini benar. Perintahnya di docs/1
 - [ ] Kriteria fitur terkait di docs/23_ACCEPTANCE_CRITERIA.md terpenuhi.
 - [ ] `flutter analyze` → `No issues found!`
 - [ ] `flutter test` → `All tests passed!`, tanpa uji yang dihapus, di-`skip`, atau dilonggarkan.
-- [ ] "Cek warna literal", "Cek `print`", dan "Cek alamat tertanam" → keluaran kosong.
+- [ ] "Cek warna literal", "Cek gradien dan huruf", "Cek `print`", dan "Cek alamat tertanam" → keluaran kosong.
 
 **Server (bila slice punya bagian server)**
 

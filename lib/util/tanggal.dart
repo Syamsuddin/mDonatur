@@ -40,6 +40,10 @@ String namaHari(DateTime tanggal) => _namaHari[tanggal.weekday - 1];
 String formatTanggal(DateTime tanggal) =>
     '${namaHari(tanggal)}, ${_dua(tanggal.day)}/${_dua(tanggal.month)}/${tanggal.year}';
 
+/// Label sumbu grafik per hari: "Sen" … "Min" untuk Minggu, "5" (tanggal) untuk Bulan.
+String labelSumbuGrafik(DateTime tanggal, {required bool pekan}) =>
+    pekan ? namaHari(tanggal).substring(0, 3) : '${tanggal.day}';
+
 /// "04/01": tanggal dan bulan saja, untuk riwayat ringkas di kartu donatur (tahunnya di judul).
 String formatTanggalPendek(DateTime tanggal) => '${_dua(tanggal.day)}/${_dua(tanggal.month)}';
 

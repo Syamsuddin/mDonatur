@@ -12,6 +12,7 @@ Perintah `flutter` dan `bash scripts/…` dijalankan dari `mDonator/`. Perintah 
 | Sidik data **(root)** | `php bin/sidik-data.php > tests/_out/sidik-<label>.txt`, lalu `diff` dua label | tanpa selisih |
 | Buat proyek Flutter (S0, sekali) | `flutter create --project-name mdonator --org com.kapuhmadani --platforms android .` | lalu hapus `test/widget_test.dart` contoh |
 | Dependensi (S0, sekali) | `flutter pub add http flutter_secure_storage intl "flutter_localizations@{sdk: flutter}" "dev:integration_test@{sdk: flutter}"` | `pubspec.lock` terisi |
+| Dependensi tampilan (S7, sekali) | `flutter pub add "fl_chart:^1.2.0" "flutter_animate:^4.5.2" "skeletonizer:^3.0.0"` | `pubspec.lock` memuat ketiganya |
 | Ambil dependensi | `flutter pub get` | — |
 | Analisis statik | `flutter analyze` | `No issues found!` |
 | Semua uji | `flutter test` | `All tests passed!` |
@@ -23,6 +24,7 @@ Perintah `flutter` dan `bash scripts/…` dijalankan dari `mDonator/`. Perintah 
 | ⚠️ Bersihkan data uji integrasi (hanya DB lokal) | `mysql -u root -p kapuhmad_donatur -e "DELETE s FROM donasi s JOIN donator d ON d.Id = s.IdDonator WHERE d.Nama LIKE 'UJI-MOBILE%'; DELETE FROM donator WHERE Nama LIKE 'UJI-MOBILE%';"` | sidik data sama dengan sebelum uji |
 | APK debug (alamat bawaan server produksi, permintaan pemilik 10 Okt 2026) | `flutter build apk --debug --dart-define=SERVER_URL=https://donatur.kapuhmadani.com` | `build/app/outputs/flutter-apk/app-debug.apk` ada. Untuk demo terhadap server lokal, ubah alamat di Pengaturan ke `http://localhost:8000` **sebelum** masuk |
 | Cek warna literal | `grep -rn "Color(0x" lib --include=*.dart \| grep -v "^lib/tema.dart"` | keluaran kosong |
+| Cek gradien dan huruf | `grep -rnE "LinearGradient\(\|fontFamily:\|TextStyle\(" lib --include=*.dart \| grep -v "^lib/tema.dart"` | keluaran kosong |
 | Cek `print` | `grep -rnE "(^\|[^a-zA-Z_])print\(" lib --include=*.dart` | keluaran kosong |
 | Cek alamat tertanam | `grep -rnE "https?://" lib --include=*.dart` | keluaran kosong |
 | Validasi blueprint | `bash scripts/validate.sh` | `FAIL=0` |

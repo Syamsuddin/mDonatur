@@ -1,5 +1,5 @@
 // Pengaturan (P7 docs/06_BUSINESS_PROCESS.md): Alamat Server, Simpan, Pakai alamat bawaan, dan
-// informasi diagnosa (docs/15_OBSERVABILITY.md). Alamat yang berganti saat sudah masuk menghapus
+// informasi diagnosa (docs/15_OBSERVABILITY.md) di dalam kartu. Alamat yang berganti saat sudah masuk menghapus
 // token, lalu Sesi membuka layar Masuk.
 
 import 'package:flutter/material.dart';
@@ -9,6 +9,8 @@ import '../state/sesi.dart';
 import '../tema.dart';
 import '../util/tanggal.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/latar_dasbor.dart';
+import '../widget/tombol_utama.dart';
 
 class LayarPengaturan extends StatefulWidget {
   const LayarPengaturan({super.key});
@@ -56,48 +58,59 @@ class _LayarPengaturanState extends State<LayarPengaturan> {
     final kedaluwarsa = sesi.kedaluwarsa;
     final teks = Theme.of(context).textTheme;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: const Text('Pengaturan')),
-      body: ListView(
-        padding: const EdgeInsets.all(Jarak.tepiLayar),
-        children: [
-          TextField(
-            controller: _alamat,
-            enabled: !_menyimpan,
-            keyboardType: TextInputType.url,
-            autocorrect: false,
-            enableSuggestions: false,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _simpan(_alamat.text),
-            decoration: InputDecoration(labelText: 'Alamat Server', errorText: _galat),
-          ),
-          if (_sukses case final pesan?) ...[
-            const SizedBox(height: Jarak.j8),
-            Semantics(
-              liveRegion: true,
-              child: Text(pesan, style: teks.bodyMedium!.copyWith(color: Warna.teksSukses)),
+      body: LatarDasbor(
+        isi: ListView(
+          padding: const EdgeInsets.all(Jarak.tepiLayar),
+          children: [
+            TextField(
+              controller: _alamat,
+              enabled: !_menyimpan,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              enableSuggestions: false,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _simpan(_alamat.text),
+              decoration: InputDecoration(labelText: 'Alamat Server', errorText: _galat),
+            ),
+            if (_sukses case final pesan?) ...[
+              const SizedBox(height: Jarak.j8),
+              Semantics(
+                liveRegion: true,
+                child: Text(pesan, style: teks.bodyMedium!.copyWith(color: Warna.teksSukses)),
+              ),
+            ],
+            const SizedBox(height: Jarak.antarIsian),
+            TombolUtama(
+              onPressed: _menyimpan ? null : () => _simpan(_alamat.text),
+              child: _menyimpan ? const IndikatorTombol() : const Text('Simpan'),
+            ),
+            const SizedBox(height: Jarak.antarTombol),
+            TextButton(
+              onPressed: _menyimpan || sesi.alamatBawaan.isEmpty ? null : () => _simpan(null),
+              child: const Text('Pakai alamat bawaan'),
+            ),
+            const SizedBox(height: Jarak.j24),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Jarak.isiKartu, vertical: Jarak.j4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _Info('Versi aplikasi', versiAplikasi),
+                    _Info('Versi kontrak', versiKontrak),
+                    _Info('Versi API server', sesi.versiServer),
+                    _Info('Alamat server', sesi.alamatServer.isEmpty ? null : sesi.alamatServer),
+                    _Info('Username', pengguna?.username),
+                    _Info('Peran', pengguna?.peran),
+                    _Info('Token berlaku sampai', kedaluwarsa == null ? null : formatWaktuIso(kedaluwarsa)),
+                  ],
+                ),
+              ),
             ),
           ],
-          const SizedBox(height: Jarak.antarIsian),
-          FilledButton(
-            onPressed: _menyimpan ? null : () => _simpan(_alamat.text),
-            child: _menyimpan ? const IndikatorTombol() : const Text('Simpan'),
-          ),
-          const SizedBox(height: Jarak.antarTombol),
-          TextButton(
-            onPressed: _menyimpan || sesi.alamatBawaan.isEmpty ? null : () => _simpan(null),
-            child: const Text('Pakai alamat bawaan'),
-          ),
-          const SizedBox(height: Jarak.j24),
-          const Divider(height: Bentuk.garisPemisah),
-          const SizedBox(height: Jarak.j8),
-          _Info('Versi aplikasi', versiAplikasi),
-          _Info('Versi kontrak', versiKontrak),
-          _Info('Versi API server', sesi.versiServer),
-          _Info('Alamat server', sesi.alamatServer.isEmpty ? null : sesi.alamatServer),
-          _Info('Username', pengguna?.username),
-          _Info('Peran', pengguna?.peran),
-          _Info('Token berlaku sampai', kedaluwarsa == null ? null : formatWaktuIso(kedaluwarsa)),
-        ],
+        ),
       ),
     );
   }

@@ -1,7 +1,8 @@
-// Layar Rekap, tab 4 (P5 docs/06_BUSINESS_PROCESS.md): segmen periode dan cakupan, panah periode
-// dengan judul rentang, lalu ringkasan Total / Transaksi / Donatur, rincian per operator (Semua
-// operator), dan rincian per hari (Minggu, Bulan). Semua angka dari server (kontrak §6.9). Rekap
-// dimuat setiap kali tab dibuka dan bisa ditarik ke bawah. Empat state: docs/26_UI_CONVENTIONS.md.
+// Layar Rekap, tab 4 (P5 docs/06_BUSINESS_PROCESS.md): segmen periode dan cakupan serta panah periode
+// dengan judul rentang di kepala dasbor; di lembar isi kartu ringkasan Total / Transaksi / Donatur,
+// kartu rincian per operator dengan donat (Semua operator), dan kartu rincian per hari dengan grafik
+// (Minggu, Bulan). Semua angka dari server (kontrak §6.9); grafik hanya menggambarnya. Rekap dimuat
+// setiap kali tab dibuka dan bisa ditarik ke bawah. Empat state: docs/26_UI_CONVENTIONS.md.
 
 import 'dart:async';
 
@@ -14,7 +15,9 @@ import '../state/sesi.dart';
 import '../tema.dart';
 import '../util/rupiah.dart';
 import '../util/tanggal.dart';
+import '../widget/grafik_rekap.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/latar_dasbor.dart';
 import '../widget/panel_galat.dart';
 import '../widget/state_kosong.dart';
 
@@ -54,60 +57,53 @@ class _LayarRekapState extends State<LayarRekap> {
 
   @override
   Widget build(BuildContext context) {
+    final hariIni = SesiScope.of(context).konfigurasi?.hariIni;
     return ListenableBuilder(
       listenable: _notifier,
       builder: (context, _) {
         final n = _notifier;
         final data = n.data;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, Jarak.tepiLayar, Jarak.tepiLayar, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SegmentedButton<Periode>(
-                    segments: const [
-                      ButtonSegment(value: Periode.hari, label: Text('Hari')),
-                      ButtonSegment(value: Periode.minggu, label: Text('Minggu')),
-                      ButtonSegment(value: Periode.bulan, label: Text('Bulan')),
-                    ],
-                    selected: {n.periode},
-                    onSelectionChanged: (pilihan) => unawaited(n.pilihPeriode(pilihan.single)),
-                    showSelectedIcon: false,
-                    expandedInsets: EdgeInsets.zero,
-                  ),
-                  const SizedBox(height: Jarak.j8),
-                  SegmentedButton<Cakupan>(
-                    segments: const [
-                      ButtonSegment(value: Cakupan.saya, label: Text('Input saya')),
-                      ButtonSegment(value: Cakupan.semua, label: Text('Semua operator')),
-                    ],
-                    selected: {n.cakupan},
-                    onSelectionChanged: (pilihan) => unawaited(n.pilihCakupan(pilihan.single)),
-                    showSelectedIcon: false,
-                    expandedInsets: EdgeInsets.zero,
-                  ),
+        return LatarDasbor(
+          kepala: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SegmentedButton<Periode>(
+                segments: const [
+                  ButtonSegment(value: Periode.hari, label: Text('Hari')),
+                  ButtonSegment(value: Periode.minggu, label: Text('Minggu')),
+                  ButtonSegment(value: Periode.bulan, label: Text('Bulan')),
                 ],
+                selected: {n.periode},
+                onSelectionChanged: (pilihan) => unawaited(n.pilihPeriode(pilihan.single)),
+                showSelectedIcon: false,
+                expandedInsets: EdgeInsets.zero,
               ),
-            ),
-            _NavigasiPeriode(
-              judul: data == null ? '' : _judul(data),
-              padaSebelum: data == null ? null : n.sebelumnya,
-              padaSesudah: data?.navigasi.sesudah == null ? null : n.berikutnya,
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: n.muat,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: Jarak.j16),
-                  children: _isi(n),
-                ),
+              const SizedBox(height: Jarak.j8),
+              SegmentedButton<Cakupan>(
+                segments: const [
+                  ButtonSegment(value: Cakupan.saya, label: Text('Input saya')),
+                  ButtonSegment(value: Cakupan.semua, label: Text('Semua operator')),
+                ],
+                selected: {n.cakupan},
+                onSelectionChanged: (pilihan) => unawaited(n.pilihCakupan(pilihan.single)),
+                showSelectedIcon: false,
+                expandedInsets: EdgeInsets.zero,
               ),
+              _NavigasiPeriode(
+                judul: data == null ? '' : _judul(data),
+                padaSebelum: data == null ? null : n.sebelumnya,
+                padaSesudah: data?.navigasi.sesudah == null ? null : n.berikutnya,
+              ),
+            ],
+          ),
+          isi: RefreshIndicator(
+            onRefresh: n.muat,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(Jarak.tepiLayar),
+              children: _isi(n, hariIni),
             ),
-          ],
+          ),
         );
       },
     );
@@ -120,42 +116,59 @@ class _LayarRekapState extends State<LayarRekap> {
         Periode.bulan => formatBulan(data.dari),
       };
 
-  List<Widget> _isi(RekapNotifier n) {
-    const tepi = EdgeInsets.symmetric(horizontal: Jarak.tepiLayar);
+  List<Widget> _isi(RekapNotifier n, DateTime? hariIni) {
     final data = n.data;
     if (data != null && data.transaksi == 0) {
-      return const [StateKosong('Tidak ada sumbangan pada periode ini')];
+      return const [StateKosong('Tidak ada sumbangan pada periode ini', ikon: Icons.bar_chart)];
     }
     if (data != null) {
       return [
-        Padding(padding: tepi, child: _Ringkasan(data)),
+        _Ringkasan(data),
         // per_operator hanya diisi server untuk cakupan semua; daftarnya pendek, jadi tampil
         // sebelum rincian per hari yang bisa sampai 31 baris.
         if (data.cakupan == Cakupan.semua && data.perOperator.isNotEmpty) ...[
-          const _JudulRincian('Rincian per operator'),
-          for (final operator in data.perOperator)
-            _BarisRincian(judul: operator.nama, transaksi: operator.transaksi, total: operator.total),
+          const SizedBox(height: Jarak.antarKartu),
+          _KartuRincian(
+            judul: 'Rincian per operator',
+            grafik: Center(child: DonatOperator(perOperator: data.perOperator)),
+            baris: [
+              for (final (i, operator) in data.perOperator.indexed)
+                _BarisRincian(
+                  judul: operator.nama,
+                  transaksi: operator.transaksi,
+                  total: operator.total,
+                  warna: warnaOperator(operator, i),
+                ),
+            ],
+          ),
         ],
         if (data.periode != Periode.hari && data.perHari.isNotEmpty) ...[
-          const _JudulRincian('Rincian per hari'),
-          for (final hari in data.perHari)
-            _BarisRincian(judul: formatTanggal(hari.tanggal), transaksi: hari.transaksi, total: hari.total),
+          const SizedBox(height: Jarak.antarKartu),
+          _KartuRincian(
+            judul: 'Rincian per hari',
+            grafik: hariIni == null ? null : GrafikPerHari(rekap: data, hariIni: hariIni),
+            baris: [
+              for (final hari in data.perHari)
+                _BarisRincian(
+                  judul: formatTanggal(hari.tanggal),
+                  transaksi: hari.transaksi,
+                  total: hari.total,
+                ),
+            ],
+          ),
         ],
       ];
     }
     if (n.status == StatusRekap.gagal) {
       return [
-        Padding(
-          padding: tepi,
-          child: PanelGalat(
-            pesan: n.pesanGalat ?? TeksGalat.umum,
-            labelTombol: 'Coba lagi',
-            padaTombol: n.muat,
-          ),
+        PanelGalat(
+          pesan: n.pesanGalat ?? TeksGalat.umum,
+          labelTombol: 'Coba lagi',
+          padaTombol: n.muat,
         ),
       ];
     }
-    return const [Padding(padding: tepi, child: KerangkaMemuat())];
+    return const [KerangkaMemuat()];
   }
 }
 
@@ -170,21 +183,23 @@ class _NavigasiPeriode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tepi 4 + celah ikon 12 = tepi layar 16, sejajar dengan segmen di atasnya.
+    final gaya = Theme.of(context).textTheme.bodyLarge!.copyWith(color: Warna.diAtasPrimer);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Jarak.j4, vertical: Jarak.j4),
+      padding: const EdgeInsets.only(top: Jarak.j4),
       child: Row(
         children: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
+            color: Warna.diAtasPrimer,
+            disabledColor: Warna.diAtasPrimerNonaktif,
             tooltip: 'Periode sebelumnya',
             onPressed: padaSebelum,
           ),
-          Expanded(
-            child: Text(judul, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
-          ),
+          Expanded(child: Text(judul, textAlign: TextAlign.center, style: gaya)),
           IconButton(
             icon: const Icon(Icons.chevron_right),
+            color: Warna.diAtasPrimer,
+            disabledColor: Warna.diAtasPrimerNonaktif,
             tooltip: 'Periode berikutnya',
             onPressed: padaSesudah,
           ),
@@ -206,7 +221,6 @@ class _Ringkasan extends StatelessWidget {
     final teks = Theme.of(context).textTheme;
     final lemah = teks.bodyMedium!.copyWith(color: Warna.teksLemah);
     return Card(
-      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(Jarak.isiKartu),
         child: Column(
@@ -220,7 +234,11 @@ class _Ringkasan extends StatelessWidget {
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text(formatRupiah(data.total), style: teks.headlineSmall, maxLines: 1),
+                    child: Text(
+                      formatRupiah(data.total),
+                      style: teks.headlineSmall!.copyWith(color: Warna.primer),
+                      maxLines: 1,
+                    ),
                   ),
                 ],
               ),
@@ -262,40 +280,66 @@ class _Angka extends StatelessWidget {
   }
 }
 
-class _JudulRincian extends StatelessWidget {
-  const _JudulRincian(this.teks);
+/// Kartu rincian: judul, grafik (bila ada), lalu baris rincian bergaris pemisah.
+class _KartuRincian extends StatelessWidget {
+  const _KartuRincian({required this.judul, required this.grafik, required this.baris});
 
-  final String teks;
+  final String judul;
+  final Widget? grafik;
+  final List<Widget> baris;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, Jarak.j16, Jarak.tepiLayar, 0),
-      child: Text(teks, style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Warna.teksLemah)),
+    final grafik = this.grafik;
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Jarak.isiKartu, Jarak.isiKartu, Jarak.isiKartu, 0),
+            child: Text(judul, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          if (grafik != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Jarak.isiKartu, Jarak.j16, Jarak.isiKartu, Jarak.j8),
+              child: grafik,
+            ),
+          for (final (i, b) in baris.indexed) ...[
+            if (i > 0) const Divider(height: Bentuk.garisPemisah),
+            b,
+          ],
+        ],
+      ),
     );
   }
 }
 
 /// Satu baris rincian: nama operator atau tanggal, banyaknya transaksi, dan total di kanan. Total
-/// paling lebar separuh baris dan hurufnya mengecil bila tidak muat, seperti baris sumbangan.
+/// paling lebar separuh baris dan hurufnya mengecil bila tidak muat, seperti baris sumbangan. Baris
+/// operator diawali titik legenda berwarna sama dengan bagiannya di donat.
 class _BarisRincian extends StatelessWidget {
-  const _BarisRincian({required this.judul, required this.transaksi, required this.total});
+  const _BarisRincian({required this.judul, required this.transaksi, required this.total, this.warna});
 
   final String judul;
   final int transaksi;
   final int total;
+  final Color? warna;
 
   @override
   Widget build(BuildContext context) {
+    final warna = this.warna;
+    final gaya = Theme.of(context).textTheme.bodyLarge!.merge(Huruf.tebal);
     return LayoutBuilder(
       builder: (context, batas) => ListTile(
+        leading: warna == null ? null : TitikLegenda(warna),
+        minLeadingWidth: Bentuk.titikLegenda,
         title: Text(judul),
         subtitle: Text('${formatRibuan(transaksi)} transaksi'),
         trailing: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: batas.maxWidth / 2),
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(formatRupiah(total), style: Theme.of(context).textTheme.bodyLarge, maxLines: 1),
+            child: Text(formatRupiah(total), style: gaya, maxLines: 1),
           ),
         ),
       ),

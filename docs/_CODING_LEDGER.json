@@ -66,14 +66,21 @@
       "step": 4,
       "detik": 1491,
       "tok_est": 64480
+    },
+    {
+      "mulai": "2026-10-10T21:49:15+08:00",
+      "selesai": null,
+      "step": 7,
+      "detik": 4263,
+      "tok_est": 146344
     }
   ],
   "step_berjalan": null,
   "blueprint": {
     "sidik_awal": "f1aef310f11ad39e",
-    "sidik": "eade7ff943cd7241",
+    "sidik": "7d8fc975a929f5a7",
     "dokumen": 28,
-    "disegel": "2026-10-10T19:50:39+08:00",
+    "disegel": "2026-10-10T21:49:21+08:00",
     "riwayat": [
       {
         "dari": "f1aef310f11ad39e",
@@ -109,6 +116,11 @@
         "dari": "ad7a18e2181d038f",
         "ke": "eade7ff943cd7241",
         "pada": "2026-10-10T19:27:13+08:00"
+      },
+      {
+        "dari": "eade7ff943cd7241",
+        "ke": "7d8fc975a929f5a7",
+        "pada": "2026-10-10T21:49:15+08:00"
       }
     ]
   },
@@ -1514,13 +1526,217 @@
         "APK per ABI beralamat produksi: ditolak pemeriksa izin otomatis, dibuat pemilik sendiri"
       ],
       "selesai": "2026-10-10T20:15:42+08:00"
+    },
+    {
+      "fitur": "S7 desain Dasbor Yayasan",
+      "rute": "Halaman/komponen UI baru: 02,11,23,26 (+09,12,13,16,20,22 untuk paket/huruf/uji)",
+      "mulai": "2026-10-10T22:02:35+08:00",
+      "rencana": [
+        "docs/",
+        "CLAUDE.md",
+        "pubspec.yaml",
+        "pubspec.lock",
+        "assets/huruf/",
+        "lib/main.dart",
+        "lib/tema.dart",
+        "lib/widget/",
+        "lib/layar/",
+        "test/layar/",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md"
+      ],
+      "total_step": 7,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Blueprint docs/26 + 01,02,03,09,11,12,13,16,20,23,24, CLAUDE, manifest",
+          "mulai": "2026-10-10T22:02:36+08:00",
+          "selesai": "2026-10-10T22:02:36+08:00",
+          "detik": 0,
+          "tok_est": 21091,
+          "muat": [
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/09_STACK.md",
+            "docs/02_SCOPE.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/11_COMMANDS.md",
+            "docs/12_PROJECT_STRUCTURE.md",
+            "docs/13_TESTING.md",
+            "docs/16_DEBUGGING_GUIDE.md",
+            "docs/24_DEFINITION_OF_DONE.md",
+            "docs/03_ROADMAP.md",
+            "INDEX.md",
+            "docs/_MANIFEST.json"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "Paket, huruf, tema.dart",
+          "mulai": "2026-10-10T22:05:43+08:00",
+          "selesai": "2026-10-10T22:09:13+08:00",
+          "detik": 210,
+          "tok_est": 15616,
+          "muat": [
+            "lib/tema.dart",
+            "lib/main.dart",
+            "pubspec.yaml",
+            "lib/util/tanggal.dart",
+            "lib/widget/kartu_donatur.dart",
+            "lib/layar/rekap.dart",
+            "lib/layar/input_sumbangan.dart"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Widget bersama (latar dasbor, tombol utama, grafik, kartu, lencana, kerangka memuat, dll.)",
+          "mulai": "2026-10-10T22:09:13+08:00",
+          "selesai": "2026-10-10T22:14:15+08:00",
+          "detik": 302,
+          "tok_est": 10424,
+          "muat": [
+            "lib/widget/latar_dasbor.dart",
+            "lib/widget/tombol_utama.dart",
+            "lib/widget/avatar_inisial.dart",
+            "lib/widget/muncul.dart",
+            "lib/widget/grafik_rekap.dart",
+            "lib/widget/logo_yayasan.dart",
+            "lib/widget/lencana_bintang.dart",
+            "lib/widget/kartu_donatur.dart",
+            "lib/widget/kartu_hasil.dart",
+            "lib/widget/kerangka_memuat.dart",
+            "lib/widget/nominal_cepat.dart",
+            "lib/widget/panel_galat.dart",
+            "lib/widget/state_kosong.dart",
+            "lib/widget/strip_hari_ini.dart",
+            "lib/widget/baris_sumbangan.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "Layar: kerangka, awal, masuk, input, cari, tambah, input saya, ubah, rekap, ganti password, pengaturan",
+          "mulai": "2026-10-10T22:14:15+08:00",
+          "selesai": "2026-10-10T22:20:08+08:00",
+          "detik": 353,
+          "tok_est": 22053,
+          "muat": [
+            "lib/layar/kerangka.dart",
+            "lib/layar/awal.dart",
+            "lib/layar/masuk.dart",
+            "lib/layar/input_sumbangan.dart",
+            "lib/layar/cari_donatur.dart",
+            "lib/layar/tambah_donatur.dart",
+            "lib/layar/input_saya.dart",
+            "lib/layar/ubah_sumbangan.dart",
+            "lib/layar/ganti_password.dart",
+            "lib/layar/pengaturan.dart",
+            "lib/layar/rekap.dart"
+          ]
+        },
+        {
+          "no": 5,
+          "nama": "Tes: bantu (Hapus animasi), tema, lencana, strip, rekap, muat, gerak",
+          "mulai": "2026-10-10T22:20:08+08:00",
+          "selesai": "2026-10-10T23:03:43+08:00",
+          "detik": 2616,
+          "tok_est": 50568,
+          "muat": [
+            "test/layar/bantu.dart",
+            "test/layar/gerak_test.dart",
+            "test/layar/kerangka_test.dart",
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/input_sumbangan_muat_test.dart",
+            "test/layar/rekap_test.dart",
+            "test/layar/masuk_test.dart",
+            "test/layar/tambah_donatur_test.dart",
+            "test/layar/cari_donatur_test.dart",
+            "test/layar/input_saya_test.dart",
+            "test/util/tanggal_test.dart"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Verifikasi: analyze, test, cek grep, demo emulator",
+          "mulai": "2026-10-10T23:03:43+08:00",
+          "selesai": "2026-10-10T23:12:06+08:00",
+          "detik": 503,
+          "tok_est": 10689,
+          "muat": [
+            "lib/layar/masuk.dart",
+            "docs/16_DEBUGGING_GUIDE.md",
+            "docs/26_UI_CONVENTIONS.md"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur S7",
+          "mulai": "2026-10-10T23:12:06+08:00",
+          "selesai": "2026-10-10T23:16:44+08:00",
+          "detik": 279,
+          "tok_est": 15903,
+          "muat": [
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/rekap_test.dart"
+          ]
+        }
+      ],
+      "detik": 4263,
+      "tok_est": 146344,
+      "deviasi": [
+        "lib/util/tanggal.dart + test/util/tanggal_test.dart di luar rencana awal (diumumkan): labelSumbuGrafik, karena format tanggal hanya di util (docs/12)",
+        "Mini grafik riwayat 12 bulan dari mockup C tidak dibuat: menjumlah riwayat per bulan di Dart menyalin aturan agregat Note",
+        "Nama di kartu donatur judulKartu (bukan judul) agar Input muat satu layar di Pixel 5; docs/26 diperbarui",
+        "Token yang muncul saat implementasi dicatat di docs/26: diAtasPrimerNonaktif, transparan, jarak huruf 0, bawahKepala 12, antarBarisRiwayat 2, indikator navigasi 64x32 bawaan M3"
+      ],
+      "warn_dilewati": [
+        "S1: nama blok 23 'S7 Tampilan arah C' beda dengan nama fitur di meter; 14 kriteria dibuktikan manual di docs/_archive/23-S7-desain-dasbor.md",
+        "S6: konvensi 12 dicek manual (fl_chart hanya grafik_rekap, flutter_animate hanya muncul+kartu_hasil, skeletonizer hanya kerangka_memuat, TombolUtama di enam layar)",
+        "S7: assets/huruf/* tercakup entri direktori rencana; util tanggal di luar rencana (diumumkan)",
+        "S8: widget non-data (avatar, latar dasbor, muncul, tombol utama, grafik) tidak punya empat state karena bukan layar ber-data",
+        "Demo emulator sebagian: dihentikan karena pemilik memakai emulator bersamaan"
+      ],
+      "asumsi": [
+        "Pilihan arah C oleh pemilik = persetujuan gerbang 22 untuk fl_chart, flutter_animate, skeletonizer yang tercantum di usulan",
+        "Pilihan arah C = keputusan pemilik memasukkan grafik rincian tab Rekap ke scope; docs/02 diperjelas (halaman grafik* web tetap di luar)",
+        "Tabel token baru tidak diserahkan untuk persetujuan terpisah, karena pemilik meminta pembaruan dikerjakan penuh"
+      ],
+      "dokumen_diperbarui": [
+        "docs/26_UI_CONVENTIONS.md (ditulis ulang, arah C)",
+        "docs/09_STACK.md (3 paket, huruf)",
+        "docs/02_SCOPE.md (grafik Rekap)",
+        "docs/01_PRD.md (F7)",
+        "docs/03_ROADMAP.md (S7)",
+        "docs/11_COMMANDS.md (pub add, cek gradien dan huruf)",
+        "docs/12_PROJECT_STRUCTURE.md",
+        "docs/13_TESTING.md (Hapus animasi, gerak_test)",
+        "docs/16_DEBUGGING_GUIDE.md (8 jebakan)",
+        "docs/20_GUARDRAILS.md (#10)",
+        "docs/23 + docs/_archive/23-S7-desain-dasbor.md",
+        "docs/24_DEFINITION_OF_DONE.md",
+        "CLAUDE.md",
+        "docs/_MANIFEST.json",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md"
+      ],
+      "landmine_tersentuh": [
+        "IndexedStack menjaga gerak tab tersembunyi: perlu TickerMode",
+        "AnimatedSize durasi nol melempar galat tata letak",
+        "Jarak huruf M3 untuk Roboto melebarkan Plus Jakarta Sans",
+        "ListView menambah padding status bar transparan (pita putih di Masuk)",
+        "flutter_animate mulai setelah frame pertama dan mengecualikan semantics saat opasitas 0",
+        "Semantics tanpa container bergabung ke node kartu"
+      ],
+      "ditunda": [
+        "Demo emulator layar Input, Cari, Donatur, Input Saya, Rekap, Pengaturan (pemilik sedang memakai emulator)",
+        "APK debug varian alamat produksi (perintah di docs/11)"
+      ],
+      "selesai": "2026-10-10T23:18:10+08:00"
     }
   ],
   "akumulasi": {
-    "detik": 25310,
-    "tok_est": 739221,
+    "detik": 29573,
+    "tok_est": 885565,
     "tok_terukur": 0,
-    "step": 50,
-    "fitur": 9
+    "step": 57,
+    "fitur": 10
   }
 }

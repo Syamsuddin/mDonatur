@@ -9,9 +9,11 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 ├── scripts/                   validate.sh, token_ledger.py (alat blueprint, bukan Flutter)
 ├── pubspec.yaml · pubspec.lock · analysis_options.yaml
 ├── assets/                    logo_yayasan.png (docs/26_UI_CONVENTIONS.md, Logo)
+│   └── huruf/                 TTF Plus Jakarta Sans dan Outfit + OFL-*.txt (docs/09_STACK.md)
 ├── lib/
 │   ├── main.dart              runApp, MaterialApp (locale id_ID), SesiScope, orientasi potret
-│   ├── tema.dart              ThemeData + konstanta token 26: satu-satunya tempat Color(0x…), ukuran huruf, dan jarak
+│   ├── tema.dart              ThemeData + konstanta token 26: satu-satunya tempat Color(0x…), TextStyle, keluarga huruf,
+│   │                          jarak, radius, gradien, pola bintang, dan durasi gerak
 │   ├── api/
 │   │   ├── klien_api.dart     KlienApi; const versiKontrak = '0.1.0'; nama aksi
 │   │   ├── galat_api.dart     GalatApi, GalatJaringan, GalatVersi
@@ -23,12 +25,14 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 │   ├── layar/                 awal (gerbang P0, layar gagal dan blokir versi), masuk, kerangka,
 │   │                          input_sumbangan, cari_donatur, tambah_donatur, input_saya,
 │   │                          ubah_sumbangan, rekap, ganti_password, pengaturan (.dart)
-│   ├── widget/                komponen bersama (inventaris: docs/26_UI_CONVENTIONS.md)
+│   ├── widget/                komponen bersama (inventaris: docs/26_UI_CONVENTIONS.md), termasuk latar_dasbor,
+│   │                          tombol_utama, dan grafik_rekap (satu-satunya pemakai fl_chart)
 │   └── util/                  rupiah.dart, tanggal.dart, kunci.dart (UUID v4 dari Random.secure)
 ├── test/
 │   ├── api/                   klien_api_test.dart, kontrak_test.dart
 │   ├── util/                  rupiah_test.dart, tanggal_test.dart
-│   └── layar/                 <layar>_test.dart; bantu.dart (server tiruan, secure storage tiruan, layar 360 dp)
+│   └── layar/                 <layar>_test.dart; bantu.dart (server tiruan, secure storage tiruan, layar 360 dp,
+│                              Hapus animasi); gerak_test.dart (gerak dengan animasi aktif)
 ├── integration_test/          alur_test.dart (opsional, server lokal)
 └── android/                   applicationId com.kapuhmadani.mdonator; manifest: docs/21_SECURITY_RULES.md
                                ikon peluncur di res/mipmap-*, layar pembuka di res/drawable*/launch_background.xml
@@ -49,7 +53,8 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 ## Lokasi jenis kode
 
 - **HTTP** hanya di `lib/api/klien_api.dart`. **Nama field JSON** hanya di `lib/api/model.dart`.
-- **Warna, ukuran huruf, jarak, dan radius** hanya di `lib/tema.dart`. Widget membaca dari `Theme.of(context)` atau dari konstanta di `tema.dart`.
+- **Warna, gaya dan keluarga huruf, jarak, radius, gradien, pola, dan durasi gerak** hanya di `lib/tema.dart`. Widget membaca dari `Theme.of(context)` atau dari konstanta di `tema.dart`.
+- **Gerak** selalu lewat `Gerak.aktif(context)`, yang palsu bila Hapus animasi aktif. **Grafik** (`fl_chart`) hanya di `lib/widget/grafik_rekap.dart`, dan hanya menggambar angka jawaban server.
 - **Format rupiah dan tanggal** hanya lewat `lib/util/`. Widget tidak memanggil `NumberFormat` atau `DateFormat` langsung.
 - **Teks UI** ditulis langsung dalam bahasa Indonesia di widget, tanpa berkas l10n. `pesan` dari server ditampilkan apa adanya.
 - **Alamat server** tidak pernah tertanam di `lib/`. Asalnya hanya `SERVER_URL` dan Pengaturan.

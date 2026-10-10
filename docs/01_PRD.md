@@ -26,7 +26,7 @@ Alur rinci tiap fitur ada di docs/06_BUSINESS_PROCESS.md.
 - **F4.** Sebagai operator, saya ingin menyimpan sumbangan dengan ketukan sesedikit mungkin, dan diperingatkan bila donatur sudah menyumbang hari ini atau nominalnya janggal, agar tidak salah catat.
 - **F5.** Sebagai operator, saya ingin mendaftarkan donatur baru beserta sumbangan pertamanya, dan diperingatkan bila nama yang mirip sudah ada, agar tidak ada data ganda.
 - **F6.** Sebagai operator, saya ingin melihat semua input saya hari ini beserta totalnya untuk serah terima uang, dan memperbaiki nominal yang salah ketik.
-- **F7.** Sebagai operator, saya ingin melihat total harian, mingguan, dan bulanan, milik saya maupun semua operator.
+- **F7.** Sebagai operator, saya ingin melihat total harian, mingguan, dan bulanan, milik saya maupun semua operator. Rincian per hari dan per operator juga tampil sebagai grafik (S7).
 - **F8.** Sebagai operator, saya ingin mengganti password dari HP.
 
 ## Kebutuhan non-fungsional

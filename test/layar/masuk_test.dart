@@ -12,7 +12,9 @@ import 'package:mdonator/layar/kerangka.dart';
 import 'package:mdonator/layar/masuk.dart';
 import 'package:mdonator/main.dart';
 import 'package:mdonator/state/sesi.dart';
+import 'package:mdonator/tema.dart';
 import 'package:mdonator/widget/logo_yayasan.dart';
+import 'package:mdonator/widget/tombol_utama.dart';
 
 import 'bantu.dart';
 
@@ -26,10 +28,13 @@ void main() {
       expect(find.byType(LayarMasuk), findsOneWidget);
       expect(find.text("Yayasan Ibnu Atha'illah"), findsOneWidget);
       expect(find.text('mDonator'), findsOneWidget);
-      // Logo di kepala, di sebelah kiri nama yayasan (docs/26_UI_CONVENTIONS.md, Logo).
+      // Logo di kepala, di sebelah kiri nama yayasan, beralas dan bercincin (docs/26_UI_CONVENTIONS.md, Logo).
       final logo = tester.getRect(find.byType(LogoYayasan));
-      expect(logo.width, 64);
+      expect(logo.width, Bentuk.alasLogoKepala + 2 * Bentuk.cincinLogo);
       expect(logo.right, lessThan(tester.getRect(find.text("Yayasan Ibnu Atha'illah")).left));
+      // Kepala gradien berpola bintang dan tombol utama Masuk (docs/26 §Layar → pola).
+      expect(find.byWidgetPredicate((w) => w is CustomPaint && w.painter is LukisanPolaBintang), findsOneWidget);
+      expect(find.ancestor(of: tombol<FilledButton>('Masuk'), matching: find.byType(TombolUtama)), findsOneWidget);
       expect(tester.takeException(), isNull);
 
       await isiDanMasuk(tester);
@@ -171,6 +176,7 @@ void main() {
   group('P0 buka aplikasi', () {
     testWidgets('memuat: logo yayasan di tengah layar tanpa AppBar, lalu tab Input', (tester) async {
       aturLayarKecil(tester);
+      aturHapusAnimasi(tester);
       final semantik = tester.ensureSemantics();
       final server = ServerTiruan();
       final jawaban = Completer<void>();
@@ -195,7 +201,12 @@ void main() {
       jawaban.complete();
       await mulai;
       await tester.pumpAndSettle();
-      expect(find.byType(LogoYayasan), findsNothing);
+      // Logo layar memuat hilang; yang tersisa hanya logo kecil di AppBar kerangka.
+      expect(find.bySemanticsLabel("Yayasan Ibnu Atha'illah"), findsNothing);
+      expect(
+        tester.widgetList<LogoYayasan>(find.byType(LogoYayasan)).map((l) => l.ukuran),
+        [Bentuk.logoBar],
+      );
       expect(judulAppBar(tester), 'Input Sumbangan');
       semantik.dispose();
     });

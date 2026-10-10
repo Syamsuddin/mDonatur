@@ -97,6 +97,8 @@ void main() {
       expect(cari.single.url.queryParameters['q'], 'Fulan');
       final judul = tester.widget<Text>(find.text('Nama mirip'));
       expect(judul.style?.color, Warna.teksPeringatan);
+      // teksPeringatan hanya di atas latar putih: "Nama mirip" berada di dalam kartu (docs/26).
+      expect(find.ancestor(of: find.text('Nama mirip'), matching: find.byType(Card)), findsOneWidget);
       expect(find.text('Fulan bin Fulan'), findsOneWidget);
       expect(find.text('1234 · Desa Kapuh, Simpur'), findsOneWidget);
       expect(find.text('5678 · Kandangan'), findsOneWidget);
@@ -184,7 +186,8 @@ void main() {
       final nomor = tester.widget<Text>(find.descendant(of: kartu, matching: find.text('7759')));
       expect(nomor.style?.fontSize, 32);
       expect(nomor.style?.height, 40 / 32);
-      expect(nomor.style?.fontWeight, FontWeight.w700);
+      expect(nomor.style?.fontWeight, FontWeight.w800);
+      expect(nomor.style?.fontFamily, Huruf.keluargaTampilan);
 
       for (final label in ['Nama Donator', 'Alamat', 'Nomor Handphone', 'Keterangan', 'Sumbangan Pertama']) {
         expect(teksIsian(tester, label), '', reason: label);
@@ -193,7 +196,7 @@ void main() {
 
       // Strip tab Input dari ringkasan_hari_ini, tanpa donasisaya ulang.
       await pilihTab(tester, 'Input');
-      expect(find.text('Total input hari ini (11×): Rp 1.650.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 1.650.000', '11 transaksi'));
       expect(kirimanKe(server, 'donasisaya'), hasLength(1));
     });
 

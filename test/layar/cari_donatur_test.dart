@@ -8,8 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mdonator/layar/cari_donatur.dart';
 import 'package:mdonator/state/sesi.dart';
+import 'package:mdonator/widget/avatar_inisial.dart';
 import 'package:mdonator/widget/kartu_donatur.dart';
 import 'package:mdonator/widget/kerangka_memuat.dart';
+import 'package:mdonator/widget/latar_dasbor.dart';
 
 import 'bantu.dart';
 
@@ -50,6 +52,29 @@ void main() {
 
     expect(kirimanKe(server, 'caridonatur'), isEmpty);
     expect(find.text(petunjuk), findsOneWidget);
+  });
+
+  testWidgets('isian cari di kepala dasbor; hasil di dalam kartu dengan avatar inisial', (tester) async {
+    await bukaCari(tester);
+    final kepala = find.byWidgetPredicate((w) => w is LatarDasbor && w.kepala != null);
+    expect(find.descendant(of: kepala, matching: isian(labelCari)), findsOneWidget);
+    expect(tester.getBottomLeft(isian(labelCari)).dy, lessThan(tester.getTopLeft(find.text(petunjuk)).dy));
+
+    await tester.enterText(isian(labelCari), 'fulan');
+    await tester.pumpAndSettle(const Duration(milliseconds: 500));
+    final baris = find.widgetWithText(ListTile, 'Fulan bin Fulan');
+    expect(find.ancestor(of: baris, matching: find.byType(Card)), findsOneWidget);
+    final avatar = tester.widget<AvatarInisial>(find.descendant(of: baris, matching: find.byType(AvatarInisial)));
+    expect(avatar.nama, 'Fulan bin Fulan');
+    expect(find.descendant(of: baris, matching: find.text('FB')), findsOneWidget);
+  });
+
+  test('inisialNama: huruf pertama dua kata pertama yang diawali huruf atau angka', () {
+    expect(inisialNama('Fulan bin Fulan'), 'FB');
+    expect(inisialNama('  hj.   siti aminah '), 'HS');
+    expect(inisialNama('(donatur terhapus)'), 'T');
+    expect(inisialNama('Toko 99 Jaya'), 'T9');
+    expect(inisialNama(''), '');
   });
 
   testWidgets('q ≥ 2 huruf dikirim sekali setelah jeda 500 ms, sudah dipangkas; hasil tampil', (tester) async {

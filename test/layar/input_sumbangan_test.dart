@@ -10,11 +10,15 @@ import 'package:http/http.dart' as http;
 import 'package:mdonator/layar/masuk.dart';
 import 'package:mdonator/state/sesi.dart';
 import 'package:mdonator/tema.dart';
+import 'package:mdonator/widget/avatar_inisial.dart';
 import 'package:mdonator/widget/kartu_donatur.dart';
 import 'package:mdonator/widget/kartu_hasil.dart';
+import 'package:mdonator/widget/kerangka_memuat.dart';
+import 'package:mdonator/widget/latar_dasbor.dart';
 import 'package:mdonator/widget/lencana_bintang.dart';
 import 'package:mdonator/widget/nominal_cepat.dart';
 import 'package:mdonator/widget/strip_hari_ini.dart';
+import 'package:mdonator/widget/tombol_utama.dart';
 
 import 'bantu.dart';
 
@@ -42,10 +46,27 @@ void main() {
 
       expect(server.aksi, ['konfigurasi', 'donasisaya']);
       expect(kirimanKe(server, 'donasisaya').single.url.queryParameters.containsKey('tanggal'), isFalse);
-      expect(find.text('Total input hari ini (10×): Rp 1.550.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 1.550.000', '10 transaksi'));
       expect(find.text('Ketik nomor donatur lalu tekan Cek'), findsOneWidget);
       expect(tester.widget<OutlinedButton>(tombol<OutlinedButton>('Cek')).onPressed, isNull);
       expect(simpanAktif(tester), isFalse);
+    });
+
+    testWidgets('ringkasan memuat → kerangka memuat di kepala dasbor, lalu ringkasan', (tester) async {
+      final server = serverInput();
+      final tahan = Completer<http.Response>();
+      server.penangan['donasisaya'] = (r) => tahan.future;
+      await pompaInput(tester, server);
+      final kepala = find.byWidgetPredicate((w) => w is LatarDasbor && w.kepala != null);
+      final kerangka = find.descendant(of: kepala, matching: find.byType(KerangkaMemuat));
+      expect(kerangka, findsOneWidget);
+      expect(tester.widget<KerangkaMemuat>(kerangka).diKepala, isTrue);
+      expect(find.byType(StripHariIni), findsNothing);
+
+      tahan.complete(jawabOk(donasiSayaUji()));
+      await tester.pumpAndSettle();
+      expect(kerangka, findsNothing);
+      expect(ringkasanHariIni(tester), ('Rp 1.550.000', '10 transaksi'));
     });
 
     testWidgets('strip gagal → panel Coba lagi → dimuat ulang', (tester) async {
@@ -56,7 +77,7 @@ void main() {
 
       server.penangan['donasisaya'] = (r) async => jawabOk(donasiSayaUji(total: 50000, transaksi: 1));
       await ketuk(tester, tombol<OutlinedButton>('Coba lagi'));
-      expect(find.text('Total input hari ini (1×): Rp 50.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 50.000', '1 transaksi'));
       expect(find.text(TeksGalat.jaringanGet), findsNothing);
     });
 
@@ -71,7 +92,7 @@ void main() {
       await isiDanMasuk(tester);
       expect(find.byType(LayarMasuk), findsNothing);
       expect(kirimanKe(server, 'donasisaya'), hasLength(2));
-      expect(find.text('Total input hari ini (10×): Rp 1.550.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 1.550.000', '10 transaksi'));
     });
 
     testWidgets('hari_ini berganti saat resume → strip dimuat ulang untuk hari baru', (tester) async {
@@ -80,7 +101,7 @@ void main() {
       final sesi = await pompaInput(tester, server);
       await cekNomor(tester, '1234');
       await ketuk(tester, tombol<FilledButton>('Simpan'));
-      expect(find.text('Total input hari ini (9×): Rp 1.450.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 1.450.000', '9 transaksi'));
 
       server.penangan['konfigurasi'] =
           (r) async => jawabOk({...konfigurasiUji(), 'hari_ini': '2026-10-13'});
@@ -89,7 +110,7 @@ void main() {
       await sesi.segarkan();
       await tester.pumpAndSettle();
 
-      expect(find.text('Total input hari ini (0×): Rp 0'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 0', '0 transaksi'));
       expect(kirimanKe(server, 'donasisaya'), hasLength(2));
     });
   });
@@ -104,6 +125,8 @@ void main() {
       expect(kirimanKe(server, 'donatur').single.url.queryParameters['id'], '1234');
       expect(find.byType(KartuDonatur), findsOneWidget);
       expect(find.text('Fulan bin Fulan'), findsOneWidget);
+      expect(tester.widget<AvatarInisial>(find.descendant(of: find.byType(KartuDonatur), matching: find.byType(AvatarInisial))).nama,
+          'Fulan bin Fulan');
       expect(find.text('Alamat Desa Kapuh, Simpur', findRichText: true), findsOneWidget);
       expect(find.text('No HP 08xx', findRichText: true), findsOneWidget);
       expect(find.textContaining('Keterangan', findRichText: true), findsNothing,
@@ -224,26 +247,26 @@ void main() {
       expect(find.textContaining('Note', findRichText: true), findsNothing);
     });
 
-    testWidgets('lencana bintang: warna latar dan teks sesuai tabel token', (tester) async {
-      const harapan = {
-        0: (Warna.info, Warna.teks),
-        1: (Warna.info, Warna.teks),
-        2: (Warna.sukses, Warna.teks),
-        3: (Warna.aksi, Warna.diAtasPrimer),
-        4: (Warna.peringatan, Warna.teks),
-        5: (Warna.teksBahaya, Warna.diAtasPrimer),
-      };
-      for (final MapEntry(key: bintang, value: (latar, teks)) in harapan.entries) {
+    testWidgets('lencana bintang: n bintang terisi dan 5 − n kosong, emas, teks "Bintang n"', (tester) async {
+      final semantik = tester.ensureSemantics();
+      for (var bintang = 0; bintang <= 5; bintang++) {
         await tester.pumpWidget(MaterialApp(
           theme: temaMDonator(),
-          home: Scaffold(body: LencanaBintang(bintang: bintang)),
+          home: Scaffold(body: Center(child: LencanaBintang(bintang: bintang))),
         ));
-        final kotak = tester.widget<DecoratedBox>(
-            find.descendant(of: find.byType(LencanaBintang), matching: find.byType(DecoratedBox)));
-        expect((kotak.decoration as BoxDecoration).color, latar, reason: 'latar bintang $bintang');
-        expect(tester.widget<Text>(find.text('Bintang $bintang')).style?.color, teks,
-            reason: 'teks bintang $bintang');
+        final ikon = tester.widgetList<Icon>(
+            find.descendant(of: find.byType(LencanaBintang), matching: find.byType(Icon)));
+        expect(ikon.map((i) => i.icon), [
+          for (var i = 0; i < 5; i++) i < bintang ? Icons.star_rounded : Icons.star_outline_rounded,
+        ], reason: 'bintang $bintang');
+        expect(ikon.every((i) => i.color == Warna.emas && i.size == Bentuk.ikonBintang), isTrue,
+            reason: 'warna dan ukuran bintang $bintang');
+        final teks = tester.widget<Text>(find.text('Bintang $bintang'));
+        expect(DefaultTextStyle.of(tester.element(find.text('Bintang $bintang'))).style.merge(teks.style).color,
+            Warna.teks, reason: 'teks bintang $bintang');
+        expect(find.bySemanticsLabel('Bintang $bintang dari 5'), findsOneWidget);
       }
+      semantik.dispose();
     });
   });
 
@@ -339,6 +362,50 @@ void main() {
       semantik.dispose();
     });
 
+    testWidgets('nominal cepat yang sama dengan isian Sumbangan tampil terpilih (kuningLembut, garis emas)',
+        (tester) async {
+      final semantik = tester.ensureSemantics();
+      final server = serverInput();
+      server.penangan['konfigurasi'] =
+          (r) async => jawabOk({...konfigurasiUji(), 'nominal_umum': [50000, 100000, 150000, 200000]});
+      await pompaInput(tester, server);
+      ButtonStyle gaya(String label) => tester.widget<OutlinedButton>(tombol<OutlinedButton>(label)).style!;
+      bool terpilih(String label) => gaya(label).backgroundColor!.resolve({}) == Warna.kuningLembut;
+
+      await cekNomor(tester, '1234');
+      // Saran Jumlah Rp 200.000 terisi dari Cek, jadi tombol 200.000 ikut terpilih.
+      expect(teksIsian(tester, 'Sumbangan'), '200000');
+      expect([for (final n in ['50.000', '100.000', '200.000']) terpilih(n)], [false, false, true]);
+      expect(gaya('200.000').side!.resolve({}), const BorderSide(color: Warna.emas, width: Bentuk.garisTerpilih));
+      expect(tester.getSemantics(tombol<OutlinedButton>('200.000')), isSemantics(isSelected: true, isButton: true));
+      expect(tester.getSemantics(tombol<OutlinedButton>('100.000')), isSemantics(isSelected: false));
+
+      await ketuk(tester, tombol<OutlinedButton>('100.000'));
+      expect([for (final n in ['100.000', '200.000']) terpilih(n)], [true, false]);
+
+      await tester.enterText(isian('Sumbangan'), '123');
+      await tester.pump();
+      expect(['50.000', '100.000', '150.000', '200.000'].any(terpilih), isFalse);
+      semantik.dispose();
+    });
+
+    testWidgets('Cek bergaya isi; Simpan tombol utama bergradien, nonaktif berlatar garis', (tester) async {
+      await pompaInput(tester, serverInput());
+      final cek = tester.widget<OutlinedButton>(tombol<OutlinedButton>('Cek')).style!;
+      expect(cek.backgroundColor!.resolve({}), Warna.primer);
+      expect(cek.foregroundColor!.resolve({}), Warna.diAtasPrimer);
+      ShapeDecoration latarSimpan() => tester
+          .widget<DecoratedBox>(find.descendant(of: find.byType(TombolUtama), matching: find.byType(DecoratedBox)).first)
+          .decoration as ShapeDecoration;
+      expect(simpanAktif(tester), isFalse);
+      expect((latarSimpan().color, latarSimpan().gradient), (Warna.garis, null));
+
+      await cekNomor(tester, '1234');
+      expect(simpanAktif(tester), isTrue);
+      expect((latarSimpan().color, latarSimpan().gradient), (null, Gradien.tombol));
+      expect(tester.getSize(tombol<FilledButton>('Simpan')).height, Bentuk.tinggiTombolUtama);
+    });
+
     testWidgets('nominal_umum bawaan server → enam tombol 50.000–300.000 dalam dua baris', (tester) async {
       final server = serverInput();
       server.penangan['konfigurasi'] = (r) async => jawabOk({
@@ -405,11 +472,12 @@ void main() {
       for (final teks in ['Data Sumbangan Berhasil Disimpan', 'Fulan bin Fulan', 'Rp 200.000', '09:15 WITA']) {
         expect(find.descendant(of: kartu, matching: find.text(teks)), findsOneWidget, reason: teks);
       }
-      // Strip satu baris: total dan banyaknya input saja, tanpa input terakhir.
+      // Ringkasan di kepala: label, total, dan banyaknya input saja, tanpa input terakhir.
       final strip = find.byType(StripHariIni);
-      expect(find.descendant(of: strip, matching: find.byType(Text)), findsOneWidget);
-      expect(find.descendant(of: strip, matching: find.text('Total input hari ini (9×): Rp 1.450.000')),
-          findsOneWidget);
+      expect(
+        tester.widgetList<Text>(find.descendant(of: strip, matching: find.byType(Text))).map((t) => t.data),
+        ['Total input hari ini', 'Rp 1.450.000', '9 transaksi'],
+      );
       expect(find.textContaining('1234 · Rp'), findsNothing);
       expect(find.textContaining('77 · Rp'), findsNothing);
       expect(find.byType(KartuDonatur), findsNothing);

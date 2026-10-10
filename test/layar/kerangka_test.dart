@@ -1,10 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mdonator/layar/input_saya.dart';
 import 'package:mdonator/layar/input_sumbangan.dart';
 import 'package:mdonator/layar/kerangka.dart';
 import 'package:mdonator/layar/rekap.dart';
 import 'package:mdonator/layar/tambah_donatur.dart';
+import 'package:mdonator/main.dart';
 import 'package:mdonator/tema.dart';
+import 'package:mdonator/widget/latar_dasbor.dart';
+import 'package:mdonator/widget/logo_yayasan.dart';
 
 import 'bantu.dart';
 
@@ -70,13 +75,65 @@ void main() {
     expect(skema.surfaceTint, Warna.latar);
     expect(skema.onSurface, Warna.teks);
     expect(skema.onSurfaceVariant, Warna.teksLemah);
-    expect(skema.outline, Warna.garis);
+    expect(skema.outline, Warna.garisLembut);
     expect(skema.outlineVariant, Warna.garis);
-    expect(tema.appBarTheme.backgroundColor, Warna.primer);
-    expect(tema.navigationBarTheme.indicatorColor, Colors.transparent);
+    expect(skema.shadow, Warna.bayangan);
+    expect(tema.scaffoldBackgroundColor, Warna.latarDasbor);
+    expect(tema.appBarTheme.backgroundColor, Warna.transparan);
+    expect(tema.navigationBarTheme.indicatorColor, Warna.primer);
+    expect(tema.navigationBarTheme.height, Bentuk.tinggiNavigasi);
+    // Dua keluarga huruf docs/26: Plus Jakarta Sans untuk isi, Outfit untuk judul dan angka.
+    expect(tema.textTheme.bodyLarge?.fontFamily, Huruf.keluargaIsi);
     expect(tema.textTheme.bodyLarge?.fontSize, 16);
-    expect(tema.textTheme.titleLarge?.fontWeight, FontWeight.w500);
+    expect(tema.textTheme.labelMedium?.fontFamily, Huruf.keluargaIsi);
+    expect(tema.textTheme.titleLarge?.fontFamily, Huruf.keluargaTampilan);
+    expect(tema.textTheme.titleLarge?.fontWeight, FontWeight.w600);
+    expect(tema.textTheme.headlineMedium?.fontFamily, Huruf.keluargaTampilan);
     expect(tema.textTheme.headlineMedium?.fontSize, 32);
+    expect(tema.textTheme.displaySmall?.fontSize, 30);
+    expect(tema.textTheme.displaySmall?.fontWeight, FontWeight.w800);
+    // Slot yang tidak dipetakan token tetap Plus Jakarta Sans, bukan Roboto.
+    expect(tema.textTheme.bodySmall?.fontFamily, Huruf.keluargaIsi);
+  });
+
+  testWidgets('kerangka dasbor: AppBar transparan berlogo, navigasi mengambang, tab di latar dasbor', (tester) async {
+    await pompaAplikasi(tester, server: serverInput(), simpanan: simpananMasuk(), kerangka: const LayarKerangka());
+    final appBar = find.byType(AppBar);
+    expect(tester.widget<AppBar>(appBar).backgroundColor ?? Theme.of(tester.element(appBar)).appBarTheme.backgroundColor,
+        Warna.transparan);
+    final logo = tester.widget<LogoYayasan>(find.descendant(of: appBar, matching: find.byType(LogoYayasan)));
+    expect((logo.ukuran, logo.alas, logo.cincin), (Bentuk.logoBar, Bentuk.alasLogoBar, true));
+    // Kepala dasbor dimulai dari tepi atas layar, di belakang status bar dan AppBar.
+    expect(tester.getTopLeft(find.byType(LatarDasbor).first).dy, 0);
+
+    final kotakNavigasi = tester.widget<Material>(
+        find.ancestor(of: find.byType(NavigationBar), matching: find.byType(Material)).first);
+    expect(kotakNavigasi.elevation, Bentuk.elevasiNavigasi);
+    expect(kotakNavigasi.borderRadius, BorderRadius.circular(Bentuk.radiusLembar));
+    final navigasi = tester.getRect(find.byType(NavigationBar));
+    final layar = tester.getRect(find.byType(Scaffold).first);
+    expect(navigasi.left, Jarak.sisiNavigasi);
+    expect(layar.right - navigasi.right, Jarak.sisiNavigasi);
+    expect(layar.bottom - navigasi.bottom, Jarak.bawahNavigasi);
+
+    // Setiap tab memakai latar dasbor; gerak tab tersembunyi dihentikan.
+    for (final (i, jenis) in [LayarInputSumbangan, LayarTambahDonatur, LayarInputSaya, LayarRekap].indexed) {
+      final tab = find.byType(jenis, skipOffstage: false);
+      expect(find.descendant(of: tab, matching: find.byType(LatarDasbor, skipOffstage: false)), findsOneWidget,
+          reason: '$jenis');
+      expect(TickerMode.valuesOf(tester.element(tab)).enabled, i == 0, reason: '$jenis');
+    }
+  });
+
+  testWidgets('lisensi OFL Plus Jakarta Sans dan Outfit terdaftar di LicenseRegistry', (tester) async {
+    daftarkanLisensiHuruf();
+    final lisensi = await tester.runAsync(() => LicenseRegistry.licenses.toList());
+    for (final huruf in ['Plus Jakarta Sans', 'Outfit']) {
+      final entri = lisensi!.where((l) => l.packages.contains(huruf)).toList();
+      expect(entri, isNotEmpty, reason: huruf);
+      expect(entri.first.paragraphs.map((p) => p.text).join(' '), contains('SIL Open Font License'),
+          reason: huruf);
+    }
   });
 
   testWidgets('menu ⋮ berisi Ganti Password, Pengaturan, dan Keluar, berurutan', (tester) async {

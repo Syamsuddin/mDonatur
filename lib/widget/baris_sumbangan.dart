@@ -1,5 +1,5 @@
-// Baris sumbangan (docs/26_UI_CONVENTIONS.md §Inventaris): ListTile berisi jam (tebal bila note_n),
-// "nomor · nama", jumlah di kanan, dan ikon edit bila boleh_ubah. Baris tanpa boleh_ubah tidak bisa
+// Baris sumbangan (docs/26_UI_CONVENTIONS.md §Inventaris): ListTile di dalam Card berisi jam (tebal bila
+// note_n), "nomor · nama", jumlah tebal di kanan, dan ikon edit primer bila boleh_ubah. Baris tanpa boleh_ubah tidak bisa
 // diketuk (P4.4 docs/06_BUSINESS_PROCESS.md). Jumlah paling lebar separuh baris; huruf mengecil bila
 // tidak muat, seperti strip hari ini, sehingga nama tetap punya tempat.
 
@@ -37,7 +37,7 @@ class BarisSumbangan extends StatelessWidget {
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(formatRupiah(baris.jumlah), style: teks.bodyLarge, maxLines: 1),
+                  child: Text(formatRupiah(baris.jumlah), style: teks.bodyLarge!.merge(Huruf.tebal), maxLines: 1),
                 ),
               ),
               if (baris.bolehUbah) ...[

@@ -11,6 +11,7 @@ import 'package:mdonator/layar/masuk.dart';
 import 'package:mdonator/state/sesi.dart';
 import 'package:mdonator/tema.dart';
 import 'package:mdonator/widget/kerangka_memuat.dart';
+import 'package:mdonator/widget/latar_dasbor.dart';
 import 'package:mdonator/widget/panel_galat.dart';
 
 import 'bantu.dart';
@@ -115,6 +116,11 @@ void main() {
       expect(saya, hasLength(4));
       expect(saya.last.url.queryParameters.containsKey('tanggal'), isFalse);
       expect(find.text('Total 2 transaksi'), findsOneWidget);
+      // Tanggal dan ringkasan di kepala dasbor, baris sumbangan di dalam kartu.
+      final kepala = find.byWidgetPredicate((w) => w is LatarDasbor && w.kepala != null);
+      expect(find.descendant(of: kepala, matching: find.text('Total 2 transaksi')), findsOneWidget);
+      expect(find.descendant(of: kepala, matching: find.byIcon(Icons.calendar_month)), findsOneWidget);
+      expect(find.ancestor(of: find.text('10:01'), matching: find.byType(Card)), findsOneWidget);
       expect(find.text('10:01'), findsOneWidget);
     });
 
@@ -227,7 +233,7 @@ void main() {
 
       // Strip tab Input tetap hari ini; data tanggal lain tidak diteruskan ke sana.
       await pilihTab(tester, 'Input');
-      expect(find.text('Total input hari ini (10×): Rp 1.550.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 1.550.000', '10 transaksi'));
 
       // Tanggal pilihan tetap saat tab dibuka lagi.
       await pilihTab(tester, 'Input Saya');
@@ -313,7 +319,7 @@ void main() {
 
       // ubahdonasi tanpa ringkasan_hari_ini: strip tab Input dari donasisaya hari ini yang dimuat ulang.
       await pilihTab(tester, 'Input');
-      expect(find.text('Total input hari ini (1×): Rp 150.000'), findsOneWidget);
+      expect(ringkasanHariIni(tester), ('Rp 150.000', '1 transaksi'));
     });
 
     testWidgets('2xx dengan "ulang": true diperlakukan sukses', (tester) async {

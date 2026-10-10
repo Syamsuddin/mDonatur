@@ -44,6 +44,16 @@ void main() {
     expect(formatJam('23:59:59'), '23:59');
   });
 
+  group('labelSumbuGrafik', () {
+    test('Minggu: nama hari tiga huruf; Bulan: tanggal tanpa nol di depan', () {
+      final senin = DateTime.utc(2026, 10, 5);
+      expect([for (var i = 0; i < 7; i++) labelSumbuGrafik(senin.add(Duration(days: i)), pekan: true)],
+          ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']);
+      expect(labelSumbuGrafik(senin, pekan: false), '5');
+      expect(labelSumbuGrafik(DateTime.utc(2026, 10, 31), pekan: false), '31');
+    });
+  });
+
   group('formatWaktuIso', () {
     test('kedaluwarsa kontrak §6.1 menurut jam server, tanpa konversi zona HP', () {
       expect(formatWaktuIso('2026-10-13T00:15:00+08:00'), 'Selasa, 13/10/2026 00:15');

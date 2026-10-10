@@ -389,9 +389,11 @@
       "14"
     ],
     "09": [
+      "02",
       "08",
       "10",
       "20",
+      "26",
       "CLAUDE"
     ],
     "10": [
@@ -449,6 +451,11 @@
       "CLAUDE"
     ],
     "26": [
+      "02",
+      "09",
+      "12",
+      "13",
+      "20",
       "23",
       "CLAUDE"
     ],
@@ -468,6 +475,11 @@
       "21",
       "23",
       "27",
+      "CLAUDE"
+    ],
+    "23": [
+      "03",
+      "24",
       "CLAUDE"
     ]
   },
@@ -490,7 +502,8 @@
     "penyimpanan_pengguna": "Pengguna dan peran tidak disimpan di perangkat; secure storage hanya token, kedaluwarsa, alamat server, username terakhir. Menyelesaikan selisih docs/05 vs docs/06 P1 + docs/21 (S1, diputuskan pemilik)",
     "versi_aplikasi": "Konstanta versiAplikasi di lib/state/sesi.dart, diuji sama dengan version pubspec.yaml; tanpa paket package_info (S1)",
     "input_ringkas": "Input Sumbangan ringkas agar muat satu layar tanpa gulir (Pixel 5, skala 1,0): strip satu baris tanpa input terakhir; nominal cepat hanya nominal_umum ≤ 300.000 (enam tombol, kisi 3 kolom); kartu donatur ringkas; isian padat; jarak antar-isian 8 dan isi kartu 12 (diputuskan pemilik)",
-    "apk_debug_domain": "APK debug dibangun dengan SERVER_URL https://donatur.kapuhmadani.com (permintaan pemilik, S6). flutter run dan uji integrasi tetap ke server lokal karena menulis data; API baru ada di produksi setelah server Fase 12 dideploy"
+    "apk_debug_domain": "APK debug dibangun dengan SERVER_URL https://donatur.kapuhmadani.com (permintaan pemilik, S6). flutter run dan uji integrasi tetap ke server lokal karena menulis data; API baru ada di produksi setelah server Fase 12 dideploy",
+    "desain_c": "Tampilan arah C \"Dasbor Yayasan\" dipilih pemilik dari tiga usulan (S7): token docs/26 baru, paket fl_chart, flutter_animate, skeletonizer (gerbang 22 lewat pilihan arah yang mencantumkan ketiganya), huruf Plus Jakarta Sans + Outfit dibundel, grafik rincian di tab Rekap masuk scope (docs/02). Mini grafik riwayat 12 bulan dari mockup tidak dibuat: menjumlah riwayat per bulan di Dart akan menyalin aturan agregat Note (guardrail inti). teksLemah digelapkan ke #6B6B6B agar AA di latarDasbor."
   },
   "open_questions": [
     "Penyelarasan UPDATE_PLAN.md: Beranda → Input Sumbangan; 12a/12b/12c → S0–S6",

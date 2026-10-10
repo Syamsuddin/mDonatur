@@ -13,7 +13,7 @@ mDonator — aplikasi Android (Flutter) untuk operator aplikasi Donatur: input s
 5. Hormati scope (docs/02). Out-of-scope → berhenti & tanya.
 
 ## Stack  (sumber: docs/09)
-Flutter 3.47.5 / Dart 3.13.4, Android; `http`, `flutter_secure_storage`, `intl`, `flutter_localizations`; state `ChangeNotifier`. Terlarang: WebView, paket state/router, dio/codegen, telemetri, pustaka UI lain, `http://` di rilis, paket baru tanpa gerbang 22.
+Flutter 3.47.5 / Dart 3.13.4, Android; `http`, `flutter_secure_storage`, `intl`, `flutter_localizations`; tampilan `fl_chart`, `flutter_animate`, `skeletonizer`; huruf Plus Jakarta Sans + Outfit dibundel; state `ChangeNotifier`. Terlarang: WebView, paket state/router, dio/codegen, telemetri, pustaka UI lain, `google_fonts`, `http://` di rilis, paket baru tanpa gerbang 22.
 
 ## Struktur & konvensi  (sumber: docs/12)
 - `lib/layar` → `lib/state` (`*Notifier`) → `lib/api/` (HTTP hanya di sini; nama field JSON hanya di `model.dart`).
@@ -32,7 +32,7 @@ Flutter 3.47.5 / Dart 3.13.4, Android; `http`, `flutter_secure_storage`, `intl`,
 - JANGAN menyentuh server/DB produksi, menulis ke DB non-lokal, atau commit tanpa diminta.
 
 ## Antarmuka  (sumber: docs/26_UI_CONVENTIONS.md)
-Warna web Donatur, tata letak HP, layar awal Input Sumbangan, 4 tab. Larangan: nilai di luar token, `ColorScheme.fromSeed`, gradien/emoji/animasi dekoratif.
+Arah C "Dasbor Yayasan": kepala gradien hijau berpola bintang, angka kuning, lembar berkartu, grafik Rekap, gerak singkat; layar awal Input Sumbangan, 4 tab. Larangan: nilai di luar token, `ColorScheme.fromSeed`, gradien di luar token, emoji, gerak yang mengabaikan Hapus animasi, grafik yang menjumlah di Dart.
 
 ## Kontrak API  (sumber: docs/27_API_CONTRACT.md + API_CONTRACT.md)
 Peran paket: frontend · Kontrak: `API_CONTRACT.md` v0.1.0 (tanpa openapi.yaml). KONTRAK menang — aksi/payload hanya dari sana; ubah kontrak = gerbang manusia + bump versi.

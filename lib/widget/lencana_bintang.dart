@@ -1,5 +1,5 @@
-// Lencana bintang (docs/26_UI_CONVENTIONS.md §Lencana bintang): "Bintang {n}" bergaya tombol, warna
-// latar dan teks dari tabel token, dibacakan "Bintang {n} dari 5". Nilai bintang dihitung server.
+// Lencana bintang (docs/26_UI_CONVENTIONS.md §Lencana bintang): satu baris berisi lima ikon bintang
+// emas, n terisi, lalu teks "Bintang {n}", dibacakan "Bintang {n} dari 5". Nilai bintang dihitung server.
 
 import 'package:flutter/material.dart';
 
@@ -8,33 +8,28 @@ import '../tema.dart';
 class LencanaBintang extends StatelessWidget {
   const LencanaBintang({super.key, required this.bintang});
 
-  final int bintang;
+  static const jumlahBintang = 5;
 
-  /// (latar, teks) per bintang. Teks putih hanya di atas aksi dan teksBahaya (kontras AA).
-  static (Color, Color) warna(int bintang) => switch (bintang) {
-        <= 1 => (Warna.info, Warna.teks),
-        2 => (Warna.sukses, Warna.teks),
-        3 => (Warna.aksi, Warna.diAtasPrimer),
-        4 => (Warna.peringatan, Warna.teks),
-        _ => (Warna.teksBahaya, Warna.diAtasPrimer),
-      };
+  final int bintang;
 
   @override
   Widget build(BuildContext context) {
-    final (latar, teks) = warna(bintang);
     return Semantics(
       container: true,
-      label: 'Bintang $bintang dari 5',
+      label: 'Bintang $bintang dari $jumlahBintang',
       excludeSemantics: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: latar, borderRadius: BorderRadius.circular(Bentuk.radius)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Jarak.j8, vertical: Jarak.j4),
-          child: Text(
-            'Bintang $bintang',
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: teks),
-          ),
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < jumlahBintang; i++)
+            Icon(
+              i < bintang ? Icons.star_rounded : Icons.star_outline_rounded,
+              size: Bentuk.ikonBintang,
+              color: Warna.emas,
+            ),
+          const SizedBox(width: Jarak.j4),
+          Flexible(child: Text('Bintang $bintang', style: Theme.of(context).textTheme.labelMedium)),
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -10,12 +11,16 @@ import 'package:mdonator/api/model.dart';
 import 'package:mdonator/layar/masuk.dart';
 import 'package:mdonator/state/sesi.dart';
 import 'package:mdonator/tema.dart';
+import 'package:mdonator/widget/grafik_rekap.dart';
 import 'package:mdonator/widget/kerangka_memuat.dart';
+import 'package:mdonator/widget/latar_dasbor.dart';
 import 'package:mdonator/widget/panel_galat.dart';
 
 import 'bantu.dart';
 
-Finder get _kartu => find.byType(Card);
+/// Kartu ringkasan (Total, Transaksi, Donatur). Rincian per operator dan per hari juga berupa kartu
+/// sejak S7, dan totalnya bisa sama dengan Total, jadi kartu ringkasan dikenali dari label "Total".
+Finder get _kartu => find.ancestor(of: find.text('Total'), matching: find.byType(Card));
 
 Finder _diKartu(String teks) => find.descendant(of: _kartu, matching: find.text(teks));
 
@@ -313,18 +318,68 @@ void main() {
       expect(_kirimanRekap(server).containsKey('tanggal'), isFalse);
     });
 
-    testWidgets('segmen: tinggi 48 dp, radius 8, terpilih berlatar primer dengan teks diAtasPrimer', (tester) async {
+    testWidgets('grafik: donat per operator dan area per hari, hanya dari angka server, berhenti di hari_ini',
+        (tester) async {
+      final semantik = tester.ensureSemantics();
+      final server = serverRekap();
+      await pompaTabRekap(tester, server);
+      // Segmen dan navigasi periode berada di kepala dasbor.
+      final kepala = find.byWidgetPredicate((w) => w is LatarDasbor && w.kepala != null);
+      for (final f in [find.byType(SegmentedButton<Periode>), find.byType(SegmentedButton<Cakupan>), _panahKiri]) {
+        expect(find.descendant(of: kepala, matching: f), findsOneWidget);
+      }
+      // Hari × Input saya: tanpa grafik.
+      expect(find.byType(GrafikPerHari), findsNothing);
+      expect(find.byType(DonatOperator), findsNothing);
+
+      List<double> garis() =>
+          [for (final t in tester.widget<LineChart>(find.byType(LineChart)).data.lineBarsData.single.spots) t.y];
+
+      await ketuk(tester, find.text('Minggu'));
+      await ketuk(tester, find.text('Semua operator'));
+      // Pekan 12–18/10 dengan hari_ini 12/10 (Senin): garis berhenti di hari ini, satu titik.
+      expect(garis(), hasLength(1));
+
+      // Pekan 05–11/10: tujuh titik; tanggal tanpa baris per_hari bernilai 0 (kontrak §6.9).
+      await ketuk(tester, _panahKiri);
+      expect(garis(), [18100000, 0, 0, 8900000, 0, 0, 0]);
+      expect(find.bySemanticsLabel('Grafik rincian per hari'), findsOneWidget);
+
+      final bagian = tester.widget<PieChart>(find.byType(PieChart)).data.sections;
+      expect([for (final b in bagian) b.value], [15000000, 11950000, 50000]);
+      expect([for (final b in bagian) b.color], [Warna.primer, Warna.aksi, Warna.teksLemah]);
+      expect(find.bySemanticsLabel('Grafik rincian per operator'), findsOneWidget);
+      // Baris rincian per operator menjadi legenda: titiknya berwarna sama dengan bagiannya.
+      for (final (nama, warna) in [
+        ('operator1', Warna.primer),
+        ('operator2', Warna.aksi),
+        ('User lama (sudah dihapus)', Warna.teksLemah),
+      ]) {
+        final titik = find.descendant(of: _baris(nama), matching: find.byType(TitikLegenda));
+        expect(tester.widget<TitikLegenda>(titik).warna, warna, reason: nama);
+      }
+      // Grafik dan donat berada di kartu rinciannya masing-masing, bukan di kartu ringkasan.
+      expect(find.descendant(of: _kartu, matching: find.byType(LineChart)), findsNothing);
+
+      // Bulan Oktober, hari_ini 12/10: dua belas titik.
+      await ketuk(tester, find.text('Bulan'));
+      expect(garis(), hasLength(12));
+      semantik.dispose();
+    });
+
+    testWidgets('segmen di kepala: tinggi 48 dp, pil, wadah pilKepala, terpilih aksen dengan teks primerTua',
+        (tester) async {
       await pompaTabRekap(tester, serverRekap());
       for (final segmen in [find.byType(SegmentedButton<Periode>), find.byType(SegmentedButton<Cakupan>)]) {
         expect(tester.getSize(segmen).height, greaterThanOrEqualTo(Bentuk.tinggiTombol));
       }
       final gaya = Theme.of(tester.element(find.byType(SegmentedButton<Periode>))).segmentedButtonTheme.style!;
       const terpilih = {WidgetState.selected};
-      expect(gaya.backgroundColor!.resolve(terpilih), Warna.primer);
-      expect(gaya.foregroundColor!.resolve(terpilih), Warna.diAtasPrimer);
-      expect(gaya.foregroundColor!.resolve({}), Warna.teks);
-      final bentuk = gaya.shape!.resolve({})! as RoundedRectangleBorder;
-      expect(bentuk.borderRadius, BorderRadius.circular(Bentuk.radius));
+      expect(gaya.backgroundColor!.resolve(terpilih), Warna.aksen);
+      expect(gaya.foregroundColor!.resolve(terpilih), Warna.primerTua);
+      expect(gaya.backgroundColor!.resolve({}), Warna.pilKepala);
+      expect(gaya.foregroundColor!.resolve({}), Warna.diAtasPrimer);
+      expect(gaya.shape!.resolve({}), isA<StadiumBorder>());
     });
   });
 

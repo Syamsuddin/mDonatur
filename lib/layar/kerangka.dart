@@ -1,4 +1,5 @@
-// Kerangka: AppBar + NavigationBar 4 tab + IndexedStack (docs/08_ARCHITECTURE.md, docs/26_UI_CONVENTIONS.md).
+// Kerangka: AppBar transparan + NavigationBar mengambang 4 tab + IndexedStack (docs/08_ARCHITECTURE.md,
+// docs/26_UI_CONVENTIONS.md). AppBar menumpang di atas kepala dasbor yang dilukis setiap tab.
 // IndexedStack menjaga isian setiap tab tetap ada saat berpindah tab, juga saat layar Masuk
 // didorong di atasnya karena 401. Menu ⋮: Ganti Password (P6), Pengaturan dan Keluar (P7
 // docs/06_BUSINESS_PROCESS.md).
@@ -11,6 +12,7 @@ import '../state/kerangka_notifier.dart';
 import '../state/sesi.dart';
 import '../tema.dart';
 import '../widget/dialog_konfirmasi.dart';
+import '../widget/logo_yayasan.dart';
 import 'ganti_password.dart';
 import 'input_saya.dart';
 import 'input_sumbangan.dart';
@@ -84,7 +86,11 @@ class _LayarKerangkaState extends State<LayarKerangka> {
 
   Widget _bangun(List<Widget> isiTab, int aktif) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        leading: const Center(
+          child: LogoYayasan(ukuran: Bentuk.logoBar, alas: Bentuk.alasLogoBar, cincin: true),
+        ),
         title: Text(_daftarTab[aktif].judul),
         actions: [
           PopupMenuButton<_Menu>(
@@ -99,11 +105,15 @@ class _LayarKerangkaState extends State<LayarKerangka> {
           ),
         ],
       ),
-      body: IndexedStack(index: aktif, children: isiTab),
-      bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Warna.garis, width: Bentuk.garisPemisah)),
-        ),
+      // Tab tersembunyi tetap hidup (isian terjaga), tetapi geraknya dihentikan: kerangka memuat di
+      // tab yang belum pernah dibuka tidak boleh terus berkilau di belakang layar.
+      body: IndexedStack(
+        index: aktif,
+        children: [
+          for (final (i, tab) in isiTab.indexed) TickerMode(enabled: i == aktif, child: tab),
+        ],
+      ),
+      bottomNavigationBar: _NavigasiMengambang(
         child: NavigationBar(
           selectedIndex: aktif,
           onDestinationSelected: _kerangka.pilihTab,
@@ -112,6 +122,32 @@ class _LayarKerangkaState extends State<LayarKerangka> {
               NavigationDestination(icon: Icon(tab.ikon), label: tab.label),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// NavigationBar mengambang (docs/26 §Inventaris): kotak latar radius 24, elevasi 3, berjarak dari tepi
+/// layar dan di atas inset bawah sistem. Inset itu dipakai di sini, bukan di dalam NavigationBar,
+/// agar tidak masuk ke dalam kotaknya.
+class _NavigasiMengambang extends StatelessWidget {
+  const _NavigasiMengambang({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final bawah = MediaQuery.paddingOf(context).bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          Jarak.sisiNavigasi, 0, Jarak.sisiNavigasi, Jarak.bawahNavigasi + bawah),
+      child: Material(
+        color: Warna.latar,
+        elevation: Bentuk.elevasiNavigasi,
+        shadowColor: Warna.bayangan,
+        borderRadius: BorderRadius.circular(Bentuk.radiusLembar),
+        clipBehavior: Clip.antiAlias,
+        child: MediaQuery.removePadding(context: context, removeBottom: true, child: child),
       ),
     );
   }

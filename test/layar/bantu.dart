@@ -15,6 +15,7 @@ import 'package:mdonator/layar/kerangka.dart';
 import 'package:mdonator/main.dart';
 import 'package:mdonator/state/sesi.dart';
 import 'package:mdonator/util/tanggal.dart';
+import 'package:mdonator/widget/strip_hari_ini.dart';
 
 const alamatBawaanUji = 'http://10.0.2.2:3000';
 const tokenUji = 'tkn-uji-123';
@@ -87,9 +88,17 @@ class ServerTiruan {
   List<String?> get aksi => [for (final r in permintaan) r.url.queryParameters['aksi']];
 }
 
+/// Pengaturan Android "Hapus animasi" (docs/26 §Token gerak). Tanpa itu kilau kerangka memuat berulang
+/// tanpa henti dan `pumpAndSettle` tidak pernah selesai selama kerangka tampil (docs/13_TESTING.md).
+/// Gerak dengan animasi aktif diuji tersendiri di gerak_test.dart.
+void aturHapusAnimasi(WidgetTester tester, {bool aktif = true}) {
+  tester.platformDispatcher.accessibilityFeaturesTestValue = FakeAccessibilityFeatures(disableAnimations: aktif);
+  addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+}
+
 /// Memompa aplikasi lengkap dengan [simpanan] sebagai isi secure storage, lalu menjalankan P0.
 /// Bawaannya [kerangkaKosong], supaya uji sesi hanya melihat aksi sesi; uji layar memakai
-/// `const LayarKerangka()`.
+/// `const LayarKerangka()`. Hapus animasi aktif, kecuali [hapusAnimasi] false (uji gerak).
 Future<Sesi> pompaAplikasi(
   WidgetTester tester, {
   required ServerTiruan server,
@@ -98,7 +107,9 @@ Future<Sesi> pompaAplikasi(
   String alamatBawaan = alamatBawaanUji,
   bool rilis = false,
   FlutterSecureStorage penyimpanan = const FlutterSecureStorage(),
+  bool hapusAnimasi = true,
 }) async {
+  aturHapusAnimasi(tester, aktif: hapusAnimasi);
   FlutterSecureStorage.setMockInitialValues(simpanan ?? {});
   final sesi = Sesi(
     alamatBawaan: alamatBawaan,
@@ -157,6 +168,18 @@ Future<void> isiDanMasuk(WidgetTester tester, {String username = 'uji_operator',
   await tester.enterText(isian('Password'), password);
   await tester.tap(tombol<FilledButton>('Masuk'));
   await tester.pumpAndSettle();
+}
+
+/// Ringkasan hari ini di kepala tab Input (docs/26 §Inventaris): (nominal, pil). Labelnya diperiksa di
+/// sini, sehingga pemanggil cukup membandingkan angkanya.
+(String, String) ringkasanHariIni(WidgetTester tester) {
+  final teks = tester
+      .widgetList<Text>(find.descendant(of: find.byType(StripHariIni), matching: find.byType(Text)))
+      .map((t) => t.data!)
+      .toList();
+  expect(teks, hasLength(3));
+  expect(teks.first, 'Total input hari ini');
+  return (teks[1], teks[2]);
 }
 
 String judulAppBar(WidgetTester tester) => tester

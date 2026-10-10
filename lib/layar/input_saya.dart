@@ -1,5 +1,5 @@
-// Layar Input Saya, tab 3 (P4 docs/06_BUSINESS_PROCESS.md): pilihan tanggal, total dan transaksi,
-// lalu daftar sumbangan milik pengguna pada tanggal itu. Daftar dimuat setiap kali tab dibuka dan
+// Layar Input Saya, tab 3 (P4 docs/06_BUSINESS_PROCESS.md): pilihan tanggal dan ringkasan (total dan
+// transaksi) di kepala dasbor, lalu daftar sumbangan milik pengguna pada tanggal itu di dalam kartu. Daftar dimuat setiap kali tab dibuka dan
 // bisa ditarik ke bawah; baris boleh_ubah membuka lembar Ubah. Empat state: docs/26_UI_CONVENTIONS.md.
 
 import 'dart:async';
@@ -15,6 +15,7 @@ import '../util/rupiah.dart';
 import '../util/tanggal.dart';
 import '../widget/baris_sumbangan.dart';
 import '../widget/kerangka_memuat.dart';
+import '../widget/latar_dasbor.dart';
 import '../widget/panel_galat.dart';
 import '../widget/state_kosong.dart';
 import 'ubah_sumbangan.dart';
@@ -85,60 +86,65 @@ class _LayarInputSayaState extends State<LayarInputSaya> {
       listenable: _notifier,
       builder: (context, _) {
         final n = _notifier;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, Jarak.tepiLayar, Jarak.tepiLayar, Jarak.j8),
-              child: _PilihanTanggal(
+        final data = n.data;
+        return LatarDasbor(
+          kepala: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _PilihanTanggal(
                 tanggal: n.tanggal,
                 errorText: n.galatTanggal,
                 padaKetuk: n.hariIni == null ? null : _pilihTanggal,
               ),
+              if (data != null && data.daftar.isNotEmpty) ...[
+                const SizedBox(height: Jarak.j12),
+                _Ringkasan(total: data.total, transaksi: data.transaksi),
+              ],
+            ],
+          ),
+          isi: RefreshIndicator(
+            onRefresh: n.muat,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(Jarak.tepiLayar),
+              children: _isi(n),
             ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: n.muat,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: _isi(n),
-                ),
-              ),
-            ),
-          ],
+          ),
         );
       },
     );
   }
 
   List<Widget> _isi(InputSayaNotifier n) {
-    const tepi = EdgeInsets.symmetric(horizontal: Jarak.tepiLayar);
     final data = n.data;
     if (data != null && data.daftar.isEmpty) {
-      return const [StateKosong('Belum ada input pada tanggal ini')];
+      return const [StateKosong('Belum ada input pada tanggal ini', ikon: Icons.receipt_long)];
     }
     if (data != null) {
       return [
-        _Ringkasan(total: data.total, transaksi: data.transaksi),
-        const Divider(height: Bentuk.garisPemisah),
-        for (final baris in data.daftar)
-          BarisSumbangan(baris: baris, padaUbah: () => _ubah(data.tanggal, baris)),
+        Card(
+          child: Column(
+            children: [
+              for (final (i, baris) in data.daftar.indexed) ...[
+                if (i > 0) const Divider(height: Bentuk.garisPemisah),
+                BarisSumbangan(baris: baris, padaUbah: () => _ubah(data.tanggal, baris)),
+              ],
+            ],
+          ),
+        ),
       ];
     }
     if (n.status == StatusInputSaya.gagal) {
       return [
         if (n.pesanGalat case final pesan?)
-          Padding(
-            padding: tepi,
-            child: PanelGalat(pesan: pesan, labelTombol: 'Coba lagi', padaTombol: n.muat),
-          ),
+          PanelGalat(pesan: pesan, labelTombol: 'Coba lagi', padaTombol: n.muat),
       ];
     }
-    return const [Padding(padding: tepi, child: KerangkaMemuat())];
+    return const [KerangkaMemuat()];
   }
 }
 
-/// Pilihan tanggal: isian baca-saja berlabel "Tanggal" yang membuka date picker. `rincian.tanggal`
+/// Pilihan tanggal: isian kepala baca-saja berlabel "Tanggal" yang membuka date picker. `rincian.tanggal`
 /// 422 tampil sebagai errorText-nya (docs/14_ERROR_HANDLING.md).
 class _PilihanTanggal extends StatelessWidget {
   const _PilihanTanggal({required this.tanggal, required this.errorText, required this.padaKetuk});
@@ -154,13 +160,13 @@ class _PilihanTanggal extends StatelessWidget {
       button: true,
       child: InkWell(
         onTap: padaKetuk,
-        borderRadius: BorderRadius.circular(Bentuk.radius),
+        borderRadius: BorderRadius.circular(Bentuk.radiusIsian),
         child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: 'Tanggal',
+          decoration: dekorasiIsianKepala(
+            label: 'Tanggal',
             errorText: errorText,
-            errorMaxLines: 3,
             enabled: padaKetuk != null,
+            suffixIcon: const Icon(Icons.calendar_month, color: Warna.primer),
           ),
           child: Text(
             tanggal == null ? '' : formatTanggal(tanggal),
@@ -172,8 +178,8 @@ class _PilihanTanggal extends StatelessWidget {
   }
 }
 
-/// Total dan banyaknya sumbangan `Note='y'` pada tanggal itu (kontrak §6.7). Total paling lebar
-/// separuh baris dan hurufnya mengecil bila tidak muat, seperti strip hari ini.
+/// Total dan banyaknya sumbangan `Note='y'` pada tanggal itu (kontrak §6.7), di kepala: label putih dan
+/// nominal besar aksen. Total paling lebar separuh baris dan hurufnya mengecil bila tidak muat.
 class _Ringkasan extends StatelessWidget {
   const _Ringkasan({required this.total, required this.transaksi});
 
@@ -183,14 +189,13 @@ class _Ringkasan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final teks = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Jarak.tepiLayar, 0, Jarak.tepiLayar, Jarak.j8),
+    return MergeSemantics(
       child: Row(
         children: [
           Expanded(
             child: Text(
               'Total $transaksi transaksi',
-              style: teks.bodyMedium!.copyWith(color: Warna.teksLemah),
+              style: teks.bodyMedium!.copyWith(color: Warna.diAtasPrimer),
             ),
           ),
           const SizedBox(width: Jarak.j8),
@@ -199,7 +204,11 @@ class _Ringkasan extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text(formatRupiah(total), style: teks.titleLarge, maxLines: 1),
+                child: Text(
+                  formatRupiah(total),
+                  style: teks.displaySmall!.copyWith(color: Warna.aksen),
+                  maxLines: 1,
+                ),
               ),
             ),
           ),

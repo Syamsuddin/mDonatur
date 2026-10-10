@@ -9,7 +9,11 @@ Uji unit dan widget berjalan **tanpa jaringan** memakai `MockClient` dari `packa
 | Kepatuhan kontrak | `test/api/kontrak_test.dart` | Membaca `API_CONTRACT.md` dari root paket; setiap blok ```` ```json ```` di §5–§6 di-parse oleh model aksi pada bagian itu tanpa galat. Kontrak berubah → uji ini memaksa model ikut berubah |
 | Widget | `test/layar/<layar>_test.dart` | Kriteria antarmuka setiap fitur di docs/23_ACCEPTANCE_CRITERIA.md: empat state, dialog, `boleh_ubah`, `note_n`, isi otomatis saran |
 | Tata letak | `test/layar/<layar>_test.dart` | Setiap layar dirender di 360×640 dp dengan `textScaler` 1,3 tanpa galat overflow |
+| Muat satu layar | `test/layar/input_sumbangan_muat_test.dart` | Input Sumbangan di Pixel 5 tanpa digulir, dengan huruf aplikasi dari `assets/huruf/` |
+| Gerak | `test/layar/gerak_test.dart` | Dengan animasi aktif: kartu hasil mencapai nominal akhir, `Semantics` selalu nilai akhir, kerangka memuat berkilau. Dengan Hapus animasi: nilai akhir langsung dan kerangka statis |
 | Integrasi (opsional) | `integration_test/alur_test.dart` | Lihat bagian di bawah |
+
+**Hapus animasi di uji widget.** `pompaAplikasi` di `bantu.dart` menyalakan Hapus animasi (`accessibilityFeaturesTestValue`). Tanpa itu, kilau kerangka memuat berulang tanpa henti dan `pumpAndSettle` tidak pernah selesai selama kerangka tampil. Gerak dengan animasi aktif diuji tersendiri di `gerak_test.dart` memakai `pump(durasi)`.
 
 **Unit API** (`klien_api_test.dart`) wajib mencakup:
 
