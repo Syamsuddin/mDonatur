@@ -1,0 +1,2 @@
+# 07 — DATA_MODEL
+Skema fisik database bukan milik paket ini; rumahnya `../database/SCHEMA.sql` di server. Bentuk data yang dilihat klien ditetapkan `API_CONTRACT.md`, dengan versi terpin di manifest `split.contract_version`. Model Dart ditulis tangan di `lib/api/model.dart` dan diuji terhadap contoh JSON kontrak (docs/27_API_CONTRACT.md). Dilarang memakai field yang tidak ada di kontrak. Dokumen ini terdaftar di `collapsed`.
