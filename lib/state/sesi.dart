@@ -16,7 +16,7 @@ import '../api/model.dart';
 
 /// Versi aplikasi untuk Pengaturan. Harus sama dengan `version` di pubspec.yaml (diuji di
 /// test/layar/pengaturan_test.dart); membacanya saat berjalan butuh paket tambahan.
-const versiAplikasi = '1.0.0+1';
+const versiAplikasi = '1.1.0+2';
 
 enum FaseSesi {
   /// Membaca secure storage, lalu `konfigurasi` bila ada token.
