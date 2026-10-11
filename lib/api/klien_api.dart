@@ -15,7 +15,7 @@ import 'model.dart';
 
 /// Versi API_CONTRACT.md yang dipakai aplikasi ini. Harus sama dengan
 /// `split.contract_version` di docs/_MANIFEST.json (docs/27_API_CONTRACT.md).
-const versiKontrak = '0.1.0';
+const versiKontrak = '0.2.0';
 
 enum MetodeHttp { get, post }
 
@@ -30,7 +30,8 @@ enum Aksi {
   donasisaya(MetodeHttp.get),
   ubahdonasi(MetodeHttp.post, berkunci: true),
   rekap(MetodeHttp.get),
-  gantipassword(MetodeHttp.post);
+  gantipassword(MetodeHttp.post),
+  logout(MetodeHttp.post);
 
   const Aksi(this.metode, {this.bertoken = true, this.berkunci = false});
 
@@ -132,6 +133,12 @@ class KlienApi {
   Future<JawabanGantiPassword> gantiPassword(PermintaanGantiPassword isi) =>
       _kirim(Aksi.gantipassword, JawabanGantiPassword.fromJson, isi: isi.toJson());
 
+  /// Kontrak §6.11: memberi tahu server bahwa pengguna keluar, dengan [tokenLama] (sesi sudah
+  /// melupakan tokennya). Senyap: 401 dan versi tidak cocok tidak memanggil [padaTidakSah] maupun
+  /// [padaGalatVersi], karena keluar tidak boleh bergantung pada jawaban ini.
+  Future<void> logout(String tokenLama) =>
+      _kirim(Aksi.logout, (_) {}, isi: const {}, tokenLain: tokenLama, senyap: true);
+
   Uri _alamat(Aksi aksi, Map<String, String> query) {
     final dasar = alamatServer.replaceFirst(RegExp(r'/+$'), '');
     return Uri.parse('$dasar/api').replace(queryParameters: {'aksi': aksi.name, ...query});
@@ -143,10 +150,13 @@ class KlienApi {
     Map<String, String> query = const {},
     Json? isi,
     String? kunci,
+    String? tokenLain,
+    bool senyap = false,
   }) async {
     final uri = _alamat(aksi, query);
+    final tokenDipakai = tokenLain ?? token;
     final header = <String, String>{
-      if (aksi.bertoken && token != null) 'Authorization': 'Bearer $token',
+      if (aksi.bertoken && tokenDipakai != null) 'Authorization': 'Bearer $tokenDipakai',
       if (aksi.metode == MetodeHttp.post) 'Content-Type': 'application/json',
       if (aksi.berkunci && kunci != null) 'Idempotency-Key': kunci,
     };
@@ -176,6 +186,7 @@ class KlienApi {
     final versi = jawaban.headers['x-api-versi'];
     if (versi != null && !versiCocok(versi)) {
       _catat(aksi, status, jam, 'versi $versi');
+      if (senyap) throw GalatVersi(versi);
       _galatVersi(versi);
     }
 
@@ -193,7 +204,7 @@ class KlienApi {
     }
 
     _catat(aksi, status, jam, galat.kode.isEmpty ? 'bukan amplop' : galat.kode);
-    if (galat.tidakSah && aksi != Aksi.login) padaTidakSah?.call(galat);
+    if (galat.tidakSah && aksi != Aksi.login && !senyap) padaTidakSah?.call(galat);
     throw galat;
   }
 

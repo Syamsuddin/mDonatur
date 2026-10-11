@@ -35,7 +35,7 @@ Flutter 3.47.5 / Dart 3.13.4, Android; `http`, `flutter_secure_storage`, `intl`,
 Arah C "Dasbor Yayasan": kepala gradien hijau berpola bintang, angka kuning, lembar berkartu, grafik Rekap, gerak singkat; layar awal Input Sumbangan, 4 tab. Larangan: nilai di luar token, `ColorScheme.fromSeed`, gradien di luar token, emoji, gerak yang mengabaikan Hapus animasi, grafik yang menjumlah di Dart.
 
 ## Kontrak API  (sumber: docs/27_API_CONTRACT.md + API_CONTRACT.md)
-Peran paket: frontend · Kontrak: `API_CONTRACT.md` v0.1.0 (tanpa openapi.yaml). KONTRAK menang — aksi/payload hanya dari sana; ubah kontrak = gerbang manusia + bump versi.
+Peran paket: frontend · Kontrak: `API_CONTRACT.md` v0.2.0 (tanpa openapi.yaml). KONTRAK menang — aksi/payload hanya dari sana; ubah kontrak = gerbang manusia + bump versi.
 
 ## Alur per-task  (penuh: docs/17, 19)
 Baca INDEX.md → muat dokumen relevan → konfirmasi scope → vertical slice → tes (docs/13) → DoD (docs/24).

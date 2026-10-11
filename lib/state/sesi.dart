@@ -211,11 +211,23 @@ class Sesi extends ChangeNotifier {
     ]);
   }
 
-  /// P7 Keluar: tanpa aksi server. Alamat server dan username terakhir tetap tersimpan.
+  /// P7 Keluar: token dan state di perangkat dihapus lebih dulu, lalu server diberi tahu lewat
+  /// `logout` di latar belakang (kontrak §6.11). Keluar tidak menunggu jawabannya. Alamat server
+  /// dan username terakhir tetap tersimpan.
   Future<void> keluar() async {
+    final tokenLama = klien.token;
     _lupakanSesi();
     _ubahFase(FaseSesi.perluMasuk);
+    if (tokenLama != null) unawaited(_beritahuKeluar(tokenLama));
     await _hapusToken();
+  }
+
+  Future<void> _beritahuKeluar(String tokenLama) async {
+    try {
+      await klien.logout(tokenLama);
+    } on Object {
+      // Kontrak §6.11: jaringan, 401, 404 server lama, atau versi tidak cocok tidak menahan Keluar.
+    }
   }
 
   /// P0.4: dipanggil saat aplikasi kembali ke depan.

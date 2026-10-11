@@ -11,7 +11,7 @@ Kapuh Madani, Kandangan · Kalimantan Selatan
 [![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.13.4-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](#persyaratan)
-[![Kontrak API](https://img.shields.io/badge/kontrak_API-v0.1.0-046500)](API_CONTRACT.md)
+[![Kontrak API](https://img.shields.io/badge/kontrak_API-v0.2.0-046500)](API_CONTRACT.md)
 [![Uji](https://img.shields.io/badge/uji-281_lulus-046500)](#pengujian)
 [![Lisensi](https://img.shields.io/badge/lisensi-MIT-yellow)](LICENSE)
 
@@ -43,7 +43,7 @@ Semua aturan bisnis tetap di server dan sama dengan versi web: konfirmasi sumban
 
 | Fitur | Yang bisa dilakukan operator |
 | --- | --- |
-| **Masuk dan keluar** | Masuk sekali di awal hari kerja; sesi disimpan sebagai token di penyimpanan aman. Keluar meminta konfirmasi bila masih ada isian yang belum disimpan. |
+| **Masuk dan keluar** | Masuk sekali di awal hari kerja; sesi disimpan sebagai token di penyimpanan aman. Keluar meminta konfirmasi bila masih ada isian yang belum disimpan, lalu memberi tahu server (aksi `logout`) supaya keluarnya tercatat dan token itu dicabut. |
 | **Pengaturan server** | Mengisi alamat server sendiri, termasuk instalasi di subfolder, sehingga aplikasi bisa dipakai di server mana pun. |
 | **Cek dan cari donatur** | Melihat nama, alamat, bintang, dan riwayat sumbangan tahun ini setelah mengetik nomor; mencari donatur lewat nama, alamat, atau nomor bila nomornya lupa. |
 | **Input sumbangan** | Mengisi nominal dari saran server atau tombol nominal cepat, menerima peringatan bila donatur sudah menyumbang hari ini atau nominalnya janggal, dan mengirim ulang dengan aman saat sinyal putus. |

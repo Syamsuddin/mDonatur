@@ -36,7 +36,7 @@ lib/layar/* ─► lib/state/*_notifier.dart ─► lib/api/klien_api.dart ═�
 |---|---|
 | Flutter native, Android dulu | K12, K19 |
 | Aturan bisnis hanya di server; klien menampilkan hasil | Kontrak §1: web dan mobile tidak boleh punya dua salinan aturan K5, K6, K9, Note, bintang, saran, rekap |
-| Klien API ditulis tangan dari `API_CONTRACT.md`, tanpa codegen | Keputusan 10 Okt 2026: 10 aksi berbagi satu path `/api?aksi=`, yang tidak bisa dinyatakan OpenAPI. Aksinya kecil |
+| Klien API ditulis tangan dari `API_CONTRACT.md`, tanpa codegen | Keputusan 10 Okt 2026: semua aksi berbagi satu path `/api?aksi=`, yang tidak bisa dinyatakan OpenAPI. Aksinya kecil |
 | `ChangeNotifier` + `InheritedNotifier`, tanpa paket state | 10 layar; dependensi minimal |
 | `Navigator` bawaan, `NavigationBar` + `IndexedStack` | Isian setiap tab tetap saat berpindah tab |
 | "Hari ini" dari `konfigurasi.hari_ini` | Jam HP bisa salah; data dicap jam server |

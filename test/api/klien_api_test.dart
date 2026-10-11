@@ -82,6 +82,7 @@ Future<Object> panggil(KlienApi api, Aksi aksi) => switch (aksi) {
       Aksi.rekap => api.rekap(const PermintaanRekap(periode: Periode.hari)),
       Aksi.gantipassword => api.gantiPassword(
           const PermintaanGantiPassword(lama: passwordUji, baru: 'sandi-baru-789', ulang: 'sandi-baru-789')),
+      Aksi.logout => api.logout(tokenUji).then((_) => 'logout'),
     };
 
 final polaUuidV4 = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
@@ -459,25 +460,25 @@ void main() {
 
   group('versi kontrak (§9)', () {
     test('aturan kecocokan versi', () {
-      expect(versiCocok('0.1.0'), isTrue);
-      expect(versiCocok('0.1.7'), isTrue);
-      expect(versiCocok('0.2.0'), isFalse);
-      expect(versiCocok('0.0.9'), isFalse);
+      expect(versiCocok('0.2.0'), isTrue);
+      expect(versiCocok('0.2.7'), isTrue);
+      expect(versiCocok('0.3.0'), isFalse);
+      expect(versiCocok('0.1.9'), isFalse, reason: 'server 0.1.x belum punya aksi logout');
       expect(versiCocok('1.1.0'), isFalse);
       expect(versiCocok('1.3.0', versiKlien: '1.2.0'), isTrue);
       expect(versiCocok('1.2.5', versiKlien: '1.2.0'), isTrue);
       expect(versiCocok('1.1.0', versiKlien: '1.2.0'), isFalse);
       expect(versiCocok('2.2.0', versiKlien: '1.2.0'), isFalse);
       expect(versiCocok(''), isFalse);
-      expect(versiCocok('0.1'), isFalse);
-      expect(versiCocok('v0.1.0'), isFalse);
+      expect(versiCocok('0.2'), isFalse);
+      expect(versiCocok('v0.2.0'), isFalse);
     });
 
     test('X-Api-Versi tidak cocok → GalatVersi, juga untuk jawaban sukses', () async {
-      final api = buatKlien((r) async => jawabJson(200, {'ok': true, 'data': konfigurasiUji}, versi: '0.2.0'));
+      final api = buatKlien((r) async => jawabJson(200, {'ok': true, 'data': konfigurasiUji}, versi: '0.1.0'));
       await expectLater(
         api.konfigurasi(),
-        throwsA(isA<GalatVersi>().having((g) => g.versiServer, 'versiServer', '0.2.0')),
+        throwsA(isA<GalatVersi>().having((g) => g.versiServer, 'versiServer', '0.1.0')),
       );
     });
 
@@ -501,7 +502,7 @@ void main() {
     test('padaGalatVersi dipanggil sebelum GalatVersi, dari header maupun versi_api', () async {
       final dipanggil = <String>[];
       final dariHeader = buatKlien((r) async =>
-          jawabJson(200, {'ok': true, 'data': ringkasanUji}, versi: '0.2.0'))
+          jawabJson(200, {'ok': true, 'data': ringkasanUji}, versi: '0.1.0'))
         ..padaGalatVersi = (g) => dipanggil.add('header ${g.versiServer}');
       await expectLater(dariHeader.donasiSaya(), throwsA(isA<GalatVersi>()));
 
@@ -512,7 +513,7 @@ void main() {
         ..padaGalatVersi = (g) => dipanggil.add('isi ${g.versiServer}');
       await expectLater(dariIsi.konfigurasi(), throwsA(isA<GalatVersi>()));
 
-      expect(dipanggil, ['header 0.2.0', 'isi 0.3.0']);
+      expect(dipanggil, ['header 0.1.0', 'isi 0.3.0']);
     });
 
     test('versi cocok tidak memanggil padaGalatVersi', () async {
@@ -526,9 +527,53 @@ void main() {
     test('versi patch berbeda tetap diterima', () async {
       final api = buatKlien((r) async => jawabJson(200, {
             'ok': true,
-            'data': {...konfigurasiUji, 'versi_api': '0.1.4'},
-          }, versi: '0.1.4'));
-      expect((await api.konfigurasi()).versiApi, '0.1.4');
+            'data': {...konfigurasiUji, 'versi_api': '0.2.4'},
+          }, versi: '0.2.4'));
+      expect((await api.konfigurasi()).versiApi, '0.2.4');
+    });
+  });
+
+  group('logout (kontrak §6.11)', () {
+    test('POST {} dengan token lama, meski klien sudah tanpa token; tanpa Idempotency-Key', () async {
+      late http.Request diterima;
+      final api = buatKlien((r) async {
+        diterima = r;
+        return jawabJson(200, {'ok': true, 'data': <String, Object?>{}});
+      })
+        ..token = null;
+      await api.logout('tkn-lama-789');
+      expect(diterima.method, 'POST');
+      expect(diterima.url.queryParameters['aksi'], 'logout');
+      expect(diterima.headers['Authorization'], 'Bearer tkn-lama-789');
+      expect(diterima.headers.containsKey('Idempotency-Key'), isFalse);
+      expect(jsonDecode(diterima.body), <String, Object?>{});
+      expect(api.token, isNull, reason: 'token lama tidak dipasang kembali');
+    });
+
+    test('401 → GalatApi tanpa memanggil padaTidakSah', () async {
+      final dipanggil = <GalatApi>[];
+      final api = buatKlien((r) async => jawabGalat(401, KodeGalat.tokenTidakSah), padaTidakSah: dipanggil.add);
+      await expectLater(api.logout(tokenUji), throwsA(isA<GalatApi>()));
+      expect(dipanggil, isEmpty);
+    });
+
+    test('server lama (0.1.0, belum punya logout) → GalatVersi tanpa memanggil padaGalatVersi', () async {
+      final dipanggil = <GalatVersi>[];
+      final api = buatKlien((r) async => jawabJson(
+          404, {'ok': false, 'kode': KodeGalat.aksiTidakAda, 'pesan': 'x'}, versi: '0.1.0'))
+        ..padaGalatVersi = dipanggil.add;
+      await expectLater(api.logout(tokenUji), throwsA(isA<GalatVersi>()));
+      expect(dipanggil, isEmpty);
+    });
+
+    test('tanpa jawaban → GalatJaringan, tanpa kiriman ulang', () async {
+      var kiriman = 0;
+      final api = buatKlien((r) async {
+        kiriman++;
+        throw const SocketException('putus');
+      });
+      await expectLater(api.logout(tokenUji), throwsA(isA<GalatJaringan>()));
+      expect(kiriman, 1);
     });
   });
 

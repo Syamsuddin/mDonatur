@@ -88,7 +88,7 @@ Isi permintaan, jawaban, dan kode galat ada di `API_CONTRACT.md` §6–§8. Cara
 - **Keluar** (menu ⋮)
   - Bila ada isian yang belum disimpan di tab mana pun, tampilkan dialog "Isian yang belum disimpan akan hilang. Keluar?" dengan tombol **Keluar** / **Batal**.
   - Lalu hapus token, kedaluwarsa, dan semua state di memori (konfigurasi, pengguna, isi layar). Alamat server dan username terakhir tetap disimpan.
-  - Tidak ada aksi server.
+  - Lalu kirim `logout` dengan token lama di latar belakang (kontrak §6.11, sejak 0.2.0): server mencatatnya di log aktivitas dan mencabut token itu. Tidak ditunggu, tidak diulang, dan galat apa pun (jaringan, 401, 404 server lama, versi tidak cocok) diabaikan tanpa pesan maupun layar versi.
 - **Pencabutan:** 401 `akun_nonaktif` atau `token_*` pada permintaan mana pun → docs/14_ERROR_HANDLING.md.
 - **Pengaturan** (menu ⋮ dan layar Masuk)
   - Alamat server: garis miring di akhir dibuang. Build rilis hanya menerima `https`; build debug juga menerima `http`. Tombol "Pakai alamat bawaan" kembali ke `SERVER_URL`.

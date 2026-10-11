@@ -67,11 +67,12 @@ Map<String, Object?> loginUji({String token = tokenUji, String username = 'uji_o
 
 typedef Penangan = Future<http.Response> Function(http.Request permintaan);
 
-/// Server tiruan. Bawaan: `login` dan `konfigurasi` sukses; aksi lain 404 `aksi_tidak_ada`.
+/// Server tiruan. Bawaan: `login`, `konfigurasi`, dan `logout` sukses; aksi lain 404 `aksi_tidak_ada`.
 class ServerTiruan {
   ServerTiruan() {
     penangan['login'] = (r) async => jawabOk(loginUji());
     penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji());
+    penangan['logout'] = (r) async => jawabOk(<String, Object?>{});
   }
 
   final penangan = <String, Penangan>{};

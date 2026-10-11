@@ -15,7 +15,7 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 │   ├── tema.dart              ThemeData + konstanta token 26: satu-satunya tempat Color(0x…), TextStyle, keluarga huruf,
 │   │                          jarak, radius, gradien, pola bintang, dan durasi gerak
 │   ├── api/
-│   │   ├── klien_api.dart     KlienApi; const versiKontrak = '0.1.0'; nama aksi
+│   │   ├── klien_api.dart     KlienApi; const versiKontrak = '0.2.0'; nama aksi
 │   │   ├── galat_api.dart     GalatApi, GalatJaringan, GalatVersi
 │   │   └── model.dart         kelas permintaan dan jawaban (fromJson/toJson): satu-satunya tempat nama field JSON
 │   ├── state/
