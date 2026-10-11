@@ -12,7 +12,7 @@ Kapuh Madani, Kandangan · Kalimantan Selatan
 [![Dart](https://img.shields.io/badge/Dart-3.13.4-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](#persyaratan)
 [![Kontrak API](https://img.shields.io/badge/kontrak_API-v0.2.0-046500)](API_CONTRACT.md)
-[![Uji](https://img.shields.io/badge/uji-281_lulus-046500)](#pengujian)
+[![Uji](https://img.shields.io/badge/uji-291_lulus-046500)](#pengujian)
 [![Lisensi](https://img.shields.io/badge/lisensi-MIT-yellow)](LICENSE)
 
 </div>
@@ -28,6 +28,7 @@ Semua aturan bisnis tetap di server dan sama dengan versi web: konfirmasi sumban
 ## Daftar isi
 
 - [Fitur](#fitur)
+- [Tangkapan layar](#tangkapan-layar)
 - [Tampilan](#tampilan)
 - [Arsitektur](#arsitektur)
 - [Teknologi](#teknologi)
@@ -47,12 +48,83 @@ Semua aturan bisnis tetap di server dan sama dengan versi web: konfirmasi sumban
 | **Pengaturan server** | Mengisi alamat server sendiri, termasuk instalasi di subfolder, sehingga aplikasi bisa dipakai di server mana pun. |
 | **Cek dan cari donatur** | Melihat nama, alamat, bintang, dan riwayat sumbangan tahun ini setelah mengetik nomor; mencari donatur lewat nama, alamat, atau nomor bila nomornya lupa. |
 | **Input sumbangan** | Mengisi nominal dari saran server atau tombol nominal cepat, menerima peringatan bila donatur sudah menyumbang hari ini atau nominalnya janggal, dan mengirim ulang dengan aman saat sinyal putus. |
-| **Tambah donatur** | Mendaftarkan donatur baru beserta sumbangan pertamanya, dengan peringatan bila nama yang mirip sudah ada. |
+| **Tambah donatur** | Mendaftarkan donatur baru beserta sumbangan pertamanya. Data yang persis sama dengan donatur terdaftar ditolak (beserta nomornya), dan sumbangan pertama di atas batas perlu dikonfirmasi. |
 | **Input Saya** | Melihat semua input pada tanggal tertentu beserta totalnya untuk serah terima uang, dan memperbaiki nominal yang salah ketik sesuai hak ubah dari server. |
 | **Rekap** | Melihat total harian, mingguan (Senin–Minggu), dan bulanan, milik sendiri maupun semua operator, lengkap dengan grafik per hari dan per operator. |
 | **Ganti password** | Mengganti password langsung dari HP. |
 
+Setiap fitur di atas bisa dilihat di [Tangkapan layar](#tangkapan-layar).
+
 Direncanakan setelah MVP diterima: pindai QR kartu donatur, kirim bukti sumbangan lewat WhatsApp, dan versi iOS.
+
+## Tangkapan layar
+
+Diambil dari mDonator 1.1.0 di emulator Android 13 (Pixel 5) yang terhubung ke server lokal berisi **data demo fiktif**. Nama, alamat, dan nomor HP pada gambar bukan data donatur sungguhan.
+
+### Masuk, pengaturan, dan keluar
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/01-masuk.png" width="240" alt="Layar Masuk"><br><sub><b>Masuk.</b> Username dan password operator. Sesi disimpan sebagai token di penyimpanan aman, jadi cukup masuk sekali di awal hari kerja.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/13-pengaturan.png" width="240" alt="Layar Pengaturan"><br><sub><b>Pengaturan.</b> Alamat server bisa diganti (juga instalasi di subfolder). Bagian bawah menampilkan versi aplikasi, kontrak, dan server, serta pengguna, peran, dan masa berlaku token.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/14-keluar.png" width="240" alt="Dialog Keluar"><br><sub><b>Keluar.</b> Bila masih ada isian yang belum disimpan, aplikasi meminta konfirmasi. Setelah keluar, server diberi tahu lewat aksi <code>logout</code> sehingga keluarnya tercatat dan token dicabut.</sub></td>
+</tr>
+</table>
+
+### Input sumbangan
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/02-cek-donatur.png" width="240" alt="Cek donatur"><br><sub><b>Cek donatur.</b> Ketik nomor lalu Cek: nama, alamat, bintang (rata-rata sumbangan tahun lalu), dan riwayat tahun ini. Nominal saran dari server terisi otomatis dan tombolnya ditandai. Total input hari ini selalu tampil di kepala layar.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/03-sumbangan-tersimpan.png" width="240" alt="Sumbangan tersimpan"><br><sub><b>Tersimpan.</b> Kartu hasil menampilkan nama, nominal, dan jam server (WITA), lalu total di kepala layar bertambah. Bila sinyal putus, Kirim ulang memakai kunci yang sama sehingga tidak ada input ganda.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/04-konfirmasi-ganda.png" width="240" alt="Konfirmasi sumbangan ganda"><br><sub><b>Konfirmasi.</b> Server meminta konfirmasi bila donatur sudah menyumbang hari ini, atau bila nominalnya di atas batas. Ya, simpan mengirim ulang dengan konfirmasi; Tidak kembali ke isian.</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/05-cari-donatur.png" width="240" alt="Cari donatur"><br><sub><b>Cari donatur.</b> Lupa nomornya? Cari lewat nama, alamat, atau nomor; ketuk hasilnya untuk langsung Cek di tab Input.</sub></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+### Tambah donatur
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/06-tambah-donatur.png" width="240" alt="Tambah donatur"><br><sub><b>Tambah donatur.</b> Nama, alamat, nomor HP, keterangan, dan sumbangan pertama. Server menolak data kembar dan meminta konfirmasi bila sumbangan pertamanya di atas batas.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/07-donatur-tersimpan.png" width="240" alt="Donatur tersimpan"><br><sub><b>Tersimpan.</b> Donatur dan sumbangan pertamanya tersimpan bersamaan, dan server memberi nomor register baru.</sub></td>
+<td></td>
+</tr>
+</table>
+
+### Input Saya
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/08-input-saya.png" width="240" alt="Input Saya"><br><sub><b>Input Saya.</b> Semua input pada tanggal yang dipilih beserta jumlah transaksi dan totalnya, untuk serah terima uang di akhir hari.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/09-ubah-sumbangan.png" width="240" alt="Ubah sumbangan"><br><sub><b>Ubah sumbangan.</b> Memperbaiki nominal yang salah ketik. Hak ubah ditentukan server: operator hanya untuk inputnya sendiri pada hari ini.</sub></td>
+<td></td>
+</tr>
+</table>
+
+### Rekap
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/10-rekap-operator.png" width="240" alt="Rekap bulanan semua operator"><br><sub><b>Rekap.</b> Pilih Hari, Minggu (Senin–Minggu), atau Bulan, untuk input sendiri atau semua operator. Kartu ringkasan berisi total, transaksi, dan donatur, ditambah grafik donat per operator.</sub></td>
+<td align="center" valign="top" width="33%"><img src="screenshots/11-rekap-harian.png" width="240" alt="Rekap per hari"><br><sub><b>Rincian per hari.</b> Grafik area per hari dan daftar total harian. Panah ← → berpindah ke periode sebelumnya atau berikutnya.</sub></td>
+<td></td>
+</tr>
+</table>
+
+### Ganti password
+
+<table>
+<tr>
+<td align="center" valign="top" width="33%"><img src="screenshots/12-ganti-password.png" width="240" alt="Ganti password"><br><sub><b>Ganti password.</b> Validasi server tampil di bawah isian yang bermasalah, dan isian password dikosongkan setiap kali server menjawab. Setelah berhasil, token lama di semua perangkat batal.</sub></td>
+<td></td>
+<td></td>
+</tr>
+</table>
 
 ## Tampilan
 
@@ -117,6 +189,7 @@ lib/
 test/                  uji unit, klien API, kepatuhan kontrak, dan widget
 assets/                logo yayasan dan berkas huruf
 docs/                  blueprint 00–27: PRD, scope, arsitektur, keamanan, konvensi UI, kriteria terima
+screenshots/           tangkapan layar untuk README (data demo fiktif)
 API_CONTRACT.md        kontrak API (aksi, payload, kode galat)
 ```
 
@@ -152,7 +225,7 @@ Hasilnya ada di `build/app/outputs/flutter-apk/app-debug.apk`.
 
 ```bash
 flutter analyze   # No issues found!
-flutter test      # All tests passed! (281 uji)
+flutter test      # All tests passed! (291 uji)
 ```
 
 Uji berjalan tanpa jaringan, memakai `MockClient` sebagai server tiruan:
@@ -175,7 +248,7 @@ Uji integrasi opsional terhadap server lokal dijelaskan di [`docs/11_COMMANDS.md
 
 ## Status proyek
 
-Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Distribusi aplikasi ke HP operator belum dimulai.
+Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Versi 1.1.0 (kontrak API 0.2.0) menambahkan pemberitahuan keluar ke server (aksi `logout`). Distribusi aplikasi ke HP operator belum dimulai.
 
 ## Keamanan
 
