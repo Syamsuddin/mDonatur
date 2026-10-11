@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:mdonator/layar/kerangka.dart';
 import 'package:mdonator/layar/masuk.dart';
 import 'package:mdonator/main.dart';
@@ -322,10 +323,10 @@ void main() {
   });
 
   group('versi kontrak (§9)', () {
-    testWidgets('versi_api "0.2.0" → layar blokir; hanya Pengaturan dan Keluar', (tester) async {
+    testWidgets('versi_api "0.3.0" → layar blokir; hanya Pengaturan dan Keluar', (tester) async {
       aturLayarKecil(tester);
       final server = ServerTiruan();
-      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.2.0'));
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.3.0'));
       final simpanan = simpananMasuk();
       await pompaAplikasi(tester, server: server, simpanan: simpanan);
 
@@ -345,7 +346,7 @@ void main() {
     testWidgets('X-Api-Versi tidak cocok pada permintaan di kerangka → layar blokir', (tester) async {
       final server = ServerTiruan();
       server.penangan['donatur'] = (r) async =>
-          jawabJson(200, {'ok': true, 'data': <String, Object?>{}}, versi: '0.2.0');
+          jawabJson(200, {'ok': true, 'data': <String, Object?>{}}, versi: '0.3.0');
       await pompaAplikasi(tester, server: server, simpanan: simpananMasuk(), kerangka: kerangkaDenganTabTiruan);
       await tester.tap(tombol<OutlinedButton>('Kirim Uji'));
       await tester.pumpAndSettle();
@@ -354,7 +355,7 @@ void main() {
 
     testWidgets('versi tidak cocok setelah login → layar blokir', (tester) async {
       final server = ServerTiruan();
-      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.2.0'));
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.3.0'));
       await pompaAplikasi(tester, server: server);
       await isiDanMasuk(tester);
       expect(find.text('Versi aplikasi tidak cocok dengan server. Perbarui aplikasi.'), findsOneWidget);
@@ -393,8 +394,49 @@ void main() {
       expect(find.byType(LayarKerangka, skipOffstage: false), findsNothing);
       expect(simpanan, {'alamat_server': 'http://host/donatur', 'username_terakhir': 'uji_operator'});
       expect(teksIsian(tester, 'Username'), 'uji_operator');
-      expect(server.aksi, ['konfigurasi'], reason: 'Keluar tanpa aksi server');
+      expect(server.aksi, ['konfigurasi', 'logout'], reason: 'server diberi tahu (kontrak §6.11)');
+      expect(server.permintaan.last.headers['Authorization'], 'Bearer $tokenUji');
     });
+
+    testWidgets('Masuk tampil tanpa menunggu jawaban logout', (tester) async {
+      final server = ServerTiruan();
+      final jawaban = Completer<http.Response>();
+      server.penangan['logout'] = (r) => jawaban.future;
+      final simpanan = simpananMasuk();
+      await pompaAplikasi(tester, server: server, simpanan: simpanan, kerangka: kerangkaDenganTabTiruan);
+      await bukaKeluar(tester);
+      expect(find.byType(LayarMasuk), findsOneWidget);
+      expect(simpanan.containsKey('token'), isFalse);
+      expect(server.aksi.last, 'logout');
+
+      jawaban.complete(jawabOk(<String, Object?>{}));
+      await tester.pumpAndSettle();
+      expect(find.byType(LayarMasuk), findsOneWidget);
+    });
+
+    final galatLogout = <String, http.Response Function()>{
+      'jaringan putus': () => throw const SocketException('putus'),
+      '500 galat_server': () => jawabGalat(500, 'galat_server', 'Terjadi kesalahan.'),
+      '401 token_tidak_sah': () => jawabGalat(401, 'token_tidak_sah', 'Sesi tidak sah. Silakan masuk lagi.'),
+      '404 dari server lama (0.1.0)': () =>
+          jawabJson(404, {'ok': false, 'kode': 'aksi_tidak_ada', 'pesan': 'Aksi API tidak dikenal.'}, versi: '0.1.0'),
+    };
+    for (final MapEntry(key: nama, value: jawab) in galatLogout.entries) {
+      testWidgets('logout gagal ($nama) → tetap keluar, tanpa pesan maupun layar versi', (tester) async {
+        final server = ServerTiruan();
+        server.penangan['logout'] = (r) async => jawab();
+        final sesi = await pompaAplikasi(tester, server: server, simpanan: simpananMasuk(),
+            kerangka: kerangkaDenganTabTiruan);
+        await bukaKeluar(tester);
+        expect(server.aksi.last, 'logout');
+        expect(sesi.fase, FaseSesi.perluMasuk);
+        expect(sesi.pesanMasuk, isNull);
+        expect(find.byType(LayarMasuk), findsOneWidget);
+        expect(find.text('Sesi tidak sah. Silakan masuk lagi.'), findsNothing);
+        expect(find.text('Versi aplikasi tidak cocok dengan server. Perbarui aplikasi.'), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets('tanpa isian → langsung keluar tanpa dialog', (tester) async {
       final server = ServerTiruan();

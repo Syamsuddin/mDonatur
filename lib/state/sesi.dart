@@ -16,7 +16,7 @@ import '../api/model.dart';
 
 /// Versi aplikasi untuk Pengaturan. Harus sama dengan `version` di pubspec.yaml (diuji di
 /// test/layar/pengaturan_test.dart); membacanya saat berjalan butuh paket tambahan.
-const versiAplikasi = '1.0.0+1';
+const versiAplikasi = '1.1.0+2';
 
 enum FaseSesi {
   /// Membaca secure storage, lalu `konfigurasi` bila ada token.
@@ -211,11 +211,23 @@ class Sesi extends ChangeNotifier {
     ]);
   }
 
-  /// P7 Keluar: tanpa aksi server. Alamat server dan username terakhir tetap tersimpan.
+  /// P7 Keluar: token dan state di perangkat dihapus lebih dulu, lalu server diberi tahu lewat
+  /// `logout` di latar belakang (kontrak §6.11). Keluar tidak menunggu jawabannya. Alamat server
+  /// dan username terakhir tetap tersimpan.
   Future<void> keluar() async {
+    final tokenLama = klien.token;
     _lupakanSesi();
     _ubahFase(FaseSesi.perluMasuk);
+    if (tokenLama != null) unawaited(_beritahuKeluar(tokenLama));
     await _hapusToken();
+  }
+
+  Future<void> _beritahuKeluar(String tokenLama) async {
+    try {
+      await klien.logout(tokenLama);
+    } on Object {
+      // Kontrak §6.11: jaringan, 401, 404 server lama, atau versi tidak cocok tidak menahan Keluar.
+    }
   }
 
   /// P0.4: dipanggil saat aplikasi kembali ke depan.

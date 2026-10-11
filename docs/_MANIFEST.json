@@ -7,7 +7,7 @@
   "confirmed_at": "2026-10-10T00:00:00+08:00",
   "sources": {
     "dosir": "DOSIR_MDONATOR.md (bahan asal, bukan bagian paket; bila beda dengan docs/, docs menang)",
-    "contract": "API_CONTRACT.md v0.1.0 (rumah tunggal alamat, aksi, payload, kode galat)",
+    "contract": "API_CONTRACT.md v0.2.0 (rumah tunggal alamat, aksi, payload, kode galat)",
     "server_plan": "../UPDATE_PLAN.md Fase 12 + ../CLAUDE.md (sisi server, di luar paket)"
   },
   "requirements": {
@@ -271,7 +271,7 @@
       "enabled": true,
       "role": "frontend",
       "contract_path": "API_CONTRACT.md",
-      "contract_version": "0.1.0",
+      "contract_version": "0.2.0",
       "note": "Tanpa openapi.yaml/kontrak/ (keputusan 10 Okt 2026): OpenAPI tidak bisa menyatakan banyak aksi pada satu path /api?aksi=; validate-kontrak.sh tidak dipakai"
     },
     "architecture": {

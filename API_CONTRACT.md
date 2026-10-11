@@ -1,6 +1,6 @@
 # Kontrak API mDonator
 
-**Versi kontrak: 0.1.0** · 10 Oktober 2026 · Status: **draf**; sisi server sudah diimplementasikan (Fase 12b, 10 Okt 2026, diuji `tests/api.php`), klien belum (12c).
+**Versi kontrak: 0.2.0** · 11 Oktober 2026 · Status: **draf**; sisi server diimplementasikan (Fase 12b dan 14, diuji `tests/api.php`), klien mengikuti (Fase 12c, diuji `flutter test`).
 
 Kontrak ini mengikat dua pihak:
 
@@ -29,7 +29,7 @@ Kontrak ini mengikat dua pihak:
 | Metode | Setiap aksi punya satu metode (GET atau POST, lihat §6). Metode lain → 405 dengan header `Allow`. `OPTIONS` juga 405; tidak ada CORS. |
 | Isi permintaan POST | JSON, dengan header `Content-Type: application/json`. Selain JSON → 415. Isi bukan JSON yang sah atau bukan objek → 400. Maksimum 16 KB → di atas itu 413. |
 | Isi permintaan GET | Tanpa isi; semua masukan lewat query string. |
-| Jawaban | Selalu JSON, termasuk saat galat. Header: `Content-Type: application/json; charset=utf-8`, `Cache-Control: no-store`, `X-Api-Versi: 0.1.0`. Tidak pernah ada `Set-Cookie`. |
+| Jawaban | Selalu JSON, termasuk saat galat. Header: `Content-Type: application/json; charset=utf-8`, `Cache-Control: no-store`, `X-Api-Versi: 0.2.0`. Tidak pernah ada `Set-Cookie`. |
 | Skema | Build rilis klien hanya memakai `https://`. `http://` hanya untuk build debug (server lokal, `http://10.0.2.2:3000` di emulator). |
 | Batas waktu klien | Koneksi 10 detik, permintaan 20 detik. POST tidak diulang otomatis (§7). |
 
@@ -42,10 +42,11 @@ Kontrak ini mengikat dua pihak:
   - password pengguna berubah, lewat web maupun `gantipassword`;
   - server memperbarui hash password saat pengguna login;
   - akun bukan lagi `admin`/`Operator` di `user.Keterangan`, misalnya di-Nonaktifkan;
-  - `APP_KEY` server diganti (semua token batal).
+  - `APP_KEY` server diganti (semua token batal);
+  - token itu dipakai untuk `logout` (§6.11); token lain milik pengguna yang sama tetap berlaku.
 - **Peran dibaca ulang dari DB** di setiap permintaan; perubahan peran langsung berlaku.
-- **Tidak ada pencabutan per perangkat.** Untuk mencabut akses: ganti password atau set Nonaktif.
-- **Keluar** cukup dengan menghapus token di perangkat; tidak ada aksi server.
+- **Admin tidak bisa mencabut satu perangkat.** Untuk mencabut akses: ganti password atau set Nonaktif. Pengguna sendiri mencabut token perangkatnya lewat `logout`.
+- **Keluar:** klien menghapus token di perangkat, lalu memberi tahu server lewat `logout` (§6.11). Keluar tidak bergantung pada jawaban server.
 - **Cookie diabaikan.** Cookie sesi web (`DONATUR_SID`) tidak berlaku di API; tanpa token, jawabannya 401.
 - **Jawaban 401** membawa header `WWW-Authenticate: Bearer`.
 - **API mati:** bila `APP_KEY` di server kosong, semua aksi (termasuk `login`) menjawab 503 `api_mati`. Halaman web tidak terpengaruh.
@@ -112,6 +113,7 @@ Ringkasan:
 | `ubahdonasi` | POST | ✓ | wajib | Ubah nominal satu sumbangan |
 | `rekap` | GET | ✓ | — | Rekap hari, minggu, atau bulan |
 | `gantipassword` | POST | ✓ | — | Ganti password, mendapat token baru |
+| `logout` | POST | ✓ | — | Keluar: dicatat server, token ini dicabut |
 
 Tidak ada aksi hapus. `aksi=hapusdonasi` dan nama lain yang tidak ada di tabel → 404 `aksi_tidak_ada`.
 
@@ -168,7 +170,7 @@ Tanpa parameter. Dipanggil saat aplikasi dibuka dan setelah masuk. Aksi ini seka
 
 ```json
 { "ok": true, "data": {
-  "versi_api": "0.1.0",
+  "versi_api": "0.2.0",
   "hari_ini": "2026-10-12",
   "zona_waktu": "Asia/Makassar",
   "nominal_umum": [50000, 100000, 150000, 200000, 250000, 300000, 350000, 500000, 1000000, 2000000],
@@ -425,6 +427,26 @@ Jawaban 200: `{ "ok": true, "data": { "token": "…", "kedaluwarsa": "…" } }`
 - Semua token lama pengguna ini, termasuk yang dipakai untuk permintaan ini, langsung batal. Klien mengganti token yang tersimpan dengan token baru.
 - Aksi ini **tidak** memakai kunci kirim ulang, karena jawabannya berisi token dan tidak boleh disimpan di server. Bila koneksi putus setelah mengirim, klien meminta pengguna masuk ulang: coba password baru dulu, lalu password lama.
 
+### 6.11 `logout` — POST
+
+Isi: objek JSON kosong `{}`. Field apa pun diabaikan. Tanpa kunci kirim ulang.
+
+Server:
+
+1. Memeriksa token seperti aksi lain (§3). Token tidak sah, kedaluwarsa, atau akun Nonaktif → 401 dengan kodenya.
+2. Mencatat logout pengguna token itu di log aktivitas server (media `mobile`, perangkat dari `User-Agent`).
+3. Mencabut token yang dipakai. Permintaan berikutnya dengan token itu → 401 `token_tidak_sah`. Token lain milik pengguna yang sama (perangkat lain) tetap berlaku.
+
+Jawaban 200: `{ "ok": true, "data": {} }`
+
+Klien (P7 Keluar):
+
+- menghapus token dan state di perangkat lebih dulu, lalu mengirim `logout` dengan token lama di latar belakang;
+- tidak menunggu jawabannya dan tidak mengulangnya;
+- mengabaikan galat apa pun: jaringan, 401, 404 dari server lama, maupun versi tidak cocok. Galat itu tidak memicu alur 401 atau layar versi.
+
+Akibatnya, bila `logout` tidak sampai ke server (mis. tanpa sinyal), keluarnya tidak tercatat dan token lama tetap berlaku sampai kedaluwarsa. Token itu sudah terhapus dari perangkat.
+
 ## 7. Kirim ulang aman (`Idempotency-Key`)
 
 Berlaku untuk `tambahdonasi`, `tambahdonatur`, dan `ubahdonasi`.
@@ -496,4 +518,5 @@ Berlaku untuk `tambahdonasi`, `tambahdonatur`, dan `ubahdonasi`.
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 0.2.0 | 11 Okt 2026 | Aksi `logout` (§6.11), permintaan pemilik: server mencatat logout di log aktivitas (media `mobile`) dan mencabut token yang dipakai. §3 disesuaikan (pencabutan lewat `logout`, Keluar memberi tahu server). Perubahan minor (aksi baru). Karena selama 0.x klien dan server harus bermayor dan berminor sama (§9), klien 0.1.0 menolak server 0.2.0: APK lama harus diganti. |
 | 0.1.0 | 10 Okt 2026 | Draf pertama dari `UPDATE_PLAN.md` Fase 12 dan `DOSIR_MDONATOR.md` §11, dengan rekomendasi T2 dan T4. Tambahan dari dosir: `navigasi` pada `rekap`, `lebih` pada `caridonatur`, `ringkasan_hari_ini` pada aksi tambah, `donatur` pada 409 `tambahdonasi`, kode `token_kedaluwarsa`, `akun_nonaktif`, `kunci_ulang_bentrok`, `fitur_belum_tersedia`, `terlalu_besar`, dan `tipe_tidak_didukung`, serta penyimpanan `tambahdonatur` yang atomik. |

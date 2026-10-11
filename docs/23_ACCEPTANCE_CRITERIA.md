@@ -11,6 +11,6 @@ Kriteria per fitur aktif. Alur rinci: docs/06_BUSINESS_PROCESS.md. Pola antarmuk
 
 Verifikasi: `flutter test test/layar/` → `All tests passed!`. Perintah "Cek warna literal", "Cek gradien dan huruf", "Cek `print`", dan "Cek alamat tertanam" → keluaran kosong.
 
-F1 dan F2 (S1) sudah diterima: docs/_archive/23-S1-masuk.md. F3 dan F4 (S2): docs/_archive/23-S2-input-sumbangan.md. F5 (S3): docs/_archive/23-S3-tambah-donatur.md. F6 (S4): docs/_archive/23-S4-input-saya.md. F7 (S5): docs/_archive/23-S5-rekap.md. F8 (S6): docs/_archive/23-S6-ganti-password.md. Logo yayasan (permintaan pemilik): docs/_archive/23-logo-yayasan.md. Tampilan arah C (S7): docs/_archive/23-S7-desain-dasbor.md.
+F1 dan F2 (S1) sudah diterima: docs/_archive/23-S1-masuk.md. F3 dan F4 (S2): docs/_archive/23-S2-input-sumbangan.md. F5 (S3): docs/_archive/23-S3-tambah-donatur.md. F6 (S4): docs/_archive/23-S4-input-saya.md. F7 (S5): docs/_archive/23-S5-rekap.md. F8 (S6): docs/_archive/23-S6-ganti-password.md. Logo yayasan (permintaan pemilik): docs/_archive/23-logo-yayasan.md. Tampilan arah C (S7): docs/_archive/23-S7-desain-dasbor.md. Keluar memberi tahu server (kontrak 0.2.0, permintaan pemilik): docs/_archive/23-logout.md.
 
 Tidak ada fitur aktif: semua fitur MVP F1–F8 dan tampilan S7 sudah diterima. Fitur baru menambah bloknya di sini.

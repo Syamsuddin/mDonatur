@@ -1,4 +1,4 @@
-// Kelas permintaan dan jawaban API, ditulis tangan dari API_CONTRACT.md v0.1.0.
+// Kelas permintaan dan jawaban API, ditulis tangan dari API_CONTRACT.md v0.2.0.
 // Satu-satunya tempat nama field JSON dan nama parameter query (docs/12_PROJECT_STRUCTURE.md).
 // Field jawaban yang tidak dikenal diabaikan (kontrak §4); field wajib yang hilang atau
 // bertipe salah melempar FormatException, yang oleh KlienApi diubah menjadi GalatApi.

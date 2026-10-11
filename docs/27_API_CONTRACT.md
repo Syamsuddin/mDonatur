@@ -6,8 +6,8 @@
 |---|---|
 | Peran paket | **frontend** (klien Flutter). Server ada di repo root dan diatur `../UPDATE_PLAN.md` Fase 12 |
 | Kontrak | `API_CONTRACT.md` di folder ini: rumah tunggal alamat, aksi, isi permintaan dan jawaban, amplop, kode galat, kirim ulang aman, dan aturan versi |
-| Versi terpin | `0.1.0`. Sama dengan `split.contract_version` di `docs/_MANIFEST.json` dan `const versiKontrak` di `lib/api/klien_api.dart` |
-| `openapi.yaml` | Tidak ada (keputusan 10 Okt 2026). 10 aksi berbagi satu path `/api?aksi=`, sedangkan OpenAPI tidak mengizinkan query string di kunci path. Karena itu tidak ada codegen, Prism, maupun `validate-kontrak.sh` |
+| Versi terpin | `0.2.0` (sejak 11 Okt 2026: aksi `logout`). Sama dengan `split.contract_version` di `docs/_MANIFEST.json` dan `const versiKontrak` di `lib/api/klien_api.dart` |
+| `openapi.yaml` | Tidak ada (keputusan 10 Okt 2026). Semua aksi berbagi satu path `/api?aksi=`, sedangkan OpenAPI tidak mengizinkan query string di kunci path. Karena itu tidak ada codegen, Prism, maupun `validate-kontrak.sh` |
 
 ## Presedensi
 

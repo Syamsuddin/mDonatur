@@ -3,7 +3,7 @@
 ## Di dalam scope
 
 - Aplikasi Android Flutter di `mDonator/` untuk fitur F1–F8 (docs/01_PRD.md), bagi peran operator dan admin.
-- Konsumsi 10 aksi `API_CONTRACT.md` v0.1.0. Klien API dan model ditulis tangan.
+- Konsumsi 11 aksi `API_CONTRACT.md` v0.2.0 (`logout` sejak 0.2.0, 11 Okt 2026). Klien API dan model ditulis tangan.
 - Uji klien (unit, widget, kepatuhan kontrak, dan integrasi opsional ke server lokal), serta APK debug.
 - Tampilan arah C "Dasbor Yayasan" (docs/26_UI_CONVENTIONS.md, S7), termasuk grafik rincian per hari dan per operator di tab Rekap. Grafik ini menggambar jawaban `rekap` yang sama dengan rinciannya (keputusan pemilik 10 Okt 2026).
 

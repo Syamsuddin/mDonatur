@@ -4,7 +4,7 @@
 
 - **Token.** Token dari `login` (kontrak §3) buram bagi klien: tidak diurai, hanya disimpan dan dikirim di header `Authorization: Bearer`. Token tidak pernah ditaruh di URL, query, atau log.
 - **Kedaluwarsa.** `kedaluwarsa` hanya ditampilkan di Pengaturan. Sah atau tidaknya token diputuskan server (401). Klien tidak memeriksa kedaluwarsa dengan jam HP.
-- **Hapus token** saat menerima 401 (selain dari `login`), saat Keluar, dan saat alamat server diganti.
+- **Hapus token** saat menerima 401 (selain dari `login`), saat Keluar, dan saat alamat server diganti. Saat Keluar, token itu juga dikirim sekali ke `logout` supaya server mencabutnya (kontrak §6.11).
 - **Otorisasi** milik server (docs/05_USER_ROLE.md). Klien hanya menyembunyikan aksi menurut `boleh_ubah` dan peran.
 - **Penguncian login** dipakai bersama web dan dihitung server. Klien tidak mencoba login ulang otomatis.
 
