@@ -9,6 +9,7 @@ mDonator/                      root paket; perintah flutter dijalankan dari sini
 ├── scripts/                   validate.sh, token_ledger.py (alat blueprint, bukan Flutter)
 ├── pubspec.yaml · pubspec.lock · analysis_options.yaml
 ├── assets/                    logo_yayasan.png (docs/26_UI_CONVENTIONS.md, Logo)
+├── screenshots/               PNG 480 px untuk README, diambil dari data demo fiktif (bukan DB lokal berisi PII)
 │   └── huruf/                 TTF Plus Jakarta Sans dan Outfit + OFL-*.txt (docs/09_STACK.md)
 ├── lib/
 │   ├── main.dart              runApp, MaterialApp (locale id_ID), SesiScope, orientasi potret
