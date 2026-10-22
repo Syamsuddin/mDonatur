@@ -1,6 +1,6 @@
 # Kontrak API mDonator
 
-**Versi kontrak: 0.2.0** · 11 Oktober 2026 · Status: **draf**; sisi server diimplementasikan (Fase 12b dan 14, diuji `tests/api.php`), klien mengikuti (Fase 12c, diuji `flutter test`).
+**Versi kontrak: 0.3.0** · 12 Oktober 2026 · Status: **draf**; sisi server diimplementasikan (Fase 12b, 14, dan 15, diuji `tests/api.php`), klien mengikuti (Fase 12c, diuji `flutter test`).
 
 Kontrak ini mengikat dua pihak:
 
@@ -17,7 +17,7 @@ Kontrak ini mengikat dua pihak:
 - **Aturan bisnis tetap milik server.** Kontrak hanya menjelaskan perilaku yang terlihat dari luar. Klien tidak menghitung ulang aturan K5, K6, K9, Note, bintang, saran, maupun rekap.
 - **Bila nanti dibuat `openapi.yaml`** (mode split VCBD, keputusan T1/T5 di dosir): berkas itu diturunkan dari dokumen ini dalam satu langkah dan harus setara isinya. Sejak saat itu `openapi.yaml` menjadi rumah endpoint dan payload, dan dokumen ini menyusut menjadi aturan (§1–§5, §7–§9).
 - **Keputusan yang dipakai:**
-  - [KEPUTUSAN] K3, K5, K6, K9, K11–K17 di `UPDATE_PLAN.md` §9.
+  - [KEPUTUSAN] K3, K5, K6, K9, K11–K17, K21a, dan K23 di `UPDATE_PLAN.md` §9.
   - Rekomendasi dosir yang belum dijawab pemilik: T2 (token HMAC 16 jam), T4 (nama field snake_case), A7 (tanpa paginasi), dan A9–A12. Mengubah salah satunya berarti mengubah kontrak (§9).
 
 ## 2. Alamat dan transport
@@ -29,7 +29,7 @@ Kontrak ini mengikat dua pihak:
 | Metode | Setiap aksi punya satu metode (GET atau POST, lihat §6). Metode lain → 405 dengan header `Allow`. `OPTIONS` juga 405; tidak ada CORS. |
 | Isi permintaan POST | JSON, dengan header `Content-Type: application/json`. Selain JSON → 415. Isi bukan JSON yang sah atau bukan objek → 400. Maksimum 16 KB → di atas itu 413. |
 | Isi permintaan GET | Tanpa isi; semua masukan lewat query string. |
-| Jawaban | Selalu JSON, termasuk saat galat. Header: `Content-Type: application/json; charset=utf-8`, `Cache-Control: no-store`, `X-Api-Versi: 0.2.0`. Tidak pernah ada `Set-Cookie`. |
+| Jawaban | Selalu JSON, termasuk saat galat. Header: `Content-Type: application/json; charset=utf-8`, `Cache-Control: no-store`, `X-Api-Versi: 0.3.0`. Tidak pernah ada `Set-Cookie`. |
 | Skema | Build rilis klien hanya memakai `https://`. `http://` hanya untuk build debug (server lokal, `http://10.0.2.2:3000` di emulator). |
 | Batas waktu klien | Koneksi 10 detik, permintaan 20 detik. POST tidak diulang otomatis (§7). |
 
@@ -65,7 +65,7 @@ Kontrak ini mengikat dua pihak:
 | Waktu lengkap | Hanya `kedaluwarsa`, dalam ISO-8601 dengan offset zona server, mis. `"2026-10-13T00:15:00+08:00"` |
 | Boolean | `true`/`false` JSON. `konfirmasi` hanya dianggap benar bila bernilai `true`. |
 | Kosong | Field yang tidak punya nilai dikirim `null` bila tertulis "atau null" di §6. Teks opsional yang tidak diisi dikirim `""`. |
-| Field tak dikenal | Klien **wajib mengabaikan** field jawaban yang tidak dikenalnya (dasar perubahan minor, §9). Server mengabaikan field permintaan yang tidak dikenal, termasuk `id_user`, `note`, `tanggal`, dan `waktu` pada aksi tulis. |
+| Field tak dikenal | Klien **wajib mengabaikan** field jawaban yang tidak dikenalnya (dasar perubahan minor, §9). Server mengabaikan field permintaan yang tidak dikenal, termasuk `id_user`, `tanggal`, dan `waktu` pada aksi tulis, serta `note` bila pengirimnya bukan admin (§6.5). |
 | Paginasi | Tidak ada. Semua daftar terbatas: `caridonatur` ≤ 20, `donasisaya` satu hari, `rekap.per_hari` ≤ 31. |
 | "Hari ini" | Selalu tanggal server dalam `APP_TIMEZONE` (WITA), yang dikirim di `konfigurasi.hari_ini`. Klien tidak memakai jam HP untuk menentukan hari. |
 
@@ -104,7 +104,7 @@ Ringkasan:
 | Aksi | Metode | Token | Kunci kirim ulang | Fungsi |
 |---|---|:-:|:-:|---|
 | `login` | POST | — | — | Masuk, mendapat token |
-| `konfigurasi` | GET | ✓ | — | Versi API, hari ini, nominal, pengguna |
+| `konfigurasi` | GET | ✓ | — | Versi API, hari ini, nominal, pengguna, hak atur Note |
 | `donatur` | GET | ✓ | — | Detail satu donatur (Cek) |
 | `caridonatur` | GET | ✓ | — | Cari donatur lewat nomor, nama, atau alamat |
 | `tambahdonasi` | POST | ✓ | wajib | Simpan sumbangan |
@@ -114,12 +114,13 @@ Ringkasan:
 | `rekap` | GET | ✓ | — | Rekap hari, minggu, atau bulan |
 | `gantipassword` | POST | ✓ | — | Ganti password, mendapat token baru |
 | `logout` | POST | ✓ | — | Keluar: dicatat server, token ini dicabut |
+| `hapusdonasi` | POST | ✓ | wajib | Hapus satu sumbangan, khusus admin |
 
-Tidak ada aksi hapus. `aksi=hapusdonasi` dan nama lain yang tidak ada di tabel → 404 `aksi_tidak_ada`.
+Nama aksi yang tidak ada di tabel → 404 `aksi_tidak_ada`.
 
 Struktur yang dipakai berulang:
 
-- **`Sumbangan`**: `{ "id": int, "id_donatur": int, "nama_donatur": string atau null, "tanggal": "YYYY-MM-DD", "waktu": "HH:MM:SS", "jumlah": int }`. `nama_donatur` bernilai `null` bila donaturnya sudah terhapus (donasi yatim, K7).
+- **`Sumbangan`**: `{ "id": int, "id_donatur": int, "nama_donatur": string atau null, "tanggal": "YYYY-MM-DD", "waktu": "HH:MM:SS", "jumlah": int }`. `nama_donatur` bernilai `null` bila donaturnya sudah terhapus (donasi yatim, K7). Untuk admin, sumbangan `Note='n'` juga membawa `"note_n": true`; field ini tidak pernah dikirim ke operator.
 - **`RingkasanHariIni`**: input pengguna token pada hari ini, hanya `Note='y'`, sama dengan strip di form input web.
 
   ```text
@@ -170,15 +171,17 @@ Tanpa parameter. Dipanggil saat aplikasi dibuka dan setelah masuk. Aksi ini seka
 
 ```json
 { "ok": true, "data": {
-  "versi_api": "0.2.0",
+  "versi_api": "0.3.0",
   "hari_ini": "2026-10-12",
   "zona_waktu": "Asia/Makassar",
   "nominal_umum": [50000, 100000, 150000, 200000, 250000, 300000, 350000, 500000, 1000000, 2000000],
   "nominal_konfirmasi": 5000000,
-  "pengguna": { "id": 6, "username": "operator1", "peran": "operator" } } }
+  "pengguna": { "id": 6, "username": "operator1", "peran": "operator" },
+  "boleh_atur_note": false } }
 ```
 
 - `nominal_umum` adalah daftar tombol nominal cepat; isinya mengikuti konstanta server `NOMINAL_UMUM`.
+- `boleh_atur_note` bernilai `true` hanya untuk admin (K3, K23). Klien menampilkan pilihan Note di Input Sumbangan hanya bila nilainya `true`, dan tidak menyimpulkannya sendiri dari `peran`.
 - Galat: 401 (§8).
 
 ### 6.3 `donatur` — GET
@@ -241,6 +244,7 @@ Kecocokan:
 | `id_donatur` | int | wajib; harus nomor donatur yang terdaftar |
 | `jumlah` | int | wajib; 1–2.147.483.647 |
 | `konfirmasi` | bool | opsional, bawaan `false` |
+| `note` | string | opsional, `"y"` atau `"n"`, bawaan `"y"`. Hanya berlaku bila pengirimnya admin (`boleh_atur_note: true`); dari operator diabaikan, sehingga tetap `Note='y'` |
 
 Urutan pemeriksaan server:
 
@@ -252,6 +256,7 @@ Urutan pemeriksaan server:
    | `id_donatur` | bukan int atau tidak terdaftar | "Nomor Register tidak terdaftar" |
    | `jumlah` | tidak ada | "Nominal sumbangan Kosong" |
    | `jumlah` | bukan int dalam rentang | "Nominal sumbangan harus angka tanpa titik atau koma" |
+   | `note` | dari admin, bukan `"y"` atau `"n"` | "Note harus y atau n." |
 
 2. **Konfirmasi** (dilewati bila `konfirmasi: true`) → 409 `perlu_konfirmasi`, dengan `alasan` dan `donatur`:
    - **K5:** donatur ini sudah tercatat menyumbang pada hari ini. Yang dihitung adalah semua sumbangannya hari itu, dari operator mana pun. Alasan: "Donatur nomor {id} sudah tercatat menyumbang {n} kali hari ini."
@@ -259,7 +264,9 @@ Urutan pemeriksaan server:
 3. **Simpan.** Server mengisi sendiri:
    - pengguna dari token;
    - tanggal dan jam dari jam server (WITA);
-   - `Note='y'`, juga bila admin yang menginput.
+   - `Note` dari field `note` bila admin yang menginput (bawaan `y`); selain itu selalu `Note='y'`.
+
+   Sumbangan `Note='n'` tidak ikut dihitung di `ringkasan_hari_ini`, dan `sumbangan` jawabannya membawa `"note_n": true`.
 
 Jawaban **201**:
 
@@ -321,7 +328,7 @@ Jawaban **201**:
 { "ok": true, "data": {
   "tanggal": "2026-10-12", "total": 1550000, "transaksi": 10,
   "daftar": [ { "id": 145438, "waktu": "09:20:11", "id_donatur": 7759, "nama_donatur": "Fulan bin Fulan",
-                "jumlah": 100000, "boleh_ubah": true } ] } }
+                "jumlah": 100000, "boleh_ubah": true, "boleh_hapus": false } ] } }
 ```
 
 | Field | Arti |
@@ -329,6 +336,7 @@ Jawaban **201**:
 | `total`, `transaksi` | Jumlah dan banyaknya sumbangan `Note='y'` milik pengguna token pada `tanggal`, untuk semua peran |
 | `daftar` | Sumbangan milik pengguna token pada `tanggal`, urut `waktu` lalu `id` menurun. Untuk operator hanya `Note='y'`. Untuk admin juga `Note='n'` dengan `"note_n": true`. |
 | `boleh_ubah` | Hasil aturan K6 dari server: operator hanya untuk tanggal hari ini; admin selalu `true`. Klien hanya mengizinkan Ubah pada baris yang `true`. |
+| `boleh_hapus` | `true` hanya untuk admin (K23, §6.12). Klien hanya menampilkan Hapus pada baris yang `true`. |
 
 Galat: 422 `tidak_valid` (`rincian.tanggal`).
 
@@ -447,9 +455,29 @@ Klien (P7 Keluar):
 
 Akibatnya, bila `logout` tidak sampai ke server (mis. tanpa sinyal), keluarnya tidak tercatat dan token lama tetap berlaku sampai kedaluwarsa. Token itu sudah terhapus dari perangkat.
 
+### 6.12 `hapusdonasi` — POST, kunci kirim ulang wajib
+
+Khusus admin (K23); padanan web: Hapus di Daftar Sumbangan oleh admin.
+
+| Field | Tipe | Aturan |
+|---|---|---|
+| `id` | int | wajib; id sumbangan |
+
+Field lain diabaikan. Aksi ini tidak punya `konfirmasi`: server tidak meminta konfirmasi, dan klien mengirimnya tanpa dialog (K23).
+
+Urutan pemeriksaan server:
+
+1. Pengguna token bukan admin → 403 `tidak_berhak`: "Hapus sumbangan lewat mDonator hanya untuk admin."
+2. `id` tidak sah atau tidak ada → 404 `tidak_ada`, "Data sumbangan tidak ditemukan."
+3. Hapus. Sumbangan milik siapa pun dan dari tanggal mana pun boleh dihapus, seperti admin di web. Penghapusan oleh admin tidak dicatat, baik di audit maupun di log aktivitas (K21a). Sumbangan yang terhapus hanya bisa dipulihkan dari backup database.
+
+Jawaban 200: `{ "ok": true, "data": { "sumbangan": Sumbangan } }`, berisi sumbangan yang dihapus seperti sebelum dihapus.
+
+Jawaban ini tidak membawa `ringkasan_hari_ini`. Klien memuat ulang `donasisaya` untuk daftar dan totalnya.
+
 ## 7. Kirim ulang aman (`Idempotency-Key`)
 
-Berlaku untuk `tambahdonasi`, `tambahdonatur`, dan `ubahdonasi`.
+Berlaku untuk `tambahdonasi`, `tambahdonatur`, `ubahdonasi`, dan `hapusdonasi`.
 
 | Aturan | Isi |
 |---|---|
@@ -471,7 +499,7 @@ Berlaku untuk `tambahdonasi`, `tambahdonatur`, dan `ubahdonasi`.
 | 401 | `token_kedaluwarsa` | Masa berlaku token habis. Pesan: "Sesi berakhir. Silakan masuk lagi." | Sama dengan `token_tidak_sah` |
 | 401 | `akun_nonaktif` | Akun tidak lagi admin/operator. Pesan: "Akun Anda tidak aktif. Hubungi admin." | Hapus token, tampilkan pesan di layar Masuk |
 | 401 | `login_gagal` | Hanya pada `login` | Tampilkan `pesan` |
-| 403 | `tidak_berhak` | Aturan K6 pada `ubahdonasi` | Tampilkan `pesan` |
+| 403 | `tidak_berhak` | Aturan K6 pada `ubahdonasi`; `hapusdonasi` oleh bukan admin | Tampilkan `pesan` |
 | 404 | `aksi_tidak_ada` | Nilai `aksi` tidak dikenal atau tidak ada | Bug klien atau versi tidak cocok |
 | 404 | `tidak_ada` | Donatur atau sumbangan tidak ada | Tampilkan `pesan` |
 | 405 | `metode_salah` | Metode HTTP tidak sesuai aksi | Bug klien |
@@ -518,5 +546,6 @@ Berlaku untuk `tambahdonasi`, `tambahdonatur`, dan `ubahdonasi`.
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 0.3.0 | 12 Okt 2026 | Permintaan pemilik (K23): admin memilih Note dan menghapus sumbangan dari mDonator. `konfigurasi.boleh_atur_note` (§6.2); field opsional `note` pada `tambahdonasi`, hanya berlaku untuk admin (§6.5, §4); `boleh_hapus` di baris `donasisaya` (§6.7); aksi `hapusdonasi` khusus admin, dengan kunci kirim ulang dan tanpa konfirmasi (§6.12, §7, §8). Struktur `Sumbangan` kini mencatat `note_n` untuk admin, yang sudah dikirim server sejak 0.1.0. Perubahan minor (aditif). Selama 0.x, klien 0.2.0 menolak server 0.3.0 (§9), jadi server dan APK harus diganti bersamaan. |
 | 0.2.0 | 11 Okt 2026 | Aksi `logout` (§6.11), permintaan pemilik: server mencatat logout di log aktivitas (media `mobile`) dan mencabut token yang dipakai. §3 disesuaikan (pencabutan lewat `logout`, Keluar memberi tahu server). Perubahan minor (aksi baru). Karena selama 0.x klien dan server harus bermayor dan berminor sama (§9), klien 0.1.0 menolak server 0.2.0: APK lama harus diganti. |
 | 0.1.0 | 10 Okt 2026 | Draf pertama dari `UPDATE_PLAN.md` Fase 12 dan `DOSIR_MDONATOR.md` §11, dengan rekomendasi T2 dan T4. Tambahan dari dosir: `navigasi` pada `rekap`, `lebih` pada `caridonatur`, `ringkasan_hari_ini` pada aksi tambah, `donatur` pada 409 `tambahdonasi`, kode `token_kedaluwarsa`, `akun_nonaktif`, `kunci_ulang_bentrok`, `fitur_belum_tersedia`, `terlalu_besar`, dan `tipe_tidak_didukung`, serta penyimpanan `tambahdonatur` yang atomik. |

@@ -15,7 +15,7 @@ import 'model.dart';
 
 /// Versi API_CONTRACT.md yang dipakai aplikasi ini. Harus sama dengan
 /// `split.contract_version` di docs/_MANIFEST.json (docs/27_API_CONTRACT.md).
-const versiKontrak = '0.2.0';
+const versiKontrak = '0.3.0';
 
 enum MetodeHttp { get, post }
 
@@ -31,7 +31,8 @@ enum Aksi {
   ubahdonasi(MetodeHttp.post, berkunci: true),
   rekap(MetodeHttp.get),
   gantipassword(MetodeHttp.post),
-  logout(MetodeHttp.post);
+  logout(MetodeHttp.post),
+  hapusdonasi(MetodeHttp.post, berkunci: true);
 
   const Aksi(this.metode, {this.bertoken = true, this.berkunci = false});
 
@@ -125,6 +126,11 @@ class KlienApi {
 
   Future<JawabanUbahDonasi> ubahDonasi(Kiriman<PermintaanUbahDonasi> kiriman) =>
       _kirim(Aksi.ubahdonasi, JawabanUbahDonasi.fromJson,
+          isi: kiriman.isi.toJson(), kunci: kiriman.kunci);
+
+  /// Kontrak §6.12: khusus admin, tanpa konfirmasi (K23).
+  Future<JawabanHapusDonasi> hapusDonasi(Kiriman<PermintaanHapusDonasi> kiriman) =>
+      _kirim(Aksi.hapusdonasi, JawabanHapusDonasi.fromJson,
           isi: kiriman.isi.toJson(), kunci: kiriman.kunci);
 
   Future<Rekap> rekap(PermintaanRekap permintaan) =>

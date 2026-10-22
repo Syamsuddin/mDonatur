@@ -244,7 +244,9 @@ void main() {
 
       expect(beratTanggal('01/02 Rp 50.000'), FontWeight.w700);
       expect(beratTanggal('04/01 Rp 200.000'), isNot(FontWeight.w700));
-      expect(find.textContaining('Note', findRichText: true), findsNothing);
+      // Tanpa label "Note n" di kartu; label "Note" milik centang pilihan admin (K23), bukan riwayat.
+      expect(find.descendant(of: find.byType(KartuDonatur), matching: find.textContaining('Note', findRichText: true)),
+          findsNothing);
     });
 
     testWidgets('lencana bintang: n bintang terisi dan 5 − n kosong, emas, teks "Bintang n"', (tester) async {
@@ -669,6 +671,139 @@ void main() {
       await tester.tap(find.text('Keluar'));
       await tester.pumpAndSettle();
       expect(diDialog('Isian yang belum disimpan akan hilang. Keluar?'), findsOneWidget);
+    });
+  });
+
+  group('Note (admin, K23)', () {
+    Finder labelNote() => find.text('Note');
+    bool? nilaiNote(WidgetTester tester) => tester.widget<Checkbox>(find.byType(Checkbox)).value;
+
+    /// Server admin: `tambahdonasi` menandai jawaban `note_n` bila isinya membawa note "n".
+    ServerTiruan serverAdmin() {
+      final server = serverInput();
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(username: 'uji_admin', peran: 'admin'));
+      server.penangan['tambahdonasi'] = (r) async {
+        final data = tambahDonasiUji();
+        if (isiJson(r)['note'] == 'n') (data['sumbangan']! as Map<String, Object?>)['note_n'] = true;
+        return jawabDibuat(data);
+      };
+      return server;
+    }
+
+    testWidgets('operator (boleh_atur_note false): tanpa centang Note dan tanpa field note', (tester) async {
+      final server = serverInput();
+      await pompaInput(tester, server);
+      await cekNomor(tester, '1234');
+      expect(find.byType(Checkbox), findsNothing);
+      expect(labelNote(), findsNothing);
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      expect(isiJson(kirimanKe(server, 'tambahdonasi').single).containsKey('note'), isFalse);
+    });
+
+    testWidgets('admin dengan peran yang tidak dibolehkan server: centang tidak tampil (hak dari server)', (tester) async {
+      final server = serverInput();
+      server.penangan['konfigurasi'] =
+          (r) async => jawabOk(konfigurasiUji(username: 'uji_admin', peran: 'admin', bolehAturNote: false));
+      await pompaInput(tester, server);
+      expect(find.byType(Checkbox), findsNothing);
+    });
+
+    testWidgets('bawaan tercentang (y) → tanpa field note; kosongkan → note "n", jam kartu hasil tebal; lalu kembali y',
+        (tester) async {
+      final server = serverAdmin();
+      await pompaInput(tester, server);
+      expect(nilaiNote(tester), isTrue);
+
+      await cekNomor(tester, '1234');
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      expect(isiJson(kirimanKe(server, 'tambahdonasi').last), {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': false});
+      expect(tester.widget<Text>(find.text('09:15 WITA')).style?.fontWeight, isNot(FontWeight.w700));
+
+      await cekNomor(tester, '1234');
+      await ketuk(tester, labelNote()); // label ikut bisa diketuk
+      expect(nilaiNote(tester), isFalse);
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      expect(isiJson(kirimanKe(server, 'tambahdonasi').last),
+          {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': false, 'note': 'n'});
+      expect(find.byType(KartuHasil), findsOneWidget);
+      expect(tester.widget<Text>(find.text('09:15 WITA')).style?.fontWeight, FontWeight.w700);
+      expect(nilaiNote(tester), isTrue, reason: 'kembali ke y setelah tersimpan (keputusan pemilik)');
+
+      await cekNomor(tester, '1234');
+      await ketuk(tester, find.byType(Checkbox));
+      await ketuk(tester, find.byType(Checkbox));
+      expect(nilaiNote(tester), isTrue);
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      expect(isiJson(kirimanKe(server, 'tambahdonasi').last).containsKey('note'), isFalse);
+    });
+
+    testWidgets('Note n + 409 perlu_konfirmasi → Ya, simpan tetap membawa note "n" dengan kunci baru', (tester) async {
+      final server = serverAdmin();
+      server.penangan['tambahdonasi'] = (r) async {
+        if (isiJson(r)['konfirmasi'] == true) return jawabDibuat(tambahDonasiUji());
+        return jawabGalat(409, 'perlu_konfirmasi', 'Periksa sebelum menyimpan.', {
+          'alasan': ['Donatur nomor 1234 sudah tercatat menyumbang 1 kali hari ini.'],
+          'donatur': {'id': 1234, 'nama': 'Fulan bin Fulan'},
+        });
+      };
+      await pompaInput(tester, server);
+      await cekNomor(tester, '1234');
+      await ketuk(tester, find.byType(Checkbox));
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      await tester.tap(tombol<FilledButton>('Ya, simpan'));
+      await tester.pumpAndSettle();
+
+      final kiriman = kirimanKe(server, 'tambahdonasi');
+      expect(kiriman, hasLength(2));
+      expect(isiJson(kiriman[1]), {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': true, 'note': 'n'});
+      expect(kiriman[1].headers['Idempotency-Key'], isNot(kiriman[0].headers['Idempotency-Key']));
+    });
+
+    testWidgets('selama menyimpan centang terkunci; diubah setelah galat jaringan → Kirim ulang hilang', (tester) async {
+      final server = serverAdmin();
+      final tahan = Completer<http.Response>();
+      server.penangan['tambahdonasi'] = (r) => tahan.future;
+      await pompaInput(tester, server);
+      await cekNomor(tester, '1234');
+      await tester.tap(tombol<FilledButton>('Simpan'));
+      await tester.pump();
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).onChanged, isNull);
+      await tester.tap(labelNote());
+      await tester.pump();
+      expect(nilaiNote(tester), isTrue);
+
+      tahan.completeError(http.ClientException('putus'));
+      await tester.pumpAndSettle();
+      expect(tombol<OutlinedButton>('Kirim ulang'), findsOneWidget);
+      await ketuk(tester, find.byType(Checkbox));
+      expect(tombol<OutlinedButton>('Kirim ulang'), findsNothing);
+
+      server.penangan['tambahdonasi'] = (r) async => jawabDibuat(tambahDonasiUji());
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      final kiriman = kirimanKe(server, 'tambahdonasi');
+      expect(kiriman, hasLength(2));
+      expect(kiriman[1].headers['Idempotency-Key'], isNot(kiriman[0].headers['Idempotency-Key']));
+      expect(isiJson(kiriman[1])['note'], 'n');
+    });
+
+    testWidgets('360×640 dp, textScaler 1,3: centang sebaris Sumbangan tanpa luapan, juga dengan errorText', (tester) async {
+      final server = serverAdmin();
+      server.penangan['tambahdonasi'] = (r) async => jawabGalat(422, 'tidak_valid', 'Isian belum benar.', {
+            'rincian': {'jumlah': 'Nominal sumbangan harus angka tanpa titik atau koma'},
+          });
+      await pompaInput(tester, server, layarKecil: true);
+      await cekNomor(tester, '1234');
+      // Kartu donatur di layar kecil mendorong Sumbangan keluar layar: gulir sampai centangnya terlihat.
+      await tester.scrollUntilVisible(
+        find.byType(Checkbox),
+        100,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first,
+      );
+      expect(find.byType(Checkbox), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await ketuk(tester, tombol<FilledButton>('Simpan'));
+      expect(galatIsian(tester, 'Sumbangan'), 'Nominal sumbangan harus angka tanpa titik atau koma');
+      expect(tester.takeException(), isNull);
     });
   });
 

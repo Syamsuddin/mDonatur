@@ -1,6 +1,7 @@
 // Layar Input Saya, tab 3 (P4 docs/06_BUSINESS_PROCESS.md): pilihan tanggal dan ringkasan (total dan
 // transaksi) di kepala dasbor, lalu daftar sumbangan milik pengguna pada tanggal itu di dalam kartu. Daftar dimuat setiap kali tab dibuka dan
-// bisa ditarik ke bawah; baris boleh_ubah membuka lembar Ubah. Empat state: docs/26_UI_CONVENTIONS.md.
+// bisa ditarik ke bawah; baris boleh_ubah membuka lembar Ubah, dan ikon hapus pada baris boleh_hapus (admin,
+// K23) langsung menghapus tanpa dialog. Empat state: docs/26_UI_CONVENTIONS.md.
 
 import 'dart:async';
 
@@ -107,7 +108,21 @@ class _LayarInputSayaState extends State<LayarInputSaya> {
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(Jarak.tepiLayar),
-              children: _isi(n),
+              children: [
+                if (n.pesanHapus case final pesan?) ...[
+                  PanelGalat(
+                    pesan: pesan,
+                    labelTombol: switch (n.tombolHapus) {
+                      TombolPanel.tidakAda => null,
+                      TombolPanel.cobaLagi => 'Coba lagi',
+                      TombolPanel.kirimUlang => 'Kirim ulang',
+                    },
+                    padaTombol: n.kirimUlangHapus,
+                  ),
+                  const SizedBox(height: Jarak.antarKartu),
+                ],
+                ..._isi(n),
+              ],
             ),
           ),
         );
@@ -127,7 +142,12 @@ class _LayarInputSayaState extends State<LayarInputSaya> {
             children: [
               for (final (i, baris) in data.daftar.indexed) ...[
                 if (i > 0) const Divider(height: Bentuk.garisPemisah),
-                BarisSumbangan(baris: baris, padaUbah: () => _ubah(data.tanggal, baris)),
+                BarisSumbangan(
+                  baris: baris,
+                  padaUbah: () => _ubah(data.tanggal, baris),
+                  menghapus: n.idDihapus == baris.id,
+                  padaHapus: n.idDihapus == null ? () => n.hapus(baris) : null,
+                ),
               ],
             ],
           ),

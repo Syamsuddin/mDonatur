@@ -1,13 +1,14 @@
 // State layar Input Saya (P4 docs/06_BUSINESS_PROCESS.md). Empat state di docs/26_UI_CONVENTIONS.md:
 // kosong = "Belum ada input pada tanggal ini", memuat = kerangka daftar, gagal = panel + Coba lagi,
-// sukses = daftar + total. Total, boleh_ubah (K6), dan note_n diputuskan server; notifier ini hanya
-// meneruskan hasilnya.
+// sukses = daftar + total. Total, boleh_ubah (K6), boleh_hapus (K23), dan note_n diputuskan server;
+// notifier ini hanya meneruskan hasilnya. Hapus dikirim tanpa dialog (K23).
 
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
 import '../api/galat_api.dart';
+import '../api/klien_api.dart';
 import '../api/model.dart';
 import '../util/tanggal.dart';
 import 'sesi.dart';
@@ -39,6 +40,13 @@ class InputSayaNotifier extends ChangeNotifier {
   String? _pesanGalat;
   String? _galatTanggal;
 
+  // Hapus: satu kiriman pada satu waktu. Setelah galat jaringan atau pesan umum, kirimannya disimpan,
+  // sehingga Kirim ulang atau Coba lagi memakai kunci yang sama (kontrak §7).
+  int? _idDihapus;
+  Kiriman<PermintaanHapusDonasi>? _hapusTertunda;
+  String? _pesanHapus;
+  TombolPanel _tombolHapus = TombolPanel.tidakAda;
+
   StatusInputSaya get status => _status;
 
   /// Jawaban terakhir untuk tanggal yang dipilih; `null` selama tanggal baru dimuat atau setelah
@@ -50,6 +58,13 @@ class InputSayaNotifier extends ChangeNotifier {
 
   /// `errorText` pilihan tanggal dari `rincian.tanggal` 422 (docs/14_ERROR_HANDLING.md).
   String? get galatTanggal => _galatTanggal;
+
+  /// Id sumbangan yang sedang dihapus, sampai daftar selesai dimuat ulang; selama itu tidak ada hapus lain.
+  int? get idDihapus => _idDihapus;
+
+  /// Isi panel galat hapus di atas daftar.
+  String? get pesanHapus => _pesanHapus;
+  TombolPanel get tombolHapus => _tombolHapus;
 
   /// `konfigurasi.hari_ini`: batas akhir date picker (P4.1).
   DateTime? get hariIni => _sesi.konfigurasi?.hariIni;
@@ -67,6 +82,7 @@ class InputSayaNotifier extends ChangeNotifier {
     _status = StatusInputSaya.memuat;
     _pesanGalat = null;
     _galatTanggal = null;
+    _lupakanGagalHapus();
     notifyListeners();
 
     try {
@@ -101,6 +117,64 @@ class InputSayaNotifier extends ChangeNotifier {
     _pilihan = baru == hariIni ? null : baru;
     _data = null;
     return muat();
+  }
+
+  /// Ikon hapus pada baris `boleh_hapus` (P4.6): langsung dikirim tanpa dialog konfirmasi, dengan kunci
+  /// kirim ulang baru, lalu daftar dimuat ulang.
+  Future<void> hapus(BarisDonasiSaya baris) async {
+    if (!baris.bolehHapus || _idDihapus != null) return;
+    await _hapus(Kiriman(PermintaanHapusDonasi(id: baris.id)));
+  }
+
+  /// Kirim ulang (galat jaringan) atau Coba lagi (pesan umum) di panel hapus: isi dan kunci sama.
+  Future<void> kirimUlangHapus() async {
+    final kiriman = _hapusTertunda;
+    if (kiriman == null || _idDihapus != null) return;
+    await _hapus(kiriman);
+  }
+
+  Future<void> _hapus(Kiriman<PermintaanHapusDonasi> kiriman) async {
+    _idDihapus = kiriman.isi.id;
+    _lupakanGagalHapus();
+    notifyListeners();
+
+    String? pesan;
+    var tombol = TombolPanel.tidakAda;
+    var muatUlang = false;
+    try {
+      await _sesi.klien.hapusDonasi(kiriman);
+      muatUlang = true;
+    } on GalatApi catch (galat) {
+      if (galat.perluPesanUmum) {
+        // Galat tidak disimpan server (kontrak §7), jadi Coba lagi boleh memakai kiriman yang sama.
+        pesan = TeksGalat.umum;
+        tombol = TombolPanel.cobaLagi;
+      } else {
+        // 403 dan 404: pesan server; 404 berarti sumbangan sudah tidak ada, jadi daftar dimuat ulang.
+        pesan = teksGalat(galat, post: true);
+        muatUlang = galat.kode == KodeGalat.tidakAda;
+      }
+    } on GalatJaringan catch (galat) {
+      pesan = teksGalat(galat, post: true);
+      tombol = TombolPanel.kirimUlang;
+    } on GalatVersi {
+      // Layar blokir versi diurus Sesi.
+    }
+    if (_dibuang) return;
+    // Baris yang dihapus tetap menunjukkan indikator sampai daftar baru tiba.
+    if (muatUlang) await muat();
+    if (_dibuang) return;
+    _idDihapus = null;
+    _pesanHapus = pesan;
+    _tombolHapus = tombol;
+    _hapusTertunda = tombol == TombolPanel.tidakAda ? null : kiriman;
+    notifyListeners();
+  }
+
+  void _lupakanGagalHapus() {
+    _pesanHapus = null;
+    _tombolHapus = TombolPanel.tidakAda;
+    _hapusTertunda = null;
   }
 
   void _gagal(String? pesan) {

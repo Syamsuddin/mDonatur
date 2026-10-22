@@ -38,7 +38,7 @@ Rasio kontras di bawah dibulatkan ke bawah. Untuk gradien, kontras dihitung terh
 | `teksSukses` | `#3C763D` | Pesan sukses | 5,4 : 1 di `latar`, 4,9 : 1 di `latarDasbor` |
 | `teksInfo` | `#31708F` | Teks info (mis. "Persempit pencarian") | 5,4 : 1 di `latar`, 4,9 : 1 di `latarDasbor` |
 | `teksPeringatan` | `#8A6D3B` | Judul "Nama mirip" (selalu di dalam kartu `latar`); palet grafik | 4,8 : 1 di `latar` |
-| `teksBahaya` | `#A94442` | Panel galat, `errorText` | 5,8 : 1 di `latar`, 5,3 : 1 di `latarDasbor` |
+| `teksBahaya` | `#A94442` | Panel galat, `errorText`, ikon hapus baris sumbangan (admin, S8) | 5,8 : 1 di `latar`, 5,3 : 1 di `latarDasbor` |
 | `bayangan` | `#043C00` alfa 20 % (`0x33043C00`) | Bayangan kartu, navigasi mengambang, dan tombol utama | — |
 | `pola` | `#FFFFFF` alfa 10 % (`0x1AFFFFFF`) | Garis pola bintang di atas gradien kepala | dekoratif |
 | `transparan` | `0x00000000` | AppBar, status bar, dan latar `FilledButton` di dalam tombol utama | — |
@@ -92,7 +92,7 @@ Gradien lain terlarang. Kepala berakhir lurus; lembar isi di bawahnya bersudut a
 | Bentuk | elevasi | AppBar 0 (transparan) · isian 0 · kartu 2 · navigasi mengambang 3 · tombol utama: bayangan `bayangan` 0/6 dp blur 16. Semua bayangan berwarna `bayangan` |
 | Bentuk | navigasi | `NavigationBar` tinggi 64 dp, mengambang dengan jarak 12 dp kiri-kanan dan 8 dp bawah (di atas inset sistem), indikator pil 64 × 32 dp (bawaan Material 3) |
 | Sentuh | target | ≥ 48 × 48 dp; tinggi tombol 48 dp; tombol utama 52 dp |
-| Ikon | set | Material Icons bawaan (`Icons.*`), 24 dp. Tab: `add_card`, `person_add_alt_1`, `receipt_long`, `bar_chart`. Lainnya: `search`, `more_vert`, `settings`, `edit`, `chevron_left`, `chevron_right`, `calendar_month`, `error_outline`, `check_rounded`, `star_rounded`, `star_outline_rounded` |
+| Ikon | set | Material Icons bawaan (`Icons.*`), 24 dp. Tab: `add_card`, `person_add_alt_1`, `receipt_long`, `bar_chart`. Lainnya: `search`, `more_vert`, `settings`, `edit`, `delete_outline`, `chevron_left`, `chevron_right`, `calendar_month`, `error_outline`, `check_rounded`, `star_rounded`, `star_outline_rounded` |
 | Ikon | ukuran lain | Bintang lencana 16 dp; ikon state kosong 40 dp (ikon tab layar itu, `teksLemah`); centang kartu hasil 32 dp |
 | Avatar | inisial | Lingkaran `primer` 40 dp, satu atau dua huruf pertama kata nama (kapital), Outfit 800 15 sp warna `aksen` |
 | Logo | berkas | `assets/logo_yayasan.png`, logo Yayasan Ibnu Atha'illah 224 px dari pemilik (10 Okt 2026). Bagian putih di dalam logo tembus pandang, jadi logo selalu di atas `latar` atau alas lingkaran `latar`. Ikon terbesar dan layar pembuka memperbesar berkas ini sampai 1,4×; bila berkas asli ≥ 1024 px tersedia, ganti lalu buat ulang PNG Android [TERBUKA] |
@@ -142,7 +142,8 @@ Gradien lain terlarang. Kepala berakhir lurus; lembar isi di bawahnya bersudut a
 | Panel galat | Kotak `latar` radius 12, border 1 dp `teksBahaya`, ikon `error_outline` dan teks `teksBahaya`, tombol Coba lagi atau Kirim ulang. Kotak putihnya membuat panel juga terbaca di kepala | `lib/widget/panel_galat.dart` |
 | State kosong | Ikon tab layar itu (40 dp, `teksLemah`) di atas teks `teksLemah`, di tengah | `lib/widget/state_kosong.dart` |
 | Kerangka memuat | `Skeletonizer` berisi baris tiruan: tulang `garisLembut` dengan gerak `kilau`, statis bila Hapus animasi aktif; teks tiruan tidak pernah terlihat atau dibacakan. Di tombol: `CircularProgressIndicator` 20 dp di dalam tombol nonaktif | `lib/widget/kerangka_memuat.dart` |
-| Baris sumbangan | `ListTile` di dalam `Card`: jam (tebal bila `note_n`), "nomor · nama", jumlah (`isi`, 700) di kanan, ikon `edit` `primer` bila `boleh_ubah` | `lib/widget/baris_sumbangan.dart` |
+| Baris sumbangan | `ListTile` di dalam `Card`: jam (tebal bila `note_n`), "nomor · nama", jumlah (`isi`, 700) di kanan, ikon `edit` `primer` bila `boleh_ubah`, lalu `IconButton` `delete_outline` `teksBahaya` (target 48 dp, tooltip "Hapus") bila `boleh_hapus` (admin, S8). Selama menghapus, ikonnya diganti indikator tombol 20 dp | `lib/widget/baris_sumbangan.dart` |
+| Centang Note | `Checkbox` Material bawaan (tercentang berlatar `primer` dengan centang `diAtasPrimer`, kosong bergaris `teksLemah`) dengan label "Note" (`label`) yang ikut bisa diketuk, target ≥ 48 dp; sebaris di kanan isian Sumbangan, hanya bila `boleh_atur_note` (admin, S8) | `lib/layar/input_sumbangan.dart` |
 | Segmen | `SegmentedButton` pil di kepala Rekap: Hari / Minggu / Bulan dan Input saya / Semua operator. Wadah `pilKepala`, teks `diAtasPrimer`; terpilih berlatar `aksen` dengan teks `primerTua` 800; tanpa ikon centang | gaya di `lib/tema.dart` |
 | Grafik per hari | `LineChart` (`fl_chart`) setinggi 160 dp di `Card` "Rincian per hari" (periode Minggu dan Bulan): satu titik per tanggal dari `dari` sampai `sampai`, berhenti di `hari_ini` server. Tanggal yang tidak ada di `per_hari` bernilai 0 (kontrak §6.9). Garis `primer` 3 dp melengkung tanpa melampaui titik, area `areaGrafik`, titik hari ini lingkaran `primer` 5 dp bercincin `kuningLembut`; label sumbu `kecil` `teksLemah`, label hari ini `primer` (Minggu: nama hari Sen–Min tiap hari; Bulan: tanggal 1, 8, 15, 22, 29); tanpa sumbu nilai, sentuh, dan tooltip. Baris rincian per hari tetap tampil di bawahnya | `lib/widget/grafik_rekap.dart` |
 | Donat per operator | `PieChart` (`fl_chart`) donat 120 dp, lubang 60 %, di `Card` "Rincian per operator" (cakupan Semua operator); bagian berwarna palet grafik sesuai urutan `per_operator`. Baris rincian per operator di bawahnya menjadi legenda: titik 12 dp berwarna sama sebagai `leading` | `lib/widget/grafik_rekap.dart` |
@@ -153,7 +154,7 @@ Gradien lain terlarang. Kepala berakhir lurus; lembar isi di bawahnya bersudut a
 |---|---|---|---|---|
 | Memuat awal | — (tanpa kepala) | logo `logoMemuat` di tengah latar `latar`, status bar berikon gelap | P0, selama token dibaca dan `konfigurasi` dipanggil | — |
 | Masuk | `logoKepala`, nama yayasan (`judul`, `aksen`), "mDonator" (`isi`, `diAtasPrimer`), ikon `settings` sebaris | lembar `latar` bersudut atas 24: Username, Password, tombol utama Masuk | awal tanpa token; didorong di atas kerangka saat 401 | — |
-| Input Sumbangan | ringkasan hari ini | Nomor Donator + Cari + Cek, panel/kartu, Sumbangan, nominal cepat; tombol utama Simpan dan panel galatnya tetap di bawah | tab 1 "Input" (layar awal) | Input Sumbangan |
+| Input Sumbangan | ringkasan hari ini | Nomor Donator + Cari + Cek, panel/kartu, Sumbangan (dengan centang Note bagi admin), nominal cepat; tombol utama Simpan dan panel galatnya tetap di bawah | tab 1 "Input" (layar awal) | Input Sumbangan |
 | Cari Donatur | isian cari | `Card` daftar hasil: avatar inisial, nama, "nomor · alamat" | dari ikon `search` di Input | Cari Donatur |
 | Tambah Donatur | — | kartu hasil, isian, "Nama mirip" di dalam `Card`; tombol utama Simpan tetap di bawah | tab 2 "Donatur" | Tambah Donatur |
 | Input Saya | pilihan Tanggal (isian `latar` baca-saja, ikon `calendar_month`) dan, bila ada data, "Total N transaksi" (`label`, `diAtasPrimer`) dengan nominal `angkaKepala` | `Card` berisi baris sumbangan | tab 3 "Input Saya" | Input Saya |
@@ -163,7 +164,7 @@ Gradien lain terlarang. Kepala berakhir lurus; lembar isi di bawahnya bersudut a
 | Pengaturan | — | formulir, tombol utama Simpan, `Card` info diagnosa | menu ⋮ dan ikon `settings` di Masuk | Pengaturan |
 | Gagal memuat, versi tidak cocok | — | panel galat dan tombolnya | P0 | mDonator |
 
-Tidak ada aksi destruktif. Keluar dengan isian yang belum disimpan selalu lewat dialog (docs/06_BUSINESS_PROCESS.md P7).
+Satu-satunya aksi destruktif adalah hapus sumbangan oleh admin di Input Saya. Atas permintaan pemilik, aksi ini dikirim tanpa dialog konfirmasi (K23, docs/06_BUSINESS_PROCESS.md P4.6). Keluar dengan isian yang belum disimpan selalu lewat dialog (docs/06_BUSINESS_PROCESS.md P7).
 
 ## Perangkat
 
@@ -184,6 +185,7 @@ Tidak ada aksi destruktif. Keluar dengan isian yang belum disimpan selalu lewat 
 | Cari Donatur | "Ketik minimal 2 huruf nama, alamat, atau nomor" | kerangka daftar | panel galat + Coba lagi | daftar / "Tidak ada donatur yang cocok" |
 | Tambah Donatur | formulir kosong | Simpan nonaktif + indikator | `errorText` per isian / panel | kartu Nomor Register |
 | Input Saya | "Belum ada input pada tanggal ini" | kerangka daftar | panel galat + Coba lagi | ringkasan di kepala + daftar |
+| Input Saya (hapus, admin) | — | indikator di tombol hapus baris itu, hapus lain nonaktif | panel galat di atas daftar (Kirim ulang / Coba lagi / tanpa tombol) | daftar dimuat ulang tanpa baris itu |
 | Rekap | "Tidak ada sumbangan pada periode ini" | kerangka kartu | panel galat + Coba lagi | ringkasan + rincian + grafik |
 | Ganti Password, Pengaturan | isian | tombol nonaktif + indikator | `errorText` / panel | pesan sukses |
 
@@ -191,7 +193,7 @@ Tidak ada aksi destruktif. Keluar dengan isian yang belum disimpan selalu lewat 
 
 - Bahasa Indonesia, nada formal-netral. Pesan server ditampilkan apa adanya.
 - **Kata kerja tombol tetap:** Cek, Simpan, Batal, Ya, simpan, Tidak, Masuk, Keluar, Coba lagi, Kirim ulang.
-- **Label isian:** Username, Password, Nomor Donator, Sumbangan, Nama Donator, Alamat, Nomor Handphone, Keterangan, Sumbangan Pertama, Password Lama, Password Baru, Ulangi Password Baru, Alamat Server, Tanggal, Nama, alamat, atau nomor.
+- **Label isian:** Username, Password, Nomor Donator, Sumbangan, Nama Donator, Alamat, Nomor Handphone, Keterangan, Sumbangan Pertama, Password Lama, Password Baru, Ulangi Password Baru, Alamat Server, Tanggal, Nama, alamat, atau nomor. Label centang: Note. Tooltip ikon hapus: Hapus.
 - **Teks kepala dan kartu:** "Total input hari ini", "{N} transaksi", "Total N transaksi", "Total", "Transaksi", "Donatur", "Rincian per operator", "Rincian per hari".
 - **Format**
   - Rupiah "Rp 100.000" (`id_ID`, tanpa desimal).

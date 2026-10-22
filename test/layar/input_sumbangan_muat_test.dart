@@ -46,44 +46,48 @@ ScrollPosition gulirInput(WidgetTester tester) => tester
 void main() {
   setUpAll(muatHurufAplikasi);
 
-  testWidgets('Pixel 5: donatur bulanan (10 riwayat), 6 nominal, Simpan → tanpa gulir', (tester) async {
-    aturPixel5(tester);
-    final server = serverInput();
-    server.penangan['konfigurasi'] = (r) async => jawabOk({
-          ...konfigurasiUji(),
-          'nominal_umum': [50000, 100000, 150000, 200000, 250000, 300000, 350000, 500000, 1000000, 2000000],
-        });
-    server.penangan['donasisaya'] = (r) async => jawabOk(donasiSayaUji(total: 12450000, transaksi: 58));
-    server.penangan['donatur'] = (r) async => jawabOk(donaturUji(
-          nama: 'MUHAMMAD SYAIFFUL HIDAYAT',
-          alamat: 'Desa Kapuh RT 03, Kecamatan Simpur',
-          noHp: '081234567890',
-          keterangan: 'Ambil di rumah',
-          bintang: 3,
-          riwayat: [
-            for (var b = 1; b <= 10; b++)
-              {'tanggal': '2026-${'$b'.padLeft(2, '0')}-02', 'waktu': '09:00:00', 'jumlah': 1000000},
-          ],
-          totalTahunIni: 10000000,
-          saranJumlah: null,
-        ));
-    server.penangan['tambahdonasi'] = (r) async => jawabDibuat(tambahDonasiUji(jumlah: 1000000));
-    await pompaAplikasi(tester, server: server, simpanan: simpananMasuk(), kerangka: const LayarKerangka());
-    expect(gulirInput(tester).maxScrollExtent, 0, reason: 'layar kosong');
+  // Admin mendapat centang Note sebaris dengan Sumbangan (K23); tinggi layar tidak boleh bertambah.
+  for (final peran in ['operator', 'admin']) {
+    testWidgets('Pixel 5 ($peran): donatur bulanan (10 riwayat), 6 nominal, Simpan → tanpa gulir', (tester) async {
+      aturPixel5(tester);
+      final server = serverInput();
+      server.penangan['konfigurasi'] = (r) async => jawabOk({
+            ...konfigurasiUji(peran: peran),
+            'nominal_umum': [50000, 100000, 150000, 200000, 250000, 300000, 350000, 500000, 1000000, 2000000],
+          });
+      server.penangan['donasisaya'] = (r) async => jawabOk(donasiSayaUji(total: 12450000, transaksi: 58));
+      server.penangan['donatur'] = (r) async => jawabOk(donaturUji(
+            nama: 'MUHAMMAD SYAIFFUL HIDAYAT',
+            alamat: 'Desa Kapuh RT 03, Kecamatan Simpur',
+            noHp: '081234567890',
+            keterangan: 'Ambil di rumah',
+            bintang: 3,
+            riwayat: [
+              for (var b = 1; b <= 10; b++)
+                {'tanggal': '2026-${'$b'.padLeft(2, '0')}-02', 'waktu': '09:00:00', 'jumlah': 1000000},
+            ],
+            totalTahunIni: 10000000,
+            saranJumlah: null,
+          ));
+      server.penangan['tambahdonasi'] = (r) async => jawabDibuat(tambahDonasiUji(jumlah: 1000000));
+      await pompaAplikasi(tester, server: server, simpanan: simpananMasuk(), kerangka: const LayarKerangka());
+      expect(find.byType(Checkbox), peran == 'admin' ? findsOneWidget : findsNothing);
+      expect(gulirInput(tester).maxScrollExtent, 0, reason: 'layar kosong');
 
-    await tester.enterText(isian('Nomor Donator'), '1125');
-    await tester.pump();
-    await tester.tap(tombol<OutlinedButton>('Cek'));
-    await tester.pumpAndSettle();
-    expect(find.byType(KartuDonatur), findsOneWidget);
-    expect(gulirInput(tester).maxScrollExtent, 0, reason: 'dengan kartu donatur');
-    expect(tester.takeException(), isNull);
+      await tester.enterText(isian('Nomor Donator'), '1125');
+      await tester.pump();
+      await tester.tap(tombol<OutlinedButton>('Cek'));
+      await tester.pumpAndSettle();
+      expect(find.byType(KartuDonatur), findsOneWidget);
+      expect(gulirInput(tester).maxScrollExtent, 0, reason: 'dengan kartu donatur');
+      expect(tester.takeException(), isNull);
 
-    await tester.tap(tombol<OutlinedButton>('300.000'));
-    await tester.pump();
-    await tester.tap(tombol<FilledButton>('Simpan'));
-    await tester.pumpAndSettle();
-    expect(find.byType(KartuHasil), findsOneWidget);
-    expect(gulirInput(tester).maxScrollExtent, 0, reason: 'dengan kartu hasil');
-  });
+      await tester.tap(tombol<OutlinedButton>('300.000'));
+      await tester.pump();
+      await tester.tap(tombol<FilledButton>('Simpan'));
+      await tester.pumpAndSettle();
+      expect(find.byType(KartuHasil), findsOneWidget);
+      expect(gulirInput(tester).maxScrollExtent, 0, reason: 'dengan kartu hasil');
+    });
+  }
 }

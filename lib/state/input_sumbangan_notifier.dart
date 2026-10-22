@@ -1,6 +1,6 @@
 // State layar Input Sumbangan (P2 docs/06_BUSINESS_PROCESS.md). Empat state Cek dan Simpan di
 // docs/26_UI_CONVENTIONS.md; tempat tampil galat di docs/14_ERROR_HANDLING.md. Bintang, saran, K5,
-// dan K9 diputuskan server; notifier ini hanya meneruskan hasilnya.
+// K9, dan hak memilih Note (K23) diputuskan server; notifier ini hanya meneruskan hasilnya.
 
 import 'dart:async';
 
@@ -61,6 +61,9 @@ class InputSumbanganNotifier extends ChangeNotifier {
   var _jumlahOtomatis = false;
   var _mengisiSaran = false;
 
+  // Pilihan Note admin (K23): bawaan y, dan kembali ke y setelah tersimpan (keputusan pemilik 12 Okt 2026).
+  var _noteY = true;
+
   // Simpan. _tertunda = kiriman terakhir yang belum terjawab sukses; Kirim ulang memakainya lagi.
   StatusSimpan _statusSimpan = StatusSimpan.siap;
   Kiriman<PermintaanTambahDonasi>? _tertunda;
@@ -94,6 +97,12 @@ class InputSumbanganNotifier extends ChangeNotifier {
 
   /// Sumbangan yang baru tersimpan, untuk kartu hasil.
   Sumbangan? get hasil => _hasil;
+
+  /// `konfigurasi.boleh_atur_note` (admin): pilihan Note hanya tampil bila benar.
+  bool get bolehAturNote => _sesi.konfigurasi?.bolehAturNote ?? false;
+
+  /// Centang Note: benar = Note y, salah = Note n.
+  bool get noteY => _noteY;
 
   StatusStrip get statusStrip => _statusStrip;
   Object? get galatStrip => _galatStrip;
@@ -166,6 +175,14 @@ class InputSumbanganNotifier extends ChangeNotifier {
     jumlah.value = _nilaiAkhir(teks);
   }
 
+  /// Centang Note diubah. Sama dengan mengubah isian: Kirim ulang tidak boleh lagi mengirim isi lama.
+  void aturNote(bool y) {
+    if (_simpanMemuat || y == _noteY) return;
+    _noteY = y;
+    _lupakanGagalSimpan();
+    notifyListeners();
+  }
+
   static TextEditingValue _nilaiAkhir(String teks) =>
       TextEditingValue(text: teks, selection: TextSelection.collapsed(offset: teks.length));
 
@@ -183,7 +200,8 @@ class InputSumbanganNotifier extends ChangeNotifier {
       }
       if (!bisaSimpan) return;
     }
-    await _kirim(Kiriman(PermintaanTambahDonasi(idDonatur: _donatur!.id, jumlah: nilai)), tanya);
+    final noteN = bolehAturNote && !_noteY;
+    await _kirim(Kiriman(PermintaanTambahDonasi(idDonatur: _donatur!.id, jumlah: nilai, noteN: noteN)), tanya);
   }
 
   /// Kirim ulang (galat jaringan) atau Coba lagi (pesan umum): isi dan kunci sama persis.
@@ -253,6 +271,7 @@ class InputSumbanganNotifier extends ChangeNotifier {
     jumlah.clear();
     _mengisiSaran = false;
     _jumlahOtomatis = false;
+    _noteY = true;
     notifyListeners();
     fokusNomor.requestFocus();
   }

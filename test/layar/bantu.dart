@@ -45,10 +45,12 @@ http.Response jawabOk(Object data) => jawabJson(200, {'ok': true, 'data': data})
 http.Response jawabGalat(int status, String kode, String pesan, [Map<String, Object?> lain = const {}]) =>
     jawabJson(status, {'ok': false, 'kode': kode, 'pesan': pesan, ...lain});
 
+/// `boleh_atur_note` mengikuti [peran], seperti server (K23), kecuali diisi lain.
 Map<String, Object?> konfigurasiUji({
   String versi = versiKontrak,
   String username = 'uji_operator',
   String peran = 'operator',
+  bool? bolehAturNote,
 }) =>
     {
       'versi_api': versi,
@@ -57,6 +59,7 @@ Map<String, Object?> konfigurasiUji({
       'nominal_umum': [50000, 100000],
       'nominal_konfirmasi': 5000000,
       'pengguna': {'id': 7, 'username': username, 'peran': peran},
+      'boleh_atur_note': bolehAturNote ?? peran == 'admin',
     };
 
 Map<String, Object?> loginUji({String token = tokenUji, String username = 'uji_operator'}) => {
@@ -418,6 +421,7 @@ Map<String, Object?> barisDonasiSayaUji({
   String? namaDonatur = 'Fulan bin Fulan',
   int jumlah = 100000,
   bool bolehUbah = true,
+  bool bolehHapus = false,
   bool? noteN,
 }) =>
     {
@@ -427,6 +431,7 @@ Map<String, Object?> barisDonasiSayaUji({
       'nama_donatur': namaDonatur,
       'jumlah': jumlah,
       'boleh_ubah': bolehUbah,
+      'boleh_hapus': bolehHapus,
       'note_n': ?noteN,
     };
 

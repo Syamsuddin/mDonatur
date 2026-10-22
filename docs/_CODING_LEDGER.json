@@ -5,7 +5,7 @@
     "test": "flutter test",
     "lint": "flutter analyze",
     "run": "flutter run -d emulator-5554 --dart-define=SERVER_URL=http://localhost:8000",
-    "migrate": "",
+    "migrate": "(tidak ada)",
     "deps": "flutter pub get",
     "create": "flutter create --project-name mdonator --org com.kapuhmadani --platforms android .",
     "test_satu": "flutter test test/api/"
@@ -73,14 +73,21 @@
       "step": 7,
       "detik": 4263,
       "tok_est": 146344
+    },
+    {
+      "mulai": "2026-10-12T22:18:23+08:00",
+      "selesai": null,
+      "step": 7,
+      "detik": 3770,
+      "tok_est": 250198
     }
   ],
   "step_berjalan": null,
   "blueprint": {
     "sidik_awal": "f1aef310f11ad39e",
-    "sidik": "7d8fc975a929f5a7",
+    "sidik": "33c7b339b03198dc",
     "dokumen": 28,
-    "disegel": "2026-10-10T21:49:21+08:00",
+    "disegel": "2026-10-12T22:18:22+08:00",
     "riwayat": [
       {
         "dari": "f1aef310f11ad39e",
@@ -121,8 +128,14 @@
         "dari": "eade7ff943cd7241",
         "ke": "7d8fc975a929f5a7",
         "pada": "2026-10-10T21:49:15+08:00"
+      },
+      {
+        "dari": "7d8fc975a929f5a7",
+        "ke": "33c7b339b03198dc",
+        "pada": "2026-10-12T22:18:22+08:00"
       }
-    ]
+    ],
+    "sidik_sebelumnya": "7d8fc975a929f5a7"
   },
   "riwayat_fitur": [
     {
@@ -1730,13 +1743,204 @@
         "APK debug varian alamat produksi (perintah di docs/11)"
       ],
       "selesai": "2026-10-10T23:18:10+08:00"
+    },
+    {
+      "fitur": "S8 admin note dan hapus",
+      "rute": "Fitur baru (vertical slice)",
+      "mulai": "2026-10-12T22:26:36+08:00",
+      "rencana": [
+        "API_CONTRACT.md",
+        "../app/api.php",
+        "../app/api/konfigurasi.php",
+        "../app/api/tambahdonasi.php",
+        "../app/api/donasisaya.php",
+        "../app/api/hapusdonasi.php",
+        "../tests/api.php",
+        "lib/api/klien_api.dart",
+        "lib/api/model.dart",
+        "lib/state/input_sumbangan_notifier.dart",
+        "lib/layar/input_sumbangan.dart",
+        "lib/state/input_saya_notifier.dart",
+        "lib/layar/input_saya.dart",
+        "lib/widget/baris_sumbangan.dart",
+        "lib/widget/kartu_hasil.dart",
+        "test/api/klien_api_test.dart",
+        "test/api/kontrak_test.dart",
+        "test/layar/bantu.dart",
+        "test/layar/input_sumbangan_test.dart",
+        "test/layar/input_saya_test.dart",
+        "docs/01_PRD.md",
+        "docs/02_SCOPE.md",
+        "docs/03_ROADMAP.md",
+        "docs/05_USER_ROLE.md",
+        "docs/06_BUSINESS_PROCESS.md",
+        "docs/12_PROJECT_STRUCTURE.md",
+        "docs/23_ACCEPTANCE_CRITERIA.md",
+        "docs/26_UI_CONVENTIONS.md",
+        "docs/27_API_CONTRACT.md",
+        "docs/_MANIFEST.json",
+        "CLAUDE.md",
+        "README.md",
+        "../UPDATE_PLAN.md",
+        "../CLAUDE.md"
+      ],
+      "total_step": 0,
+      "step": [
+        {
+          "no": 1,
+          "nama": "Kontrak API 0.3.0",
+          "mulai": "2026-10-12T22:26:42+08:00",
+          "selesai": "2026-10-12T22:27:45+08:00",
+          "detik": 64,
+          "tok_est": 17985,
+          "muat": [
+            "API_CONTRACT.md",
+            "docs/02_SCOPE.md",
+            "docs/22_CHANGE_POLICY.md",
+            "docs/26_UI_CONVENTIONS.md",
+            "docs/05_USER_ROLE.md"
+          ]
+        },
+        {
+          "no": 2,
+          "nama": "Server API",
+          "mulai": "2026-10-12T22:27:53+08:00",
+          "selesai": "2026-10-12T22:34:44+08:00",
+          "detik": 412,
+          "tok_est": 30093,
+          "muat": [
+            "../app/api.php",
+            "../app/api/konfigurasi.php",
+            "../app/api/tambahdonasi.php",
+            "../app/api/donasisaya.php",
+            "../app/api/ubahdonasi.php",
+            "../app/api/hapusdonasi.php",
+            "../app/donasi.php",
+            "../tests/api.php"
+          ]
+        },
+        {
+          "no": 3,
+          "nama": "Klien API dan model",
+          "mulai": "2026-10-12T22:34:45+08:00",
+          "selesai": "2026-10-12T22:36:47+08:00",
+          "detik": 123,
+          "tok_est": 17350,
+          "muat": [
+            "lib/api/model.dart",
+            "lib/api/klien_api.dart",
+            "test/layar/bantu.dart",
+            "test/api/kontrak_test.dart"
+          ]
+        },
+        {
+          "no": 4,
+          "nama": "UI dan state",
+          "mulai": "2026-10-12T22:36:48+08:00",
+          "selesai": "2026-10-12T22:40:20+08:00",
+          "detik": 213,
+          "tok_est": 25981,
+          "muat": [
+            "lib/state/input_sumbangan_notifier.dart",
+            "lib/layar/input_sumbangan.dart",
+            "lib/state/input_saya_notifier.dart",
+            "lib/layar/input_saya.dart",
+            "lib/widget/baris_sumbangan.dart",
+            "lib/widget/kartu_hasil.dart",
+            "lib/state/ubah_sumbangan_notifier.dart",
+            "lib/state/sesi.dart",
+            "lib/tema.dart"
+          ]
+        },
+        {
+          "no": 5,
+          "nama": "Tes klien",
+          "mulai": "2026-10-12T22:40:23+08:00",
+          "selesai": "2026-10-12T23:07:46+08:00",
+          "detik": 1644,
+          "tok_est": 52922,
+          "muat": [
+            "test/api/klien_api_test.dart",
+            "test/api/kontrak_test.dart",
+            "test/layar/bantu.dart",
+            "test/layar/input_sumbangan_test.dart",
+            "test/layar/input_sumbangan_muat_test.dart",
+            "test/layar/input_saya_test.dart",
+            "test/layar/masuk_test.dart",
+            "docs/_MANIFEST.json"
+          ]
+        },
+        {
+          "no": 6,
+          "nama": "Dokumen",
+          "mulai": "2026-10-12T23:07:46+08:00",
+          "selesai": "2026-10-12T23:25:00+08:00",
+          "detik": 1035,
+          "tok_est": 64395,
+          "muat": [
+            "docs/01_PRD.md",
+            "docs/02_SCOPE.md",
+            "docs/03_ROADMAP.md",
+            "docs/05_USER_ROLE.md",
+            "docs/06_BUSINESS_PROCESS.md",
+            "docs/23_ACCEPTANCE_CRITERIA.md",
+            "docs/26_UI_CONVENTIONS.md",
+            "../UPDATE_PLAN.md",
+            "../CLAUDE.md"
+          ]
+        },
+        {
+          "no": 7,
+          "nama": "Gerbang fitur",
+          "mulai": "2026-10-12T23:25:01+08:00",
+          "selesai": "2026-10-12T23:29:40+08:00",
+          "detik": 279,
+          "tok_est": 41472,
+          "muat": [
+            "../UPDATE_PLAN.md"
+          ]
+        }
+      ],
+      "detik": 3770,
+      "tok_est": 250198,
+      "deviasi": [
+        "test/layar/masuk_test.dart — di luar rencana: versi 0.3.0 kini cocok, layar blokir diuji dengan 0.2.0",
+        "test/layar/input_sumbangan_muat_test.dart — di luar rencana: uji muat satu layar Pixel 5 kini juga untuk admin (centang Note)",
+        "docs/_MANIFEST.json — juga menambah S7 yang hilang di requirements.roadmap"
+      ],
+      "warn_dilewati": [
+        "S1: nama blok 23 'S8 — Admin: Note dan hapus sumbangan' beda dengan nama fitur meter; blok ada",
+        "S6: diperiksa manual (HTTP hanya lib/api, nama field JSON hanya model.dart, hak dari server)",
+        "S7: sebagian besar karena path rencana relatif mDonator/ vs path git dari root"
+      ],
+      "asumsi": [
+        "Hapus lewat API memakai Idempotency-Key seperti aksi tulis lain (disetujui pemilik)",
+        "Operator yang mengirim note diabaikan, bukan ditolak (kompatibel mundur)",
+        "Peran diperiksa sebelum id di hapusdonasi agar operator tak bisa menebak id yang ada",
+        "Tidak ada snackbar sukses setelah hapus: baris hilang dan total berubah sebagai umpan balik"
+      ],
+      "dokumen_diperbarui": [
+        "API_CONTRACT.md 0.3.0",
+        "docs/01,02,03,05,06,12,23,26,27",
+        "docs/_MANIFEST.json",
+        "CLAUDE.md",
+        "README.md",
+        "../UPDATE_PLAN.md Fase 15 + K23",
+        "../CLAUDE.md"
+      ],
+      "ditunda": [
+        "Demo emulator S8 (emulator tertutup, port 8000 dipakai proyek lain); blok 23 S8 belum diarsipkan",
+        "tests/mariadb.php dan tests/instalasi.php untuk Fase 15",
+        "Rilis: versi server 2.3.0, APK 1.2.0, CHANGELOG, tag — menunggu permintaan pemilik"
+      ],
+      "selesai": "2026-10-12T23:29:52+08:00"
     }
   ],
   "akumulasi": {
-    "detik": 29573,
-    "tok_est": 885565,
+    "detik": 33343,
+    "tok_est": 1135763,
     "tok_terukur": 0,
-    "step": 57,
-    "fitur": 10
+    "step": 64,
+    "fitur": 11
   }
 }
