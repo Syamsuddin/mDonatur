@@ -3,16 +3,17 @@
 ## Di dalam scope
 
 - Aplikasi Android Flutter di `mDonator/` untuk fitur F1–F8 (docs/01_PRD.md), bagi peran operator dan admin.
-- Konsumsi 11 aksi `API_CONTRACT.md` v0.2.0 (`logout` sejak 0.2.0, 11 Okt 2026). Klien API dan model ditulis tangan.
+- Konsumsi 12 aksi `API_CONTRACT.md` v0.3.0 (`logout` sejak 0.2.0, 11 Okt 2026; `hapusdonasi` sejak 0.3.0, 12 Okt 2026). Klien API dan model ditulis tangan.
 - Uji klien (unit, widget, kepatuhan kontrak, dan integrasi opsional ke server lokal), serta APK debug.
+- **Khusus admin (S8, K23, permintaan pemilik 12 Okt 2026):** centang Note (y/n) di Input Sumbangan, dan hapus sumbangan dari Input Saya tanpa dialog konfirmasi. Hak keduanya diputuskan server (`boleh_atur_note`, `boleh_hapus`). Hapus oleh admin tidak dicatat di log mana pun (K21a).
 - Tampilan arah C "Dasbor Yayasan" (docs/26_UI_CONVENTIONS.md, S7), termasuk grafik rincian per hari dan per operator di tab Rekap. Grafik ini menggambar jawaban `rekap` yang sama dengan rinciannya (keputusan pemilik 10 Okt 2026).
 
 ## Di luar scope
 
-Keputusan K11 dan K15, serta `../UPDATE_PLAN.md` §10.
+Keputusan K11, K15, dan K23, serta `../UPDATE_PLAN.md` §10.
 
-1. **Hapus donasi** dari mobile. Hapus tetap dilakukan di web.
-2. **Input Khusus dan atribut Note.** Note tidak bisa dibuat atau diubah dari mobile. Operator tidak pernah melihat baris Note n.
+1. **Hapus donasi oleh operator** dari mobile. Operator tetap menghapus di web (K6, dengan konfirmasi dan alasan). Admin boleh menghapus dari Input Saya sejak S8 (K23).
+2. **Input Khusus sebagai layar sendiri, Note bagi operator, dan mengubah Note sumbangan yang sudah ada.** Admin memilih Note hanya saat menginput di Input Sumbangan (S8, K23); Ubah Sumbangan tetap hanya mengubah nominal. Operator tidak pernah melihat baris Note n.
 3. **Ubah atau hapus donatur**, serta Kelola Pengguna.
 4. **Daftar sumbangan lengkap**, halaman grafik web (`grafik*`), dan rekap tahunan. Grafik rincian di tab Rekap bukan fitur ini, sebab tidak menambah data maupun aksi.
 5. **Mode offline.** Waktu dicap oleh jam server, sehingga tanpa sinyal tidak ada input. Isian tetap di layar sampai dikirim.

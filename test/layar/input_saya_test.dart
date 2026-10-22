@@ -180,7 +180,13 @@ void main() {
 
       await _bukaUbah(tester);
       expect(_lembar, findsOneWidget);
-      for (final hapus in [find.textContaining('Hapus'), find.textContaining('hapus'), find.byIcon(Icons.delete)]) {
+      for (final hapus in [
+        find.textContaining('Hapus'),
+        find.textContaining('hapus'),
+        find.byIcon(Icons.delete),
+        find.byIcon(Icons.delete_outline),
+        find.byTooltip('Hapus'),
+      ]) {
         expect(hapus, findsNothing);
       }
     });
@@ -539,6 +545,176 @@ void main() {
     });
   });
 
+  group('hapus (admin, K23)', () {
+    const judulKedua = '1234 · Fulan bin Fulan';
+
+    Finder ikonHapus(String judul) => find.descendant(of: _baris(judul), matching: find.byTooltip('Hapus'));
+
+    IconButton tombolHapus(WidgetTester tester, String judul) => tester.widget<IconButton>(
+        find.ancestor(of: ikonHapus(judul), matching: find.byType(IconButton)));
+
+    /// Admin dengan dua baris; setelah [hapus] dipanggil, `donasisaya` hanya berisi baris kedua.
+    ServerTiruan serverAdmin() {
+      final server = serverInputSaya();
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(username: 'uji_admin', peran: 'admin'));
+      server.penangan['donasisaya'] = _donasiSaya(total: 300000, transaksi: 2, daftar: [
+        barisDonasiSayaUji(bolehHapus: true),
+        barisDonasiSayaUji(id: 145400, waktu: '08:00:00', idDonatur: 1234, jumlah: 200000, bolehHapus: true),
+      ]);
+      server.penangan['hapusdonasi'] = (r) async {
+        server.penangan['donasisaya'] = _donasiSaya(total: 200000, transaksi: 1, daftar: [
+          barisDonasiSayaUji(id: 145400, waktu: '08:00:00', idDonatur: 1234, jumlah: 200000, bolehHapus: true),
+        ]);
+        return jawabOk({
+          'sumbangan': {'id': 145438, 'id_donatur': 7759, 'nama_donatur': 'Fulan bin Fulan', 'tanggal': '2026-10-12', 'waktu': '09:20:11', 'jumlah': 100000},
+        });
+      };
+      return server;
+    }
+
+    testWidgets('ikon hapus hanya pada baris boleh_hapus, teksBahaya, target 48 dp', (tester) async {
+      final server = serverAdmin();
+      server.penangan['donasisaya'] = _donasiSaya(daftar: [
+        barisDonasiSayaUji(bolehHapus: true),
+        barisDonasiSayaUji(id: 145400, waktu: '08:00:00', idDonatur: 1234, bolehHapus: false),
+      ]);
+      await pompaTabInputSaya(tester, server);
+      expect(ikonHapus(_judulBaris), findsOneWidget);
+      expect(ikonHapus(judulKedua), findsNothing);
+      expect(tombolHapus(tester, _judulBaris).color, Warna.teksBahaya);
+      expect(find.descendant(of: _baris(_judulBaris), matching: find.byIcon(Icons.delete_outline)), findsOneWidget);
+      expect(tester.getSize(find.ancestor(of: ikonHapus(_judulBaris), matching: find.byType(IconButton))).height,
+          greaterThanOrEqualTo(Bentuk.targetSentuh));
+    });
+
+    testWidgets('ketuk → hapusdonasi langsung tanpa dialog; daftar, total, dan strip dimuat ulang', (tester) async {
+      final server = serverAdmin();
+      await pompaTabInputSaya(tester, server);
+      final muatSebelum = kirimanKe(server, 'donasisaya').length;
+
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(_lembar, findsNothing, reason: 'ketuk ikon hapus tidak membuka lembar Ubah');
+      final kiriman = kirimanKe(server, 'hapusdonasi').single;
+      expect(_isiJson(kiriman), {'id': 145438});
+      expect(kiriman.headers['Idempotency-Key'], matches(RegExp(r'^[0-9a-f-]{36}$')));
+      expect(kirimanKe(server, 'donasisaya'), hasLength(muatSebelum + 1));
+      expect(find.text(_judulBaris), findsNothing);
+      expect(find.text(judulKedua), findsOneWidget);
+      expect(find.text('Total 1 transaksi'), findsOneWidget);
+      expect(find.byType(PanelGalat), findsNothing);
+
+      await pilihTab(tester, 'Input');
+      expect(ringkasanHariIni(tester), ('Rp 200.000', '1 transaksi'));
+    });
+
+    testWidgets('selama menghapus: indikator di baris itu, hapus lain nonaktif; baris tetap sampai daftar baru tiba',
+        (tester) async {
+      final server = serverAdmin();
+      final tahan = Completer<void>();
+      final asli = server.penangan['hapusdonasi']!;
+      server.penangan['hapusdonasi'] = (r) async {
+        await tahan.future;
+        return asli(r);
+      };
+      await pompaTabInputSaya(tester, server);
+      await tester.tap(ikonHapus(_judulBaris));
+      await tester.pump();
+
+      expect(find.descendant(of: _baris(_judulBaris), matching: find.byType(CircularProgressIndicator)), findsOneWidget);
+      expect(tombolHapus(tester, _judulBaris).onPressed, isNull);
+      expect(tombolHapus(tester, judulKedua).onPressed, isNull);
+      await tester.tap(ikonHapus(judulKedua));
+      await tester.pump();
+      expect(kirimanKe(server, 'hapusdonasi'), hasLength(1));
+
+      tahan.complete();
+      await tester.pumpAndSettle();
+      expect(find.text(_judulBaris), findsNothing);
+      expect(tombolHapus(tester, judulKedua).onPressed, isNotNull);
+    });
+
+    testWidgets('galat jaringan → panel Kirim ulang dengan kunci dan isi sama; baris tetap', (tester) async {
+      final server = serverAdmin();
+      final asli = server.penangan['hapusdonasi']!;
+      server.penangan['hapusdonasi'] = (r) async => throw http.ClientException('putus');
+      await pompaTabInputSaya(tester, server);
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.text(TeksGalat.jaringanPost), findsOneWidget);
+      expect(find.text(_judulBaris), findsOneWidget);
+
+      server.penangan['hapusdonasi'] = asli;
+      await ketuk(tester, tombol<OutlinedButton>('Kirim ulang'));
+      final kiriman = kirimanKe(server, 'hapusdonasi');
+      expect(kiriman, hasLength(2));
+      expect(kiriman[1].headers['Idempotency-Key'], kiriman[0].headers['Idempotency-Key']);
+      expect(kiriman[1].bodyBytes, kiriman[0].bodyBytes);
+      expect(find.text(_judulBaris), findsNothing);
+      expect(find.text(TeksGalat.jaringanPost), findsNothing);
+    });
+
+    testWidgets('500 galat_server → pesan umum + Coba lagi dengan kunci sama', (tester) async {
+      final server = serverAdmin();
+      final asli = server.penangan['hapusdonasi']!;
+      server.penangan['hapusdonasi'] = (r) async => jawabGalat(500, 'galat_server', 'Terjadi galat di server.');
+      await pompaTabInputSaya(tester, server);
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.text(TeksGalat.umum), findsOneWidget);
+
+      server.penangan['hapusdonasi'] = asli;
+      await ketuk(tester, tombol<OutlinedButton>('Coba lagi'));
+      final kiriman = kirimanKe(server, 'hapusdonasi');
+      expect(kiriman[1].headers['Idempotency-Key'], kiriman[0].headers['Idempotency-Key']);
+      expect(find.text(_judulBaris), findsNothing);
+    });
+
+    testWidgets('404 tidak_ada → pesan server dan daftar dimuat ulang', (tester) async {
+      final server = serverAdmin();
+      server.penangan['hapusdonasi'] = (r) async {
+        server.penangan['donasisaya'] = _donasiSaya(daftar: [
+          barisDonasiSayaUji(id: 145400, waktu: '08:00:00', idDonatur: 1234, bolehHapus: true),
+        ]);
+        return jawabGalat(404, 'tidak_ada', 'Data sumbangan tidak ditemukan.');
+      };
+      await pompaTabInputSaya(tester, server);
+      final muatSebelum = kirimanKe(server, 'donasisaya').length;
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.text('Data sumbangan tidak ditemukan.'), findsOneWidget);
+      expect(kirimanKe(server, 'donasisaya'), hasLength(muatSebelum + 1));
+      expect(find.text(_judulBaris), findsNothing);
+      expect(find.widgetWithText(OutlinedButton, 'Kirim ulang'), findsNothing);
+    });
+
+    testWidgets('403 tidak_berhak → pesan server tanpa tombol; ketuk hapus lagi memakai kunci baru', (tester) async {
+      final server = serverAdmin();
+      server.penangan['hapusdonasi'] =
+          (r) async => jawabGalat(403, 'tidak_berhak', 'Hapus sumbangan lewat mDonator hanya untuk admin.');
+      await pompaTabInputSaya(tester, server);
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.text('Hapus sumbangan lewat mDonator hanya untuk admin.'), findsOneWidget);
+      expect(find.widgetWithText(OutlinedButton, 'Coba lagi'), findsNothing);
+      expect(find.text(_judulBaris), findsOneWidget);
+
+      await ketuk(tester, ikonHapus(_judulBaris));
+      final kiriman = kirimanKe(server, 'hapusdonasi');
+      expect(kiriman, hasLength(2));
+      expect(kiriman[1].headers['Idempotency-Key'], isNot(kiriman[0].headers['Idempotency-Key']));
+    });
+
+    testWidgets('daftar dimuat ulang (tab dibuka lagi) → panel galat hapus hilang', (tester) async {
+      final server = serverAdmin();
+      server.penangan['hapusdonasi'] = (r) async => throw http.ClientException('putus');
+      await pompaTabInputSaya(tester, server);
+      await ketuk(tester, ikonHapus(_judulBaris));
+      expect(find.text(TeksGalat.jaringanPost), findsOneWidget);
+
+      await pilihTab(tester, 'Input');
+      await pilihTab(tester, 'Input Saya');
+      expect(find.text(TeksGalat.jaringanPost), findsNothing);
+      expect(find.text(_judulBaris), findsOneWidget);
+    });
+  });
+
   testWidgets('360×640 dp, textScaler 1,3: daftar panjang, nominal besar, lembar dengan panel → tanpa luapan',
       (tester) async {
     final server = serverInputSaya();
@@ -551,6 +727,7 @@ void main() {
           namaDonatur: 'Hj. Siti Fatimah binti Haji Abdurrahman Kandangan $i',
           jumlah: 2000000000,
           bolehUbah: i.isEven,
+          bolehHapus: i % 4 < 2,
           noteN: i % 3 == 0,
         ),
     ]);

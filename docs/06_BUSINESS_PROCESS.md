@@ -27,12 +27,14 @@ Isi permintaan, jawaban, dan kode galat ada di `API_CONTRACT.md` §6–§8. Cara
 3. **Jumlah**
    - Bila `saran_jumlah` tidak `null`, nilainya mengisi Jumlah hanya bila Jumlah kosong atau masih berisi saran sebelumnya (penanda "otomatis"). Ketikan pengguna atau ketukan nominal cepat menghapus penanda itu. Aturan ini sama dengan Fase 11 web (`isiSaranJumlah()`).
    - Tombol nominal cepat diambil dari `konfigurasi.nominal_umum` yang ≤ Rp 300.000, yaitu enam tombol 50.000–300.000 (keputusan pemilik 10 Okt 2026); ketukan mengisi Jumlah. Saran di atas Rp 300.000 tetap mengisi Jumlah.
+3a. **Note (hanya admin, K23).** Bila `konfigurasi.boleh_atur_note` bernilai `true`, centang **Note** tampil sebaris dengan Sumbangan, bawaan tercentang (Note y). Bila dikosongkan, `tambahdonasi` membawa `note: "n"`; bila tercentang, field `note` tidak dikirim. Mengubah centang setelah Simpan gagal sama dengan mengubah isian: Kirim ulang hilang.
 4. **Jumlah < 1.000:** sebelum mengirim, tampilkan dialog lokal "Nominal Rp {jumlah} — benar?" dengan tombol **Ya, simpan** / **Tidak** (T16). Tidak → kembali ke isian Jumlah.
 5. **Simpan** → `tambahdonasi`. Pada 201, atau 2xx dengan `"ulang": true`:
    - tampilkan kartu hasil (nama, nominal, jam WITA);
    - perbarui strip dari `ringkasan_hari_ini`;
-   - kosongkan Nomor dan Jumlah, tutup kartu donatur, dan fokus ke Nomor Donator.
-6. **409 `perlu_konfirmasi`:** dialog konfirmasi berisi `alasan` dan `donatur`. **Ya, simpan** mengirim isi yang sama dengan `konfirmasi: true` dan kunci baru. **Tidak** kembali ke isian.
+   - kosongkan Nomor dan Jumlah, tutup kartu donatur, dan fokus ke Nomor Donator;
+   - centang Note kembali tercentang (y), keputusan pemilik 12 Okt 2026. Bila `sumbangan.note_n` bernilai `true`, jam di kartu hasil ditulis tebal. Sumbangan Note n tidak menambah strip, karena `ringkasan_hari_ini` hanya menghitung Note y.
+6. **409 `perlu_konfirmasi`:** dialog konfirmasi berisi `alasan` dan `donatur`. **Ya, simpan** mengirim isi yang sama (termasuk `note`) dengan `konfirmasi: true` dan kunci baru. **Tidak** kembali ke isian.
 7. **Timeout atau tanpa jaringan:** isian tetap, dan tombol **Kirim ulang** memakai kunci yang sama.
 8. **401:** layar Masuk tampil di atas kerangka (docs/08_ARCHITECTURE.md). Setelah masuk, isian masih ada dan pengguna menekan Simpan lagi.
 
@@ -56,13 +58,19 @@ Isi permintaan, jawaban, dan kode galat ada di `API_CONTRACT.md` §6–§8. Cara
    - `nama_donatur: null` → tulis "(donatur terhapus)".
    - `note_n: true` (hanya admin) → jam ditulis tebal, tanpa label.
 3. Baris `boleh_ubah: true` bisa diketuk dan membuka lembar bawah **Ubah**, dengan Jumlah lama sudah terisi → Simpan (< 1.000 → dialog lokal) → `ubahdonasi`. Pada 200: tutup lembar, lalu muat ulang `donasisaya`.
-4. Baris `boleh_ubah: false` tidak bisa diketuk dan tidak punya ikon ubah. Tidak ada aksi hapus.
+4. Baris `boleh_ubah: false` tidak bisa diketuk dan tidak punya ikon ubah. Baris `boleh_hapus: false` (semua baris operator) tidak punya ikon hapus.
 5. *Cabang:*
    - 403 `tidak_berhak`;
    - 404 `tidak_ada` → muat ulang daftar;
    - 409 `perlu_konfirmasi` → seperti P2.6;
    - 422;
    - galat jaringan → Kirim ulang dengan kunci yang sama.
+6. **Hapus (hanya admin, K23).** Baris `boleh_hapus: true` punya ikon hapus. Ketuk → `hapusdonasi` langsung, tanpa dialog konfirmasi, dengan kunci baru. Selama berjalan, ikon baris itu menjadi indikator dan ikon hapus lain nonaktif. Pada 200 (atau `"ulang": true`), muat ulang `donasisaya`; baris hilang, total diperbarui, dan strip tab Input ikut diperbarui bila tanggalnya hari ini. Server tidak mencatat penghapusan oleh admin (K21a).
+   - galat jaringan → panel galat di atas daftar dengan **Kirim ulang** (kunci dan isi sama);
+   - 500 → pesan umum dengan **Coba lagi** (kunci sama);
+   - 403 `tidak_berhak` → pesan server tanpa tombol;
+   - 404 `tidak_ada` → pesan server, lalu daftar dimuat ulang;
+   - panel hilang saat daftar dimuat ulang (tab dibuka lagi, tarik ke bawah, tanggal lain).
 
 ## P5 Rekap (tab)
 

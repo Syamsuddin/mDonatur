@@ -323,10 +323,10 @@ void main() {
   });
 
   group('versi kontrak (§9)', () {
-    testWidgets('versi_api "0.3.0" → layar blokir; hanya Pengaturan dan Keluar', (tester) async {
+    testWidgets('versi_api "0.2.0" (server sebelum Note dan hapus) → layar blokir; hanya Pengaturan dan Keluar', (tester) async {
       aturLayarKecil(tester);
       final server = ServerTiruan();
-      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.3.0'));
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.2.0'));
       final simpanan = simpananMasuk();
       await pompaAplikasi(tester, server: server, simpanan: simpanan);
 
@@ -346,7 +346,7 @@ void main() {
     testWidgets('X-Api-Versi tidak cocok pada permintaan di kerangka → layar blokir', (tester) async {
       final server = ServerTiruan();
       server.penangan['donatur'] = (r) async =>
-          jawabJson(200, {'ok': true, 'data': <String, Object?>{}}, versi: '0.3.0');
+          jawabJson(200, {'ok': true, 'data': <String, Object?>{}}, versi: '0.2.0');
       await pompaAplikasi(tester, server: server, simpanan: simpananMasuk(), kerangka: kerangkaDenganTabTiruan);
       await tester.tap(tombol<OutlinedButton>('Kirim Uji'));
       await tester.pumpAndSettle();
@@ -355,7 +355,7 @@ void main() {
 
     testWidgets('versi tidak cocok setelah login → layar blokir', (tester) async {
       final server = ServerTiruan();
-      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.3.0'));
+      server.penangan['konfigurasi'] = (r) async => jawabOk(konfigurasiUji(versi: '0.2.0'));
       await pompaAplikasi(tester, server: server);
       await isiDanMasuk(tester);
       expect(find.text('Versi aplikasi tidak cocok dengan server. Perbarui aplikasi.'), findsOneWidget);

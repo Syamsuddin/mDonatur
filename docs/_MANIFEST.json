@@ -7,7 +7,7 @@
   "confirmed_at": "2026-10-10T00:00:00+08:00",
   "sources": {
     "dosir": "DOSIR_MDONATOR.md (bahan asal, bukan bagian paket; bila beda dengan docs/, docs menang)",
-    "contract": "API_CONTRACT.md v0.2.0 (rumah tunggal alamat, aksi, payload, kode galat)",
+    "contract": "API_CONTRACT.md v0.3.0 (rumah tunggal alamat, aksi, payload, kode galat)",
     "server_plan": "../UPDATE_PLAN.md Fase 12 + ../CLAUDE.md (sisi server, di luar paket)"
   },
   "requirements": {
@@ -60,15 +60,15 @@
       }
     ],
     "out_of_scope": [
-      "hapus donasi",
-      "Note/Input Khusus",
       "ubah/hapus donatur dan kelola pengguna",
       "daftar sumbangan lengkap, grafik, rekap tahunan",
       "mode offline",
       "aplikasi untuk donatur",
       "perubahan skema DB",
       "distribusi APK dan langkah server produksi",
-      "kode server (milik repo root)"
+      "kode server (milik repo root)",
+      "hapus donasi dan pilihan Note oleh operator (khusus admin sejak S8, K23)",
+      "Input Khusus sebagai layar sendiri"
     ],
     "roles": [
       {
@@ -88,11 +88,12 @@
         "can": [
           "F1-F8",
           "melihat baris note_n",
-          "ubah milik sendiri tanggal apa pun [ASUMSI A19]"
+          "ubah milik sendiri tanggal apa pun [ASUMSI A19]",
+          "pilih Note y/n di Input Sumbangan (boleh_atur_note, K23)",
+          "hapus sumbangan dari Input Saya tanpa konfirmasi dan tanpa log (boleh_hapus, K23, K21a)"
         ],
         "cannot": [
           "ubah Note",
-          "hapus",
           "Input Khusus di mobile"
         ]
       }
@@ -271,7 +272,7 @@
       "enabled": true,
       "role": "frontend",
       "contract_path": "API_CONTRACT.md",
-      "contract_version": "0.2.0",
+      "contract_version": "0.3.0",
       "note": "Tanpa openapi.yaml/kontrak/ (keputusan 10 Okt 2026): OpenAPI tidak bisa menyatakan banyak aksi pada satu path /api?aksi=; validate-kontrak.sh tidak dipakai"
     },
     "architecture": {
@@ -325,7 +326,9 @@
       "S3 tambah donatur",
       "S4 Input Saya",
       "S5 rekap",
-      "S6 ganti password+APK debug"
+      "S6 ganti password+APK debug",
+      "S7 tampilan arah C Dasbor Yayasan",
+      "S8 admin: Note dan hapus sumbangan (K23)"
     ]
   },
   "canonical_owners": {
@@ -503,7 +506,8 @@
     "versi_aplikasi": "Konstanta versiAplikasi di lib/state/sesi.dart, diuji sama dengan version pubspec.yaml; tanpa paket package_info (S1)",
     "input_ringkas": "Input Sumbangan ringkas agar muat satu layar tanpa gulir (Pixel 5, skala 1,0): strip satu baris tanpa input terakhir; nominal cepat hanya nominal_umum ≤ 300.000 (enam tombol, kisi 3 kolom); kartu donatur ringkas; isian padat; jarak antar-isian 8 dan isi kartu 12 (diputuskan pemilik)",
     "apk_debug_domain": "APK debug dibangun dengan SERVER_URL https://donatur.kapuhmadani.com (permintaan pemilik, S6). flutter run dan uji integrasi tetap ke server lokal karena menulis data; API baru ada di produksi setelah server Fase 12 dideploy",
-    "desain_c": "Tampilan arah C \"Dasbor Yayasan\" dipilih pemilik dari tiga usulan (S7): token docs/26 baru, paket fl_chart, flutter_animate, skeletonizer (gerbang 22 lewat pilihan arah yang mencantumkan ketiganya), huruf Plus Jakarta Sans + Outfit dibundel, grafik rincian di tab Rekap masuk scope (docs/02). Mini grafik riwayat 12 bulan dari mockup tidak dibuat: menjumlah riwayat per bulan di Dart akan menyalin aturan agregat Note (guardrail inti). teksLemah digelapkan ke #6B6B6B agar AA di latarDasbor."
+    "desain_c": "Tampilan arah C \"Dasbor Yayasan\" dipilih pemilik dari tiga usulan (S7): token docs/26 baru, paket fl_chart, flutter_animate, skeletonizer (gerbang 22 lewat pilihan arah yang mencantumkan ketiganya), huruf Plus Jakarta Sans + Outfit dibundel, grafik rincian di tab Rekap masuk scope (docs/02). Mini grafik riwayat 12 bulan dari mockup tidak dibuat: menjumlah riwayat per bulan di Dart akan menyalin aturan agregat Note (guardrail inti). teksLemah digelapkan ke #6B6B6B agar AA di latarDasbor.",
+    "admin_note_hapus": "S8 (permintaan pemilik 12 Okt 2026, K23): khusus admin, Input Sumbangan punya centang Note (bawaan y, kembali ke y setelah tersimpan) dan Input Saya punya ikon hapus tanpa dialog konfirmasi; hapus oleh admin tidak dicatat di audit maupun log aktivitas (K21a). Kontrak 0.3.0: konfigurasi.boleh_atur_note, field note di tambahdonasi, boleh_hapus di donasisaya, aksi hapusdonasi. Hak diputuskan server, bukan dari peran di Dart."
   },
   "open_questions": [
     "Penyelarasan UPDATE_PLAN.md: Beranda → Input Sumbangan; 12a/12b/12c → S0–S6",

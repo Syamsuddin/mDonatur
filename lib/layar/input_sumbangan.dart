@@ -1,8 +1,8 @@
 // Layar Input Sumbangan, tab 1 dan layar awal (P2 docs/06_BUSINESS_PROCESS.md). Urutannya mengikuti
 // langkah P2: ringkasan hari ini di kepala dasbor, lalu di lembar isi Nomor Donator + Cari + Cek, hasil
-// Cek, Sumbangan, nominal cepat. Simpan dan panel galatnya tetap di bawah, supaya kartu donatur yang
-// panjang tidak mendorongnya keluar layar. Ringkasan dilipat selama keyboard terbuka. Empat state Cek,
-// Simpan, dan ringkasan: docs/26_UI_CONVENTIONS.md.
+// Cek, Sumbangan (sebaris dengan centang Note bagi admin, K23), nominal cepat. Simpan dan panel galatnya
+// tetap di bawah, supaya kartu donatur yang panjang tidak mendorongnya keluar layar. Ringkasan dilipat
+// selama keyboard terbuka. Empat state Cek, Simpan, dan ringkasan: docs/26_UI_CONVENTIONS.md.
 
 import 'package:flutter/material.dart';
 
@@ -154,20 +154,33 @@ class _LayarInputSumbanganState extends State<LayarInputSumbangan> {
                         judul: hasil.namaDonatur ?? '(donatur terhapus)',
                         jumlah: hasil.jumlah,
                         waktu: hasil.waktu,
+                        noteN: hasil.noteN,
                       ),
                       const SizedBox(height: Jarak.antarIsianRapat),
                     ] else if (n.statusCek == StatusCek.kosong)
                       const StateKosong('Ketik nomor donatur lalu tekan Cek', ikon: Icons.add_card),
-                    IsianAngka(
-                      label: 'Sumbangan',
-                      controller: n.jumlah,
-                      focusNode: n.fokusJumlah,
-                      errorText: n.galatJumlah,
-                      maksDigit: _digitJumlah,
-                      enabled: !terkunci,
-                      padat: true,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (_) => n.simpan(_tanya),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: IsianAngka(
+                            label: 'Sumbangan',
+                            controller: n.jumlah,
+                            focusNode: n.fokusJumlah,
+                            errorText: n.galatJumlah,
+                            maksDigit: _digitJumlah,
+                            enabled: !terkunci,
+                            padat: true,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => n.simpan(_tanya),
+                          ),
+                        ),
+                        // Sebaris dengan Sumbangan, supaya layar Input tetap muat tanpa digulir.
+                        if (n.bolehAturNote) ...[
+                          const SizedBox(width: Jarak.j4),
+                          _PilihanNote(nilai: n.noteY, padaUbah: terkunci ? null : n.aturNote),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: Jarak.j8),
                     NominalCepat(
@@ -206,6 +219,36 @@ class _LayarInputSumbanganState extends State<LayarInputSumbangan> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Centang Note bagi admin (K23): tercentang = Note y (bawaan), kosong = Note n. Label ikut bisa diketuk.
+class _PilihanNote extends StatelessWidget {
+  const _PilihanNote({required this.nilai, required this.padaUbah});
+
+  final bool nilai;
+  final ValueChanged<bool>? padaUbah;
+
+  @override
+  Widget build(BuildContext context) {
+    final ubah = padaUbah;
+    return MergeSemantics(
+      child: InkWell(
+        onTap: ubah == null ? null : () => ubah(!nilai),
+        borderRadius: BorderRadius.circular(Bentuk.radiusIsian),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: Bentuk.targetSentuh),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Checkbox(value: nilai, onChanged: ubah == null ? null : (v) => ubah(v ?? true)),
+              Text('Note', style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(width: Jarak.j8),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

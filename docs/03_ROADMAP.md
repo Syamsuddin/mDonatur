@@ -17,6 +17,7 @@ Slice selesai bila dapat didemokan di emulator terhadap server lokal.
 | S5 | Rekap | logika bersama rekap, aksi `rekap` | layar Rekap | F7 |
 | S6 | Ganti password dan APK debug | aksi `gantipassword` | layar Ganti Password, ikon sementara, `flutter build apk --debug` | F8 |
 | S7 | Tampilan arah C "Dasbor Yayasan" di semua layar (keputusan pemilik 10 Okt 2026) | — (tanpa bagian server) | token docs/26 baru di `tema.dart`, huruf di `assets/huruf/`, latar dasbor, tombol utama, kartu, grafik Rekap, gerak, kerangka memuat berkilau | F1–F8 (tampilan) |
+| S8 | Admin memilih Note di Input Sumbangan dan menghapus sumbangan dari Input Saya tanpa konfirmasi (permintaan pemilik 12 Okt 2026, K23) | kontrak 0.3.0: `konfigurasi.boleh_atur_note`, `note` di `tambahdonasi`, `boleh_hapus` di `donasisaya`, aksi `hapusdonasi` (`../UPDATE_PLAN.md` Fase 15) | centang Note, jam tebal di kartu hasil Note n, ikon hapus di baris sumbangan, panel galat hapus | F4, F6 (admin) |
 
 Kriteria terima per fitur ada di docs/23_ACCEPTANCE_CRITERIA.md.
 

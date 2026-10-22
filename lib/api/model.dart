@@ -1,4 +1,4 @@
-// Kelas permintaan dan jawaban API, ditulis tangan dari API_CONTRACT.md v0.2.0.
+// Kelas permintaan dan jawaban API, ditulis tangan dari API_CONTRACT.md v0.3.0.
 // Satu-satunya tempat nama field JSON dan nama parameter query (docs/12_PROJECT_STRUCTURE.md).
 // Field jawaban yang tidak dikenal diabaikan (kontrak §4); field wajib yang hilang atau
 // bertipe salah melempar FormatException, yang oleh KlienApi diubah menjadi GalatApi.
@@ -150,6 +150,7 @@ class Sumbangan {
     required this.tanggal,
     required this.waktu,
     required this.jumlah,
+    this.noteN = false,
   });
 
   factory Sumbangan.fromJson(Json json) => Sumbangan(
@@ -159,6 +160,7 @@ class Sumbangan {
         tanggal: _tanggal(json, 'tanggal'),
         waktu: _wajib<String>(json, 'waktu'),
         jumlah: _wajib<int>(json, 'jumlah'),
+        noteN: _boleh<bool>(json, 'note_n') ?? false,
       );
 
   final int id;
@@ -171,6 +173,9 @@ class Sumbangan {
   /// "HH:MM:SS" apa adanya dari server, tanpa konversi zona (K1).
   final String waktu;
   final int jumlah;
+
+  /// Hanya pernah benar untuk admin (kontrak §6).
+  final bool noteN;
 }
 
 class InputTerakhir {
@@ -248,6 +253,7 @@ class Konfigurasi {
     required this.nominalUmum,
     required this.nominalKonfirmasi,
     required this.pengguna,
+    required this.bolehAturNote,
   });
 
   factory Konfigurasi.fromJson(Json json) => Konfigurasi(
@@ -257,6 +263,7 @@ class Konfigurasi {
         nominalUmum: _daftarAngka(json, 'nominal_umum'),
         nominalKonfirmasi: _wajib<int>(json, 'nominal_konfirmasi'),
         pengguna: Pengguna.fromJson(_wajib<Json>(json, 'pengguna')),
+        bolehAturNote: _wajib<bool>(json, 'boleh_atur_note'),
       );
 
   final String versiApi;
@@ -267,6 +274,9 @@ class Konfigurasi {
   final List<int> nominalUmum;
   final int nominalKonfirmasi;
   final Pengguna pengguna;
+
+  /// Hasil aturan K3/K23 dari server (admin); klien hanya menampilkan pilihan Note bila benar.
+  final bool bolehAturNote;
 }
 
 // ---------------------------------------------------------------------------
@@ -389,16 +399,25 @@ class PermintaanTambahDonasi {
     required this.idDonatur,
     required this.jumlah,
     this.konfirmasi = false,
+    this.noteN = false,
   });
 
   final int idDonatur;
   final int jumlah;
   final bool konfirmasi;
 
-  PermintaanTambahDonasi denganKonfirmasi() =>
-      PermintaanTambahDonasi(idDonatur: idDonatur, jumlah: jumlah, konfirmasi: true);
+  /// Admin memilih Note n; field `note` hanya dikirim bila benar, sehingga isian operator tetap sama.
+  final bool noteN;
 
-  Json toJson() => {'id_donatur': idDonatur, 'jumlah': jumlah, 'konfirmasi': konfirmasi};
+  PermintaanTambahDonasi denganKonfirmasi() =>
+      PermintaanTambahDonasi(idDonatur: idDonatur, jumlah: jumlah, konfirmasi: true, noteN: noteN);
+
+  Json toJson() => {
+        'id_donatur': idDonatur,
+        'jumlah': jumlah,
+        'konfirmasi': konfirmasi,
+        if (noteN) 'note': 'n',
+      };
 }
 
 class JawabanTambahDonasi {
@@ -515,6 +534,7 @@ class BarisDonasiSaya {
     required this.namaDonatur,
     required this.jumlah,
     required this.bolehUbah,
+    required this.bolehHapus,
     required this.noteN,
   });
 
@@ -525,6 +545,7 @@ class BarisDonasiSaya {
         namaDonatur: _boleh<String>(json, 'nama_donatur'),
         jumlah: _wajib<int>(json, 'jumlah'),
         bolehUbah: _wajib<bool>(json, 'boleh_ubah'),
+        bolehHapus: _wajib<bool>(json, 'boleh_hapus'),
         noteN: _boleh<bool>(json, 'note_n') ?? false,
       );
 
@@ -536,6 +557,9 @@ class BarisDonasiSaya {
 
   /// Hasil aturan K6 dari server; klien hanya mengizinkan Ubah bila benar.
   final bool bolehUbah;
+
+  /// Hasil aturan K23 dari server (admin); klien hanya menampilkan Hapus bila benar.
+  final bool bolehHapus;
   final bool noteN;
 }
 
@@ -589,6 +613,27 @@ class JawabanUbahDonasi {
 
   final Sumbangan sumbangan;
   final bool bolehUbah;
+}
+
+// ---------------------------------------------------------------------------
+// 6.12 hapusdonasi
+
+class PermintaanHapusDonasi {
+  const PermintaanHapusDonasi({required this.id});
+
+  final int id;
+
+  Json toJson() => {'id': id};
+}
+
+class JawabanHapusDonasi {
+  const JawabanHapusDonasi({required this.sumbangan});
+
+  factory JawabanHapusDonasi.fromJson(Json json) =>
+      JawabanHapusDonasi(sumbangan: Sumbangan.fromJson(_wajib<Json>(json, 'sumbangan')));
+
+  /// Sumbangan yang dihapus, seperti sebelum dihapus.
+  final Sumbangan sumbangan;
 }
 
 // ---------------------------------------------------------------------------

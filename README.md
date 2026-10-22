@@ -11,7 +11,7 @@ Kapuh Madani, Kandangan · Kalimantan Selatan
 [![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.13.4-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](#persyaratan)
-[![Kontrak API](https://img.shields.io/badge/kontrak_API-v0.2.0-046500)](API_CONTRACT.md)
+[![Kontrak API](https://img.shields.io/badge/kontrak_API-v0.3.0-046500)](API_CONTRACT.md)
 [![Uji](https://img.shields.io/badge/uji-291_lulus-046500)](#pengujian)
 [![Lisensi](https://img.shields.io/badge/lisensi-MIT-yellow)](LICENSE)
 
@@ -248,7 +248,7 @@ Uji integrasi opsional terhadap server lokal dijelaskan di [`docs/11_COMMANDS.md
 
 ## Status proyek
 
-Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Versi 1.1.0 (kontrak API 0.2.0) menambahkan pemberitahuan keluar ke server (aksi `logout`). Distribusi aplikasi ke HP operator belum dimulai.
+Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Versi 1.1.0 (kontrak API 0.2.0) menambahkan pemberitahuan keluar ke server (aksi `logout`). Slice S8 (kontrak API 0.3.0) memberi admin centang Note di Input Sumbangan dan tombol hapus di Input Saya; dirilis sebagai 1.2.0+3 (server 2.4.0), dan server sudah dideploy ke produksi (kontrak 0.3.0) 22 Okt 2026. Distribusi APK 1.2.0+3 ke HP operator belum dimulai.
 
 ## Keamanan
 

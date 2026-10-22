@@ -119,6 +119,7 @@ void main() {
       expect(k.nominalUmum.last, 2000000);
       expect(k.nominalKonfirmasi, 5000000);
       expect(k.pengguna.peran, 'operator');
+      expect(k.bolehAturNote, isFalse);
     });
 
     test('§6.3 donatur', () {
@@ -174,6 +175,7 @@ void main() {
       expect(d.total, 1550000);
       expect(d.transaksi, 10);
       expect(d.daftar.single.bolehUbah, isTrue);
+      expect(d.daftar.single.bolehHapus, isFalse);
       expect(d.daftar.single.noteN, isFalse);
       expect(d.daftar.single.namaDonatur, 'Fulan bin Fulan');
     });

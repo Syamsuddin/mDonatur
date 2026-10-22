@@ -1,8 +1,8 @@
 // Kartu hasil (docs/26_UI_CONVENTIONS.md §Inventaris): lingkaran cek bergradien (gerak pop), pesan
 // sukses, Nomor Register bila donatur baru (Tambah Donatur), nama donatur, nominal yang menghitung naik
-// (gerak hitung), dan jam "HH:mm WITA". Label WITA hanya di sini, karena sumbangan baru pasti tercatat
-// WITA (K1). Pembaca layar selalu menerima nominal akhir. Pemanggil memberi kunci baru per hasil, agar
-// gerak diulang untuk setiap simpan.
+// (gerak hitung), dan jam "HH:mm WITA", tebal bila note_n. Label WITA hanya di sini, karena sumbangan
+// baru pasti tercatat WITA (K1). Pembaca layar selalu menerima nominal akhir. Pemanggil memberi kunci
+// baru per hasil, agar gerak diulang untuk setiap simpan.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -20,6 +20,7 @@ class KartuHasil extends StatelessWidget {
     required this.jumlah,
     required this.waktu,
     this.nomorRegister,
+    this.noteN = false,
   });
 
   final String pesan;
@@ -33,6 +34,9 @@ class KartuHasil extends StatelessWidget {
 
   /// Nomor donatur baru, ditampilkan besar (`nomorRegister`) di atas nama.
   final int? nomorRegister;
+
+  /// Sumbangan Note n (hanya admin): jam tebal, seperti penanda `note_n` di daftar.
+  final bool noteN;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class KartuHasil extends StatelessWidget {
                 const SizedBox(height: Jarak.j4),
                 Text(judul, textAlign: TextAlign.center, style: teks.titleLarge),
                 _Nominal(jumlah: jumlah, gerak: gerak),
-                Text('${formatJam(waktu)} WITA', style: lemah),
+                Text('${formatJam(waktu)} WITA', style: noteN ? lemah.merge(Huruf.penandaNote) : lemah),
               ],
             ),
           ),

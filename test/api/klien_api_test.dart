@@ -52,6 +52,7 @@ const konfigurasiUji = {
   'nominal_umum': [50000, 100000],
   'nominal_konfirmasi': 5000000,
   'pengguna': {'id': 6, 'username': 'operator1', 'peran': 'operator'},
+  'boleh_atur_note': false,
 };
 
 KlienApi buatKlien(
@@ -83,6 +84,7 @@ Future<Object> panggil(KlienApi api, Aksi aksi) => switch (aksi) {
       Aksi.gantipassword => api.gantiPassword(
           const PermintaanGantiPassword(lama: passwordUji, baru: 'sandi-baru-789', ulang: 'sandi-baru-789')),
       Aksi.logout => api.logout(tokenUji).then((_) => 'logout'),
+      Aksi.hapusdonasi => api.hapusDonasi(Kiriman(const PermintaanHapusDonasi(id: 145437))),
     };
 
 final polaUuidV4 = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
@@ -329,8 +331,8 @@ void main() {
               'total': 300000,
               'transaksi': 2,
               'daftar': [
-                {'id': 2, 'waktu': '10:00:00', 'id_donatur': 9, 'nama_donatur': null, 'jumlah': 100000, 'boleh_ubah': false},
-                {'id': 1, 'waktu': '09:00:00', 'id_donatur': 8, 'nama_donatur': 'A', 'jumlah': 200000, 'boleh_ubah': true, 'note_n': true},
+                {'id': 2, 'waktu': '10:00:00', 'id_donatur': 9, 'nama_donatur': null, 'jumlah': 100000, 'boleh_ubah': false, 'boleh_hapus': false},
+                {'id': 1, 'waktu': '09:00:00', 'id_donatur': 8, 'nama_donatur': 'A', 'jumlah': 200000, 'boleh_ubah': true, 'boleh_hapus': true, 'note_n': true},
               ],
             },
           }));
@@ -338,6 +340,97 @@ void main() {
       expect(d.daftar[0].namaDonatur, isNull);
       expect(d.daftar[0].noteN, isFalse);
       expect(d.daftar[1].noteN, isTrue);
+      expect(d.daftar[0].bolehHapus, isFalse);
+      expect(d.daftar[1].bolehHapus, isTrue);
+    });
+
+    test('donasisaya tanpa boleh_hapus → GalatApi (field wajib sejak 0.3.0)', () async {
+      final api = buatKlien((r) async => jawabJson(200, {
+            'ok': true,
+            'data': {
+              'tanggal': '2026-10-12',
+              'total': 100000,
+              'transaksi': 1,
+              'daftar': [
+                {'id': 2, 'waktu': '10:00:00', 'id_donatur': 9, 'nama_donatur': 'A', 'jumlah': 100000, 'boleh_ubah': true},
+              ],
+            },
+          }));
+      await expectLater(api.donasiSaya(), throwsA(isA<GalatApi>()));
+    });
+
+    test('konfigurasi membaca boleh_atur_note; tanpa field itu → GalatApi', () async {
+      final admin = buatKlien((r) async => jawabJson(200, {
+            'ok': true,
+            'data': {...konfigurasiUji, 'boleh_atur_note': true},
+          }));
+      expect((await admin.konfigurasi()).bolehAturNote, isTrue);
+      expect((await buatKlien((r) async => jawabJson(200, {'ok': true, 'data': konfigurasiUji})).konfigurasi()).bolehAturNote, isFalse);
+
+      final tanpa = {...konfigurasiUji}..remove('boleh_atur_note');
+      await expectLater(
+        buatKlien((r) async => jawabJson(200, {'ok': true, 'data': tanpa})).konfigurasi(),
+        throwsA(isA<GalatApi>()),
+      );
+    });
+
+    test('Sumbangan membaca note_n hanya bila dikirim', () async {
+      final api = buatKlien((r) async => jawabJson(201, {
+            'ok': true,
+            'data': {'sumbangan': {...sumbanganUji, 'note_n': true}, 'ringkasan_hari_ini': ringkasanUji},
+          }));
+      final n = await api.tambahDonasi(Kiriman(const PermintaanTambahDonasi(idDonatur: 1234, jumlah: 200000, noteN: true)));
+      expect(n.sumbangan.noteN, isTrue);
+      expect(Sumbangan.fromJson(sumbanganUji).noteN, isFalse);
+    });
+  });
+
+  group('Note di tambahdonasi dan hapusdonasi (kontrak §6.5, §6.12; K23)', () {
+    test('tanpa pilihan Note: isi sama persis dengan sebelum 0.3.0 (tanpa field note)', () async {
+      late http.Request diterima;
+      final api = buatKlien((r) async {
+        diterima = r;
+        return jawabJson(201, {'ok': true, 'data': {'sumbangan': sumbanganUji, 'ringkasan_hari_ini': ringkasanUji}});
+      });
+      await api.tambahDonasi(Kiriman(const PermintaanTambahDonasi(idDonatur: 1234, jumlah: 200000)));
+      expect(jsonDecode(diterima.body), {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': false});
+    });
+
+    test('Note n: field note "n" ikut, juga pada kiriman "Ya, simpan"', () async {
+      const isi = PermintaanTambahDonasi(idDonatur: 1234, jumlah: 200000, noteN: true);
+      expect(isi.toJson(), {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': false, 'note': 'n'});
+      expect(isi.denganKonfirmasi().toJson(), {'id_donatur': 1234, 'jumlah': 200000, 'konfirmasi': true, 'note': 'n'});
+    });
+
+    test('hapusdonasi: POST {id} dengan Idempotency-Key, membaca sumbangan yang dihapus', () async {
+      late http.Request diterima;
+      final api = buatKlien((r) async {
+        diterima = r;
+        return jawabJson(200, {
+          'ok': true,
+          'data': {'sumbangan': {...sumbanganUji, 'note_n': true}},
+        });
+      });
+      final kiriman = Kiriman(const PermintaanHapusDonasi(id: 145437));
+      final jawaban = await api.hapusDonasi(kiriman);
+      expect(diterima.method, 'POST');
+      expect(diterima.url.queryParameters['aksi'], 'hapusdonasi');
+      expect(diterima.headers['Idempotency-Key'], kiriman.kunci);
+      expect(jsonDecode(diterima.body), {'id': 145437});
+      expect(jawaban.sumbangan.id, 145437);
+      expect(jawaban.sumbangan.noteN, isTrue);
+    });
+
+    test('hapusdonasi 403 tidak_berhak → GalatApi dengan pesan server', () async {
+      final api = buatKlien((r) async => jawabJson(403, {
+            'ok': false,
+            'kode': KodeGalat.tidakBerhak,
+            'pesan': 'Hapus sumbangan lewat mDonator hanya untuk admin.',
+          }));
+      await expectLater(
+        panggil(api, Aksi.hapusdonasi),
+        throwsA(isA<GalatApi>().having((g) => g.pesan, 'pesan', 'Hapus sumbangan lewat mDonator hanya untuk admin.')),
+      );
     });
   });
 
@@ -460,9 +553,10 @@ void main() {
 
   group('versi kontrak (§9)', () {
     test('aturan kecocokan versi', () {
-      expect(versiCocok('0.2.0'), isTrue);
-      expect(versiCocok('0.2.7'), isTrue);
-      expect(versiCocok('0.3.0'), isFalse);
+      expect(versiCocok('0.3.0'), isTrue);
+      expect(versiCocok('0.3.7'), isTrue);
+      expect(versiCocok('0.4.0'), isFalse);
+      expect(versiCocok('0.2.9'), isFalse, reason: 'server 0.2.x belum punya Note dan hapusdonasi');
       expect(versiCocok('0.1.9'), isFalse, reason: 'server 0.1.x belum punya aksi logout');
       expect(versiCocok('1.1.0'), isFalse);
       expect(versiCocok('1.3.0', versiKlien: '1.2.0'), isTrue);
@@ -470,8 +564,8 @@ void main() {
       expect(versiCocok('1.1.0', versiKlien: '1.2.0'), isFalse);
       expect(versiCocok('2.2.0', versiKlien: '1.2.0'), isFalse);
       expect(versiCocok(''), isFalse);
-      expect(versiCocok('0.2'), isFalse);
-      expect(versiCocok('v0.2.0'), isFalse);
+      expect(versiCocok('0.3'), isFalse);
+      expect(versiCocok('v0.3.0'), isFalse);
     });
 
     test('X-Api-Versi tidak cocok → GalatVersi, juga untuk jawaban sukses', () async {
@@ -491,11 +585,11 @@ void main() {
     test('konfigurasi.versi_api tidak cocok → GalatVersi', () async {
       final api = buatKlien((r) async => jawabJson(200, {
             'ok': true,
-            'data': {...konfigurasiUji, 'versi_api': '0.3.0'},
+            'data': {...konfigurasiUji, 'versi_api': '0.4.0'},
           }));
       await expectLater(
         api.konfigurasi(),
-        throwsA(isA<GalatVersi>().having((g) => g.versiServer, 'versiServer', '0.3.0')),
+        throwsA(isA<GalatVersi>().having((g) => g.versiServer, 'versiServer', '0.4.0')),
       );
     });
 
@@ -508,12 +602,12 @@ void main() {
 
       final dariIsi = buatKlien((r) async => jawabJson(200, {
             'ok': true,
-            'data': {...konfigurasiUji, 'versi_api': '0.3.0'},
+            'data': {...konfigurasiUji, 'versi_api': '0.4.0'},
           }))
         ..padaGalatVersi = (g) => dipanggil.add('isi ${g.versiServer}');
       await expectLater(dariIsi.konfigurasi(), throwsA(isA<GalatVersi>()));
 
-      expect(dipanggil, ['header 0.1.0', 'isi 0.3.0']);
+      expect(dipanggil, ['header 0.1.0', 'isi 0.4.0']);
     });
 
     test('versi cocok tidak memanggil padaGalatVersi', () async {
@@ -527,9 +621,9 @@ void main() {
     test('versi patch berbeda tetap diterima', () async {
       final api = buatKlien((r) async => jawabJson(200, {
             'ok': true,
-            'data': {...konfigurasiUji, 'versi_api': '0.2.4'},
-          }, versi: '0.2.4'));
-      expect((await api.konfigurasi()).versiApi, '0.2.4');
+            'data': {...konfigurasiUji, 'versi_api': '0.3.4'},
+          }, versi: '0.3.4'));
+      expect((await api.konfigurasi()).versiApi, '0.3.4');
     });
   });
 
