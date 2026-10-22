@@ -248,7 +248,7 @@ Uji integrasi opsional terhadap server lokal dijelaskan di [`docs/11_COMMANDS.md
 
 ## Status proyek
 
-Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Versi 1.1.0 (kontrak API 0.2.0) menambahkan pemberitahuan keluar ke server (aksi `logout`). Slice S8 (kontrak API 0.3.0) memberi admin centang Note di Input Sumbangan dan tombol hapus di Input Saya; dirilis sebagai 1.2.0+3 (server 2.4.0), belum dideploy ke produksi. Distribusi aplikasi ke HP operator belum dimulai.
+Dalam pengembangan. Slice S0–S7 selesai ([`docs/03_ROADMAP.md`](docs/03_ROADMAP.md)): dasar proyek dan klien API, masuk dan pengaturan, input sumbangan, tambah donatur, Input Saya, rekap, ganti password, dan desain "Dasbor Yayasan". Versi 1.1.0 (kontrak API 0.2.0) menambahkan pemberitahuan keluar ke server (aksi `logout`). Slice S8 (kontrak API 0.3.0) memberi admin centang Note di Input Sumbangan dan tombol hapus di Input Saya; dirilis sebagai 1.2.0+3 (server 2.4.0), dan server sudah dideploy ke produksi (kontrak 0.3.0) 22 Okt 2026. Distribusi APK 1.2.0+3 ke HP operator belum dimulai.
 
 ## Keamanan
 
